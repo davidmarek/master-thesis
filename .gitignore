@@ -161,3 +161,18 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+# Latex
+*.aux
+*.toc
+*.log
+*.dvi
+*.lof
+*.out
+prace.ps
+prace.pdf
+dp_uprava.pdf
+ukazka.tex
+img/logo-eps-converted-to.pdf
+
+*~
