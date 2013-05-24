@@ -193,3 +193,30 @@ kde
     w^*_0 &\propto w_0 \\
     w^*_j &\propto w_j \frac{\alpha_j}{\sum_i \alpha_i}
 \end{align}
+
+Pro nalezení rozdělení z exponencíální rodiny tak, aby odpovídalo jinému
+rozdělení, nám stačí nalézt parametry, pro které budou mít daná rozdělení
+stejné momenty. V tomto případě budeme používat pouze první dva momenty a
+zbytek zanedbáme. Je tedy třeba nalézt střední hodnotu a rozptyl
+$p^*(\vec\theta)$.
+
+\begin{align}
+\mathbb{E}[aX+bY] &= a\mathbb{E}[X] + b\mathbb{E}[Y]
+\\
+\mathbb{E}[p^*(\vec{\theta})] &= \mathbb{E}
+    \left[
+        w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
+        \sum_j w^*_j
+            Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+    \right] 
+\\
+&= w_0^* \mathbb{E}[Dir(\vec\theta; \vec\alpha)] +
+    \sum_j w_j^* \mathbb{E}[Dir(\vec\theta; \vec\alpha + \vec{\delta}_j)]
+\end{align}
+
+Pro náhodnou proměnnou $X$ z Dirichletovského rozdělení s parametry
+$\vec\alpha$ platí
+
+\begin{align}
+    \mathbb{E}[X_i] &= \frac{\alpha_i}{\sum_j \alpha_j}
+\end{align}
