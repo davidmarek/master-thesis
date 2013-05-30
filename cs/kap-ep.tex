@@ -70,7 +70,20 @@ pravděpodobnosti v Loopy Belief Propagation algoritmu, střední hodnota
 $\mathbb{E}_{q^\backslash} (\theta_{\rho(\vec{x^\prime}), x_0})$ zde
 reprezentuje zprávu z vrcholu $\vec{\theta}_{\rho_x}$.
 
-    \subsection{Marginální pravděpodobnost množin parametrů}
+Zprávu z faktoru do vrcholu $x_j$ pak získáme vydělením zprávy z $x_j$ z
+marginální pravděpodobnosti.
+
+\begin{equation}
+\hat f(x_j) =
+    \sum_{\vec{x}: x_j = \tilde{x}_j}
+        \prod_{i \ne j}
+            q^\backslash(x_i)
+            \mathbb{E}_{q^\backslash}
+                (\theta_{\rho(\vec{x^\prime}), x_0})
+\label{eq:msgfromftox}
+\end{equation}
+
+\subsection{Marginální pravděpodobnost parametrů}
 
 Pro množiny parametrů se jejich marginální pravděpodobnost spočítá podobně jako
 pro proměnné.
@@ -123,15 +136,18 @@ jednotlivé členy produktu cavity distribucí pro množiny parametrů. Ve výsl
 získáme $q^\backslash(\tilde{\vec{\theta}}_j) \int_{\vec{\theta}_l}
 q^\backslash(\vec{\theta}_l) \theta_{l, x_0}$ a pak zbylé členy, které zmizí.
 
-Opět tedy docházíme k vyjádření skutečné marginální pravděpodobnosti, ve které
-není třeba integrovat přes všechny množiny parametrů, ale stačí jen očekávaná
-hodnota těchto parametrů.
+Docházíme k vyjádření skutečné marginální pravděpodobnosti, ve které není třeba
+integrovat přes všechny množiny parametrů, ale stačí jen očekávaná hodnota
+těchto parametrů.
+
+\section{Aproximace marginálních pravděpodobností}
 
 Stále tu ovšem zůstává problém, že spočítat aproximující distribuci
-$q(\vec{\theta}_j)$ může být příliš složité a tak je třeba model dále
-aproximovat. Pro zjednodušení výpočtu jsou zprávy z faktoru do množiny
-parametrů $\hat{f}(\vec{\theta}_i)$ ve tvaru Dirichletovského rozdělení s
-parametry $\hat{\vec{\alpha}}_i$:
+$q(\vec{\theta}_j)$ může být příliš složité, protože skutečná marginální
+distribuce je směs několika distribucí a ta nemusí být v obecném případě
+vyjádřitelná. Je tedy třeba model dále aproximovat. Pro zjednodušení výpočtu
+jsou zprávy z faktoru do množiny parametrů, $\hat{f}(\vec{\theta}_i)$, ve tvaru
+Dirichletovského rozdělení s parametry $\hat{\vec{\alpha}}_i$:
 \begin{equation}
     \hat{f}(\vec{\theta}_i) = Dir(\vec{\theta}_i; \hat{\vec{\alpha}}_i) =
     \frac{\Gamma (\sum_j \hat{\alpha}_{i,j})}{\prod_j
@@ -205,20 +221,21 @@ w_j \theta_j Dir(\vec{\theta}; \vec{\alpha}) &\propto
     Dir(\vec\theta; \vec{\alpha} + \vec{\delta}_j) \\
 \end{align}
 
-Díky této úpravě lze $p^*$ vyjádřit jako směs dvou Dirichletovských rozdělení.
+Díky této úpravě lze $p^*$ vyjádřit jako směs Dirichletovských rozdělení.
 \begin{equation}
 p^*(\vec{\theta}) =
     w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
     \sum_j w^*_j
         Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+\label{eq:marginaltheta}
 \end{equation}
-kde 
+kde
 \begin{align}
     w^*_0 &\propto w_0 \\
     w^*_j &\propto w_j \frac{\alpha_j}{\sum_i \alpha_i}
 \end{align}
 
-Pro nalezení rozdělení z exponencíální rodiny tak, aby odpovídalo jinému
+Pro nalezení rozdělení z exponenciální rodiny tak, aby odpovídalo jinému
 rozdělení, nám stačí nalézt parametry, pro které budou mít daná rozdělení
 stejné momenty. V tomto případě budeme používat pouze první dva momenty a
 zbytek zanedbáme. Je tedy třeba nalézt střední hodnotu a rozptyl
@@ -232,7 +249,7 @@ proměmnných z $p^*(\vec\theta)$.
         w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
         \sum_j w^*_j
             Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
-    \right] 
+    \right]
 \\
 &= w_0^* \mathbb{E}[Dir(\vec\theta; \vec\alpha)] +
     \sum_j w_j^* \mathbb{E}[Dir(\vec\theta; \vec\alpha + \vec{\delta}_j)]
@@ -267,3 +284,74 @@ Var[X_i] &= \mathbb{E}[X_i^2] - \mathbb{E}[X_i]^2
 \sum_j \alpha_j &= \frac{\mathbb{E}[X_1] - \mathbb{E}[X_1^2]}
                         {\mathbb{E}[X_1^2] - \mathbb{E}[X_1]^2}
 \end{align}
+
+\subsection{Algoritmus}
+
+\begin{algorithm}
+\caption{Expectation Propagation pro učení parametrů}
+\label{alg:ep}
+\begin{algorithmic}
+\State Parametry zpráv z faktoru $\beta$ do množiny parametrů
+    $\vec{\theta}_i$ označíme $\hat{\vec{\alpha}}_{\beta,i}$.
+\State Parametry zpráv z množiny parametrů $\vec{\theta}_i$ do faktoru $\beta$
+    označíme $\vec{\alpha}_i^\beta$.
+\State Parametry marginální distribuce množiny parametrů $\vec{\theta}_i$
+    označíme $\vec{\alpha}_i$.
+\Init
+    \State Nastav zprávy mezi faktory a proměnnými na $1$.
+    \State Nastav parametry $\hat{\vec{\alpha}}_{\beta,i}$ na $1$.
+    \State Nastav parametry $\vec{\alpha}_i$ na apriorní hodnotu.
+\EndInit
+\Repeat
+    \State Vyber faktor $f_{\tilde\beta}$, který se bude aktualizovat.
+
+    \State Spočítej všechny zpravy z parametrů:
+    \For{každý parametr $\vec{\theta}_i$ spojený s faktorem $f_{\tilde\beta}$}
+        \State Parametry zprávy z $\vec{\theta}_i$ do $f_{\tilde\beta}$:
+            $\vec{\alpha}_i^{\tilde\beta} = \vec{\alpha}_i -
+            \hat{\vec{\alpha}}_{\tilde\beta, i} + 1$.
+    \EndFor
+
+    \State Aktualizuj zprávy z faktoru do proměnných:
+    \For{každou proměnnou $X_i$, spojenou s faktorem $f_{\tilde\beta}$}
+    \State Zpráva z $f_{\tilde\beta}$ do $X_i$ podle (\ref{eq:msgfromftox}):
+    \State
+        \hskip\algorithmicindent
+        $\hat{f}(x_j) =
+            \sum_{\vec{x}: x_j = \tilde{x}_j}
+                \mathbb{E}_{q^\backslash}(\theta_{\rho(\vec{x^\prime}), x_0})
+                \prod_{i \ne j}
+                    q^\backslash(x_i) $
+    \EndFor
+
+    \State Aktualizuj marginální pravděpodobnost parametrů:
+    \For{každý parametr $\vec{\theta}_i$ spojený s faktorem $f_{\tilde\beta}$}
+        \State Spočítej parametry $\vec{\alpha}_i^*$ pro Dirichletovské
+            rozdělení, které nejlépe
+        \State aproximuje cílovou marginální distribuci
+            (\ref{eq:marginaltheta}). Metoda popsána
+        \State v sekci \ref{FIXME}
+        \State Parametry zprávy z $f_{\tilde\beta}$ do $\vec{\theta}_i$:
+        \State
+            \hskip\algorithmicindent
+            $\hat{\vec{\alpha}}_{\beta, i} =
+                \vec{\alpha}_i^*
+                - \vec{\alpha}_i^{\backslash \tilde\beta}
+                + 1$
+        \State Aktualizuj parametry marginální distribuce $q(\vec{\theta}_i)$
+        \State
+            \hskip\algorithmicindent
+            $\vec{\alpha}_i = \vec{\alpha}_i^* =
+                \hat{\vec{\alpha}}_{\tilde\beta, i}
+                + \vec{\alpha}_i^{\backslash \beta}$.
+    \For{každou proměnnou $X_i$, spojenou s faktorem $f_{\tilde\beta}$}
+        \State Aktualizuj zprávy z proměnných do faktoru:
+        \State
+            \hskip\algorithmicindent
+            $q^{\backslash\beta}(x_i) =
+                \prod_{\beta \ne \tilde\beta} \hat{f}_\beta(x_l)$
+    \EndFor
+    \EndFor
+\Until{konvergence}
+\end{algorithmic}
+\end{algorithm}

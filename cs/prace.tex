@@ -35,12 +35,15 @@
 \usepackage[utf8]{inputenc}
 
 %% Ostatní balíčky
+\usepackage{todonotes}
 \usepackage{graphicx}
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{epstopdf}
 \usepackage{bm}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 
 %% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
 %% ale hlavně ho používáme k uložení metadat do PDF (včetně obsahu).
@@ -77,6 +80,10 @@
 \renewcommand{\vec}[1]{\bm{#1}}
 \hyphenation{prav-dě-po-do-bno-sti}
 \hyphenation{sdru-že-né}
+
+\floatname{algorithm}{Algoritmus}
+\algblockdefx[INIT]{Init}{EndInit}{\textbf{init}}{\textbf{end init}}
+
 
 \begin{document}
 
