@@ -1,5 +1,7 @@
 \chapter{Učení parametrů}
 
+\section{Grafický model}
+
 Máme vybraný faktor $f$, tento faktor je spojený s několika proměnnými
 $\vec{x} = (x_0, x_1, \dots, x_{N_x})$
 a množinami parametrů
@@ -9,14 +11,15 @@ $$f(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta)$$
 Rodičovské proměnné $x_1, \dots, x_{N_x}$ označujeme jako $\vec{x^\prime}$.
 Vektor $\vec{x^\prime}$ určuje, která množina parametrů bude použita.
 Protože množiny parametrů jsou číslovány $1, \dots, N_\theta$ a rodičovské
-proměnné $1, \dots, N_\theta$, musí být pro vybrání správné množiny parametrů
+proměnné $1, \dots, N_x$, musí být pro vybrání správné množiny parametrů
 použito mapování $\rho(\vec{x^\prime})$.
 Faktor pak může být zapsán zkráceně:
 $$f(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 \theta_{\rho(x^\prime), x_0}$$
 
-Pro výpočet sdružené pravděpodobnosti používáme opět plně faktorizovanou
-distribuci.
+\section{Výpočet marginálních pravděpodobností}
+
+Pro výpočet sdružené pravděpodobnosti používáme plně faktorizovanou distribuci.
 Pro každou proměnnou anebo množinu parametrů je její marginální pravděpodobnost
 rovna součinu zpráv, přicházejících z faktorů, které jsou s danou proměnnou
 nebo množinu parametrů propojeny.
@@ -26,6 +29,8 @@ Aproximovaná marginální pravděpodobnost proměnné je pak součinem cavity
 distribuce a zprávy z faktoru:
 $$q(x_i) = q^\backslash(x_i) f(x_i)$$
 $$q(\vec{\theta}_i) = q^\backslash(\vec{\theta}_i) f(\vec{\theta}_i)$$
+
+\subsection{Marginální pravděpodobnost proměnných}
 
 Pokud chceme aktualizovat hodnotu naší aproximace marginální pravděpodobnosti,
 tak je třeba minimalizovat její vzdálenost od skutečné marginální
@@ -50,7 +55,25 @@ parametrů, které nejsou spojeny s faktorem $f$, je jejich jejich cavity
 distribuce rovná marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
 1$. Na posledním řádku byla použita definice očekávané hodnoty.
 
-Pro množiny parametrů se jejich marginální pravděpodobnost spočítá podobně:
+Marginální pravděpodobnost proměnné $x_i$ tedy je
+\begin{equation}
+p^*(\tilde x) =
+    \sum_{\vec{x}: x_j = \tilde{x}_j}
+        \prod_i
+            q^\backslash(x_i)
+            \mathbb{E}_{q^\backslash}
+                (\theta_{\rho(\vec{x^\prime}), x_0})
+\end{equation}
+
+Tady docházíme k výsledku, který je velmi podobný výpočtu marginální
+pravděpodobnosti v Loopy Belief Propagation algoritmu, střední hodnota
+$\mathbb{E}_{q^\backslash} (\theta_{\rho(\vec{x^\prime}), x_0})$ zde
+reprezentuje zprávu z vrcholu $\vec{\theta}_{\rho_x}$.
+
+    \subsection{Marginální pravděpodobnost množin parametrů}
+
+Pro množiny parametrů se jejich marginální pravděpodobnost spočítá podobně jako
+pro proměnné.
 \begin{align}
 p^*(\tilde{\vec{\theta}}_j) & = \sum_{\vec{x}} \int_{\vec{\Theta}:
     \vec{\theta}_j = \tilde{\vec{\theta}}_j} \prod_i q^\backslash(x_i) \prod_l
@@ -85,7 +108,8 @@ kde
 w_0 & = \sum_{l \ne j} \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \prod_i
     q^\backslash(x_i) \mathbb{E}_{q^\backslash(\vec{\theta}_l)} (\theta_{l,
     x_0}) \\
-w_k & = \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^\backslash(x_i)
+w_k & = \sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} \prod_i
+    q^\backslash(x_i)
 \end{align}
 
 Opět vycházíme z výpočtu marginální pravděpodobnosti ze sdružené
@@ -198,7 +222,7 @@ Pro nalezení rozdělení z exponencíální rodiny tak, aby odpovídalo jinému
 rozdělení, nám stačí nalézt parametry, pro které budou mít daná rozdělení
 stejné momenty. V tomto případě budeme používat pouze první dva momenty a
 zbytek zanedbáme. Je tedy třeba nalézt střední hodnotu a rozptyl
-$p^*(\vec\theta)$.
+proměmnných z $p^*(\vec\theta)$.
 
 \begin{align}
 \mathbb{E}[aX+bY] &= a\mathbb{E}[X] + b\mathbb{E}[Y]
@@ -212,11 +236,34 @@ $p^*(\vec\theta)$.
 \\
 &= w_0^* \mathbb{E}[Dir(\vec\theta; \vec\alpha)] +
     \sum_j w_j^* \mathbb{E}[Dir(\vec\theta; \vec\alpha + \vec{\delta}_j)]
+\\
+Var[p^*(\vec\theta)] &= Var
+    \left[
+        w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
+        \sum_j w^*_j
+            Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+    \right]
+\\
+&= (w_0^*)^2 Var[Dir(\vec\theta; \vec\alpha)] + \sum_j (w_j^*)^2
+Var[Dir(\vec\theta; \vec\alpha + \vec{\delta}_j)]
 \end{align}
 
 Pro náhodnou proměnnou $X$ z Dirichletovského rozdělení s parametry
 $\vec\alpha$ platí
 
 \begin{align}
-    \mathbb{E}[X_i] &= \frac{\alpha_i}{\sum_j \alpha_j}
+\mathbb{E}[X_i] &= \frac{\alpha_i}{\sum_j \alpha_j}
+\\
+Var[X_i] &= \mathbb{E}[X_i^2] - \mathbb{E}[X_i]^2
+\\
+&= \frac{\alpha_i (\sum_j \alpha_j - \alpha_i)}
+                 {(\sum_j \alpha_j)^2 (\sum_j \alpha_j + 1)}
+\\
+\mathbb{E}[X_i^2] &= Var[X_i] + \mathbb{E}[X_i]^2
+\\
+&= \mathbb{E}[X_i] \frac{1 + \alpha_i}{1 + \sum_j
+    \alpha_j}
+\\
+\sum_j \alpha_j &= \frac{\mathbb{E}[X_1] - \mathbb{E}[X_1^2]}
+                        {\mathbb{E}[X_1^2] - \mathbb{E}[X_1]^2}
 \end{align}
