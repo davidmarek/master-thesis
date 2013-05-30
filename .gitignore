@@ -132,6 +132,10 @@ Desktop.ini
 #############
 
 *.py[co]
+*.py[cod]
+
+# C extensions
+*.so
 
 # Packages
 *.egg
@@ -145,6 +149,8 @@ var
 sdist
 develop-eggs
 .installed.cfg
+lib
+lib64
 
 # Installer logs
 pip-log.txt
@@ -152,11 +158,12 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+nosetests.xml
 
-#Translations
+# Translations
 *.mo
 
-#Mr Developer
+# Mr Developer
 .mr.developer.cfg
 
 # Mac crap
@@ -175,4 +182,17 @@ dp_uprava.pdf
 ukazka.tex
 img/logo-eps-converted-to.pdf
 
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+.*
+!.gitignore
 *~
+
+# SublimeText project files
+*.sublime-workspace
+
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
