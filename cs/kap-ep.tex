@@ -285,7 +285,7 @@ Var[X_i] &= \mathbb{E}[X_i^2] - \mathbb{E}[X_i]^2
                         {\mathbb{E}[X_1^2] - \mathbb{E}[X_1]^2}
 \end{align}
 
-\subsection{Algoritmus}
+\section{Algoritmus}
 
 \begin{algorithm}
 \caption{Expectation Propagation pro učení parametrů}
@@ -344,13 +344,13 @@ Var[X_i] &= \mathbb{E}[X_i^2] - \mathbb{E}[X_i]^2
             $\vec{\alpha}_i = \vec{\alpha}_i^* =
                 \hat{\vec{\alpha}}_{\tilde\beta, i}
                 + \vec{\alpha}_i^{\backslash \beta}$.
+    \EndFor
     \For{každou proměnnou $X_i$, spojenou s faktorem $f_{\tilde\beta}$}
         \State Aktualizuj zprávy z proměnných do faktoru:
         \State
             \hskip\algorithmicindent
             $q^{\backslash\beta}(x_i) =
                 \prod_{\beta \ne \tilde\beta} \hat{f}_\beta(x_l)$
-    \EndFor
     \EndFor
 \Until{konvergence}
 \end{algorithmic}
