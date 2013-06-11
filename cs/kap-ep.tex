@@ -1,3 +1,4 @@
+% !TEX root = prace.tex
 \chapter{Učení parametrů}
 
 \section{Grafický model}
@@ -239,50 +240,136 @@ Pro nalezení rozdělení z exponenciální rodiny tak, aby odpovídalo jinému
 rozdělení, nám stačí nalézt parametry, pro které budou mít daná rozdělení
 stejné momenty. V tomto případě budeme používat pouze první dva momenty a
 zbytek zanedbáme. Je tedy třeba nalézt střední hodnotu a rozptyl
-proměmnných z $p^*(\vec\theta)$.
+proměnných z $p^*(\vec\theta)$.
 
 \begin{align}
-\mathbb{E}[aX+bY] &= a\mathbb{E}[X] + b\mathbb{E}[Y]
+\mathbb{E}_{p^*}[\vec\theta] &= \int \vec\theta p^*(\vec\theta) ~ d\vec\theta
 \\
-\mathbb{E}[p^*(\vec{\theta})] &= \mathbb{E}
-    \left[
-        w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
-        \sum_j w^*_j
-            Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
-    \right]
+&= \int \vec\theta (
+	w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
+	\sum_j w^*_j
+        	Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+	) ~ d\vec\theta
 \\
-&= w_0^* \mathbb{E}[Dir(\vec\theta; \vec\alpha)] +
-    \sum_j w_j^* \mathbb{E}[Dir(\vec\theta; \vec\alpha + \vec{\delta}_j)]
+&= w_0^* \int \vec\theta Dir(\vec{\theta}; \vec{\alpha}) ~ d\vec\theta +
+	\sum_j w_j^* \int \vec\theta Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+	 ~ d\vec\theta
 \\
-Var[p^*(\vec\theta)] &= Var
-    \left[
-        w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
-        \sum_j w^*_j
-            Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
-    \right]
+&= w_0^* \mathbb{E}_{Dir(\vec\alpha)}[\vec\theta] +
+	\sum_j w_j^* \mathbb{E}_{Dir(\vec\alpha + \vec{\delta}_j)}[\vec\theta]
+\end{align}
+Střední hodnotu rozdělení $p^*(\vec\theta)$ lze tedy spočítat jako vážený součet středních hodnot jednotlivých Dirichletovských distribucí,
+z kterých se skládá.
+Střední hodnota Dirichletovského rozdělení je
+\begin{equation}
+\mathbb{E}[X_i] = \frac{\alpha_i}{\sum_i \alpha_i}
+\end{equation}
+
+\begin{align}
+\mathbb{E}_{p^*}[\vec\theta^2] &= \int \vec\theta^2 p^*(\vec\theta) ~ d\vec\theta
 \\
-&= (w_0^*)^2 Var[Dir(\vec\theta; \vec\alpha)] + \sum_j (w_j^*)^2
-Var[Dir(\vec\theta; \vec\alpha + \vec{\delta}_j)]
+&= w_0^* \int \vec\theta^2 Dir(\vec{\theta}; \vec{\alpha}) ~ d\vec\theta +
+	\sum_j w_j^* \int \vec\theta^2 Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+	 ~ d\vec\theta
+\\
+&= w_0^* \mathbb{E}_{Dir(\vec\alpha)}[\vec\theta^2] +
+	\sum_j w_j^* \mathbb{E}_{Dir(\vec\alpha + \vec{\delta}_j)}[\vec\theta^2]
 \end{align}
 
-Pro náhodnou proměnnou $X$ z Dirichletovského rozdělení s parametry
-$\vec\alpha$ platí
+Výpočet střední hodnoty druhé mocniny proměnné podle Dirichletovského rozdělení odvodíme z definice střední hodnoty
+\begin{align}
+\mathbb{E}_{Dir(\vec\alpha)}[x_i^2] &=
+	\int x_i^2 Dir(\vec x; \vec\alpha) d\vec x
+\\
+\int x_i^2 Dir(\vec x; \vec\alpha) dx &= 
+	\int x_i^2 \frac{\Gamma(\alpha_0)}
+			   {\prod_{j=1}^N \Gamma(\alpha_j)}
+		\prod_{j=1}^N x_j^{\alpha_j - 1} d\vec x
+\end{align}
+
+Vidíme, že $x_i^2$ můžeme vložit dovnitř produktu a tak dostaneme opět předpis Dirichletovského rozdělení, ovšem s jinými parametry a špatnou normalizační konstantou. Využijeme rekurzivní vlastnosti Gamma funkce
+\begin{equation}
+\Gamma(x+1) = x \Gamma(x)
+\end{equation}
+pro úpravu normalizační konstanty.
 
 \begin{align}
-\mathbb{E}[X_i] &= \frac{\alpha_i}{\sum_j \alpha_j}
+\int x_i^2 Dir(\vec x; \vec\alpha) dx &=
+\int \frac{\Gamma(\alpha_0 + 2) \alpha_i (\alpha_i + 1)}
+		{\alpha_0 (\alpha_0 + 1) \Gamma(\alpha_i + 2) \prod_{j \ne i} \Gamma(\alpha_j)}
+	x_i^{\alpha_i + 1} \prod_{j \ne i} x_j^{\alpha_j - 1} d\vec x
 \\
-Var[X_i] &= \mathbb{E}[X_i^2] - \mathbb{E}[X_i]^2
+&= \frac{\alpha_i (\alpha_i + 1)}
+		{\alpha_0 (\alpha_0 + 1)}
+	\int \frac{\Gamma(\beta_0)}
+		{\prod_i \Gamma(\beta_i)}
+	\prod_i x_i^{\beta_i - 1} d\vec x
 \\
-&= \frac{\alpha_i (\sum_j \alpha_j - \alpha_i)}
-                 {(\sum_j \alpha_j)^2 (\sum_j \alpha_j + 1)}
+&= \frac{\alpha_i (\alpha_i + 1)}
+		{\alpha_0 (\alpha_0 + 1)}
+	\int Dir(\vec x; \vec\beta) d\vec x
 \\
-\mathbb{E}[X_i^2] &= Var[X_i] + \mathbb{E}[X_i]^2
+&= \frac{\alpha_i (\alpha_i + 1)}
+		{\alpha_0 (\alpha_0 + 1)}
+\end{align}
+
+Vyjádřili jsme $\Gamma(\alpha_0)$ a $\Gamma(\alpha_i)$ s pomocí $\Gamma(\alpha_0 + 2)$ a $\Gamma(\alpha_i + 2)$
+\begin{align}
+\Gamma(\alpha_0) &= \frac{\Gamma(\alpha_0 + 2)}
+				{\alpha_0(\alpha_0 + 1)}
 \\
-&= \mathbb{E}[X_i] \frac{1 + \alpha_i}{1 + \sum_j
-    \alpha_j}
+\Gamma(\alpha_i) &= \frac{\Gamma(\alpha_i + 2)}
+				{\alpha_i(\alpha_i + 1)}
+\end{align}
+
+Následně jsme vytvořili nové parametry $\vec\beta$:
+\begin{align}
+\beta_i &= \alpha_i + 2 \\
+\beta_{j \ne i} &= \alpha_j \\
+\beta_0 &= \sum_i \beta_i
+\end{align}
+
+Nyní tedy dokážeme spočítat $\mathbb{E}_{p^*}[\vec\theta]$ a $\mathbb{E}_{p^*}[\vec\theta^2]$.
+Rozptyl vypočítáme podle definice
+
+\begin{equation}
+	Var[X] = \mathbb{E}[X^2] - \mathbb{E}[X]^2
+\end{equation}
+
+Parametry aproximovaného rozdělení nalezneme následovně
+\begin{align}
+\frac{\mathbb{E}[X_1] - \mathbb{E}[X_1^2]}
+     {\mathbb{E}[X_1^2] - \mathbb{E}[X_1]^2} &=
+\frac{
+	\frac{\alpha_1}
+		{\alpha_0}
+	- \frac{\alpha_1(\alpha_1 + 1)}
+		{\alpha_0(\alpha_0 + 1)}
+	}
+	{
+	\frac{\alpha_1(\alpha_1 + 1)}
+		{\alpha_0(\alpha_0 + 1)}
+	- \frac{\alpha_1^2}
+		{\alpha_0^2}
+	}
 \\
-\sum_j \alpha_j &= \frac{\mathbb{E}[X_1] - \mathbb{E}[X_1^2]}
-                        {\mathbb{E}[X_1^2] - \mathbb{E}[X_1]^2}
+&=
+\frac{
+    \frac{\alpha_1 (\alpha_0 + 1) - \alpha_1(\alpha_1 + 1)}
+         {\alpha_0 (\alpha_0 + 1)}
+}{
+    \frac{\alpha_0 \alpha_1 (\alpha_1 + 1) - \alpha_1^2 (\alpha_0 + 1)}
+         {\alpha_0^2 (\alpha_0 + 1)}
+}
+\\
+&=
+\frac{\alpha_0 \alpha_1 (\alpha_0 - \alpha_1)}
+     {\alpha_1 (\alpha_0 \alpha_1 + \alpha_0 - \alpha_0 \alpha_1 - \alpha_1)}
+\\
+&=
+\alpha_0
+\\
+\alpha_i &= \mathbb{E}[X_i] \alpha_0
 \end{align}
 
 \section{Algoritmus}
