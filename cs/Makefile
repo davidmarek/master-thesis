@@ -1,4 +1,5 @@
 all: prace.pdf
+	cp prace.pdf ..
 
 # Vyroba PDF primo z DVI by byla prijemnejsi, ale vetsina verzi dvipdfm nici obrazky
 # prace.pdf: prace.dvi
