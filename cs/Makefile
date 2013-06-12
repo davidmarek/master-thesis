@@ -14,7 +14,9 @@ prace.ps: prace.dvi
 # LaTeX je potreba spustit dvakrat, aby spravne spocital odkazy
 prace.dvi: prace.tex $(wildcard *.tex)
 	cslatex $<
+	bibtex prace
+	cslatex $<
 	cslatex $<
 
 clean:
-	rm -f *.{log,dvi,aux,toc,lof,out} prace.ps prace.pdf
+	rm -f *.bbl *.blg *.log *.dvi *.aux *.toc *.lof *.out prace.ps prace.pdf prace.dvi

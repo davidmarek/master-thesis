@@ -44,6 +44,7 @@
 \usepackage{bm}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
+\usepackage{cite}
 
 %% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
 %% ale hlavně ho používáme k uložení metadat do PDF (včetně obsahu).
@@ -263,7 +264,9 @@ Keywords:
 \include{zaver}
 
 %%% Seznam použité literatury
-\include{literatura}
+\addcontentsline{toc}{chapter}{Seznam použité literatury}
+\bibliography{citace}{}
+\bibliographystyle{czech}
 
 %%% Tabulky v diplomové práci, existují-li.
 \chapwithtoc{Seznam tabulek}
