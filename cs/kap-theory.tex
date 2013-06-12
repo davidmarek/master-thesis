@@ -1,0 +1,95 @@
+% !TEX root = prace.tex
+\chapter{Teorie}
+
+\section{Dialogový systém}
+
+Dialogový systém je počítačový systém, který umožňuje uživatelům používat
+hlasových pokynů pro ovládání počítačů a získávání informací. Dialogové systémy
+nejsou pouhým hlasovým ovládáním počítače. Obsahují strategii řízení dialogu a
+navíc obsahují interní stav dialogu, díky kterému jsou schopny vést dialog s
+uživatelem. Dialog pak umožňuje využít složitějších příkazů, pokládat dotazy
+nad strukturovanými daty a upřesňovat dotaz.
+
+Příkladem dialogového systému může být systém pro nalezení spojení pomocí
+městské dopravy. Příkladem příkazu od uživatele pak může být např. \uv{Chci jet z
+Malostranského náměstí na Anděl}. Dialogový systém se nyní může rozhodnout,
+zda-li mu zadané informace stačí pro nalezení spojení. V tomto případě systém
+stále neví, kdy chce uživatel jet. Může předpokládat, že uživatel už na
+zastávce stojí a tak tedy uživateli nalezne nejbližší spojení.
+
+Důležitou vlastností dialogového systému je robustnost. Pokud budeme používat
+dialogový systém v přirozeném prostředí, tak se musíme vyrovnat s tím, že často
+nebude uživateli rozumět. Uživatel může chtít jet stejně jako v minulém
+případě, ale nyní dialogový systém přeslechne zastávku Anděl. Pro nalezení
+spojení už nemá dost informací, může si pořád domyslet, že uživatel chce jet
+nyní, ale je mnohem více možností, kterým směrem se vůbec chce uživatel vydat.
+Dialogový systém se proto uživatele zeptá na chybějící informace a zároveň může
+i implicitně potvrdit, že rozuměl alespoň odchozí zastávku: \uv{Dobře, jedete ze
+zastávky Malostranské náměstí, můžete říct na jakou zastávku chcete jet?}.
+
+\subsection{Typy dialogových systémů}
+
+Dialogové systémy můžeme dělit podle několika kritérií. Podle toho, která
+strana dialog vede anebo třeba jakým způsobem funguje strategie dialogového
+systému.
+
+\subsubsection{Dělení podle iniciativy}
+
+Nejjednodušší dialogové systémy fungují na stejném principu jako automatické
+telefonní systémy. Systém je ten, kdo vede dialog, a uživatel pouze odpovídá na
+dotazy nebo vybírá z nabídnutých možností. Tento systém je velmi jednoduchý na
+implementaci, pokud nutíme uživatel, aby vždy pouze odpověděl na položený
+dotaz, tak velmi omezíme jeho vyjadřovací možnosti a díky tomu bude mnohem
+jednodušší rozpoznat co řekl. Například pokud se uživatele ptáme jestli musí
+nalezené spojení obsahovat pouze bezbariérové dopravní prostředky, tak můžeme
+očekávat pouze \uv{Ano} nebo \uv{Ne} a jejich synonyma. Tento přístup ovšem
+nebude velmi populární mezi častými uživteli systému, kteří by rádi zrychlili
+postup dialogem.
+
+Další možností je tedy povolit uživateli sdělit informace i tehdy, kdy se ho
+systém ptá na něco jiného. Systém se tedy stále ptá na informace, které mu
+chybějí, ale může dialog začít obecnější otázkou: "Jaké spojení chcete nalézt?"
+oproti "Z jaké zastávky chcete jet?". V prvním případě dává systém pokročilému
+uživateli možnost popsat celou cestu a velmi rychle se tak dostat ke kýžené
+informaci. Pro nové uživatele, ale může být takováto obecně položená otázka
+matoucí a tak je většinou třeba přidat i příklad.
+
+Posledním typem je takový, kde uživateli přenecháme iniciativu, příkladem může
+být například systém \uv{How may I help you?} \todo{Odkaz na článek o HMIHY} od
+společnosti AT\&T. Ten slouží pro klasifikaci požadavků od uživatele a jejich
+přepojení k patřičnému operátorovi.
+
+\subsubsection{Dělení podle strategie řízení}
+
+Důležité rozdělení dialogových systémů je podle způsobu, jakým funguje jejich
+strategie řízení. Systém většinou předpokládá, že se v dialogu střídá s
+uživatelem. Vždy, když na systém přijde řada, tak se musí rozhodnout, zda-li už
+má dost informací k zodpovězení dotazu uživatele, případně zda-li se musí
+dotázat na další informace, nechat si nějakou informaci potvrdit od uživatele,
+anebo nechat uživatele vybrat si z nabízených možností.
+
+Systém může mít přístup do databáze s informacemi a musí se tedy umět
+rozhodnout, zda-li je třeba v ní hledat. Pak musí samozřejmě na nalezená data
+reagovat. Může se stát, že je informací, které odpovídají zadání uživatele
+příliš velké množství a tak je třeba zpřísnit zadání, anebo naopak nebyla žádná
+informace nalezena a tedy je potřeba uživatele o tomto informovat.
+
+Strategii, podle které se systém bude v těchto případech řídit lze
+implementovat několika způsoby. Přímým řešením je napsat ji ručně. Pak se
+rozhodnutí systému skládá z procházení série podmínek až do nalezení podmínky
+odpovídající aktuálnímu stavu a následné provedení akce specifikované touto
+podmínkou. Tento způsob může fungovat pro jednoduché systémy a pokud je vhodně
+napsaný, tak může fungovat velmi dobře. Dost čast ale tento způsob selhává
+pokud je dialogový systém příliš složitý, když se stávají podmínky
+neudržitelné, anebo v případě, kdy se nemůžeme spolehnout na rozpoznanou řeč.
+
+Další možností jak vytvořit strategii řízení je použít učení s učitelem.
+Předpokládáme, že máme databázi hovorů mezi uživatelem a živým operátorem, z
+kterých se dialogový systém může naučit, jak v dialogu postupovat. Tento
+přístup se zdá jako dobrý nápad, ovšem naučíme se pouze napodobit operátora,
+což nemusí být ten nejlepší způsob jak vést dialog. Navíc je nepřeberné
+množství směrů, kterým se může dialog vyvíjet a jakmile se v jedné akci
+odchýlíme, tak dostáváme úplně jiný dialog a tedy je velmi těžké z pozorovaných
+dialogů zobecňovat. Proto se tento způsob téměř nevyužívá, existují ovšem
+pokusy jak jej skloubit s následující metodou učení \todo{citovat pieraccini
+2000}.
