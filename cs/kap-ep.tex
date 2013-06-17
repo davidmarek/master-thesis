@@ -21,15 +21,20 @@ $$f(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 \section{Výpočet marginálních pravděpodobností}
 
 Pro výpočet sdružené pravděpodobnosti používáme plně faktorizovanou distribuci.
-Pro každou proměnnou, anebo množinu parametrů je její marginální pravděpodobnost
+Pro každou proměnnou anebo množinu parametrů je její marginální pravděpodobnost
 rovna součinu zpráv přicházejících z faktorů, které jsou s danou proměnnou
 nebo množinu parametrů propojeny.
 Pro daný faktor je cavity distribuce $q^\backslash(x_i)$, popř.
-$q^\backslash(\vec{\theta}_i)$ rovna součinu všech ostatních faktorů.
+$q^\backslash(\vec{\theta}_i)$ rovna součinu zpráv ze všech ostatních faktorů do $x_i$, popř $\vec\theta_i$.
 Aproximovaná marginální pravděpodobnost proměnné je pak součinem cavity
 distribuce a zprávy z faktoru:
 $$q(x_i) = q^\backslash(x_i) m_{f \rightarrow x_i}(x_i)$$
 $$q(\vec{\theta}_i) = q^\backslash(\vec{\theta}_i) m_{f\rightarrow \theta}(\vec{\theta}_i)$$
+
+Cavity distribuce je právě zpráva z proměnné, popř. množiny parametrů do faktoru.
+
+$$m_{x_i \rightarrow f} = q^\backslash (x_i)$$
+$$m_{\vec\theta_i \rightarrow f} = q^\backslash (\vec\theta_i)$$
 
 \subsection{Marginální pravděpodobnost proměnných}
 
@@ -37,15 +42,39 @@ Pokud chceme aktualizovat hodnotu naší aproximace marginální pravděpodobnos
 tak je třeba minimalizovat její vzdálenost od skutečné marginální
 pravděpodobnosti:
 \begin{align}
-p^*(\tilde{x}_j) & = \sum_{\vec{x}: x_j = \tilde{x}_j} \int_{\vec{\Theta}}
-    \prod_i q^\backslash(x_i) \prod_l q^\backslash(\vec{\theta}_l) f(\vec{x};
-    \vec{\Theta}) \label{eq:1} \\
-& = \sum_{\vec{x}: x_j = \tilde{x}_j} \prod_i q^\backslash(x_i)
+p^*(\tilde{x}_j) &=
+\sum_{\vec{x}: x_j = \tilde{x}_j}
+	\int_{\vec{\Theta}}
+    		\prod_i 
+			q^\backslash(x_i)
+		\prod_l 
+			q^\backslash(\vec{\theta}_l)
+		f(\vec{x};
+    		  \vec{\Theta})
+\label{eq:1} 
+\\
+&=
+\sum_{\vec{x}: x_j = \tilde{x}_j} 
+	\prod_i 
+		q^\backslash(x_i)
     \int_{\vec{\theta_{\rho(\vec{x^\prime})}}}
-    q^\backslash(\vec{\theta}_{\rho(\vec{x^\prime})})
-    \theta_{\rho(\vec{x^\prime}), x_0} \label{eq:2} \\
-& = \sum_{\vec{x}: x_j = \tilde{x}_j} \prod_i q^\backslash(x_i)
-    \mathbb{E}_{q^\backslash} (\theta_{\rho(\vec{x^\prime}), x_0}) \label{eq:3}
+	    q^\backslash(\vec{\theta}_{\rho(\vec{x^\prime})})
+    \theta_{\rho(\vec{x^\prime}), x_0} \label{eq:2} 
+\\
+&= 
+\sum_{\vec{x}: x_j = \tilde{x}_j} 
+	\prod_i 
+		q^\backslash(x_i)
+    		\mathbb{E}_{q^\backslash} 
+			(\theta_{\rho(\vec{x^\prime}), x_0}) 
+\label{eq:3}
+\\
+&= 
+\sum_{\vec{x}: x_j = \tilde{x}_j} 
+	\prod_i 
+		m_{x_i \rightarrow f}(x_i)
+    		\mathbb{E}_{q^\backslash} 
+			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \end{align}
 
 Rovnost~(\ref{eq:1}) vychází z definice výpočtu marginální pravděpodobnosti ze
@@ -59,17 +88,15 @@ distribuce rovná marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
 Marginální pravděpodobnost proměnné $x_i$ tedy je
 \begin{equation}
 p^*(\tilde x) =
-    \sum_{\vec{x}: x_j = \tilde{x}_j}
-        \prod_i
-            q^\backslash(x_i)
-            \mathbb{E}_{q^\backslash}
-                (\theta_{\rho(\vec{x^\prime}), x_0})
+\sum_{\vec{x}: x_j = \tilde{x}_j} 
+	\prod_i 
+		m_{x_i \rightarrow f}(x_i)
+    		\mathbb{E}_{q^\backslash} 
+			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \end{equation}
 
 Tady docházíme k výsledku, který je velmi podobný výpočtu marginální
-pravděpodobnosti v Loopy Belief Propagation algoritmu, střední hodnota
-$\mathbb{E}_{q^\backslash} (\theta_{\rho(\vec{x^\prime}), x_0})$ zde
-reprezentuje zprávu z vrcholu $\vec{\theta}_{\rho_x}$.
+pravděpodobnosti v Loopy Belief Propagation algoritmu.
 
 Zprávu z faktoru $f$ do vrcholu $x_j$ pak získáme vydělením zprávy z $x_j$ z
 marginální pravděpodobnosti.
@@ -78,7 +105,7 @@ marginální pravděpodobnosti.
 m_{f \rightarrow x_j}(x_j) =
     \sum_{\vec{x}: x_j = \tilde{x}_j}
         \prod_{i \ne j}
-            q^\backslash(x_i)
+            m_{x_i \rightarrow f}(x_i)
             \mathbb{E}_{q^\backslash}
                 (\theta_{\rho(\vec{x^\prime}), x_0})
 \label{eq:msgfromftox}
@@ -114,16 +141,27 @@ p^*(\tilde{\vec{\theta}}_j) & = \sum_{\vec{x}} \int_{\vec{\Theta}:
 \\
 & = w_0 q^\backslash(\tilde{\vec{\theta}}_j) + \sum_k w_k
     \tilde{\theta}_{j,k} q^\backslash(\tilde{\vec{\theta}}_j),
+\\
+& = w_0 m_{\tilde{\vec\theta}_j \rightarrow f}(\tilde{\vec{\theta}}_j) + \sum_k w_k
+    \tilde{\theta}_{j,k} m_{\tilde{\vec\theta}_j \rightarrow f}(\tilde{\vec{\theta}}_j),
 \end{align}
 
 kde
 
 \begin{align}
-w_0 & = \sum_{l \ne j} \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \prod_i
-    q^\backslash(x_i) \mathbb{E}_{q^\backslash(\vec{\theta}_l)} (\theta_{l,
-    x_0}) \\
-w_k & = \sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} \prod_i
-    q^\backslash(x_i)
+w_0 &=
+	\sum_{l \ne j} 
+		\sum_{\vec{x}: \rho(\vec{x^\prime}) = l} 
+			\prod_i
+ 				m_{x_i \rightarrow f}(x_i)
+				\mathbb{E}_{q^\backslash(\vec{\theta}_l)} (
+					\theta_{l,
+					x_0}) 
+\\
+w_k &=
+	\sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} 
+		\prod_i
+			m_{x_i \rightarrow f}(x_i)		
 \end{align}
 
 Opět vycházíme z výpočtu marginální pravděpodobnosti ze sdružené
@@ -149,13 +187,13 @@ distribuce je směs několika distribucí a ta nemusí být v obecném případ�
 vyjádřitelná. Je tedy třeba model dále aproximovat. Pro zjednodušení výpočtu
 jsou zprávy z faktoru do množiny parametrů, $m_{f \rightarrow
 \vec{\theta}_i}(\vec{\theta}_i)$, ve tvaru Dirichletovského rozdělení s
-parametry $\hat{\vec{\alpha}}_i$:
+parametry $\vec\alpha_{f \rightarrow \vec\theta_i}$:
 \begin{equation}
 m_{f \rightarrow \vec{\theta}_i}(\vec{\theta}_i) =
-    Dir(\vec{\theta}_i; \hat{\vec{\alpha}}_i) =
-        \frac{\Gamma (\sum_j \hat{\alpha}_{i,j})}
-             {\prod_j \Gamma(\hat{\alpha}_{i,j})}
-        \prod_j \theta_{i,j}^{\hat\alpha_{i,j} - 1}
+	Dir(\vec{\theta}_i; \vec\alpha_{f \rightarrow \vec\theta_i}) =
+        \frac{\Gamma (\sum_j \vec\alpha_{f \rightarrow \vec\theta_i, j})}
+             {\prod_j \Gamma(\vec\alpha_{f \rightarrow \vec\theta_i, j})}
+        \prod_j \theta_{i,j}^{\vec\alpha_{f \rightarrow \vec\theta_i, j} - 1}
 \end{equation}
 kde $\Gamma$ je Gamma funkce (zobecnění faktoriálu):
 \begin{equation}
@@ -165,7 +203,7 @@ kde $\Gamma$ je Gamma funkce (zobecnění faktoriálu):
 Dirichletovské rozdělení bylo zvoleno, protože má důležité vlastnosti pro
 součin, které budou využity dále pro výpočet cavity distribuce a celkové
 aproximace. Pokud označíme aproximované faktory indexem $\beta$ a každý bude
-mít vlastní parametry $\hat\alpha_{\beta, i}$, tak výsledná aproximace bude
+mít vlastní parametry $\vec\alpha_{f_\beta \rightarrow \vec\theta_i}$, tak výsledná aproximace bude
 tvaru:
 \begin{align}
 q(\vec{\theta}_i) &\propto
@@ -175,18 +213,18 @@ q(\vec{\theta}_i) &\propto
 &\propto
     \prod_\beta
         \prod_j
-            \theta_{i,j}^{\hat\alpha_{\beta,i,j} - 1}
+            \theta_{i,j}^{\vec\alpha_{f_\beta \rightarrow \vec\theta_i, j} - 1}
 \\
 &\propto
     Dir(\vec{\theta}_i;
-        \sum_\beta \hat{\vec{\alpha}}_{\beta,i} - (|\beta| - 1) \vec{1})
+        \sum_\beta \vec\alpha_{f_\beta \rightarrow \vec\theta_i} - (|\beta| - 1) \vec{1})
 \\
 &=
     Dir(\vec{\theta}_i;
         \vec{\alpha}_i)
 \label{eq:ep:aprx_1}
 \end{align}
-kde $\vec{\alpha}_i = \sum_\beta \hat{\vec{\alpha}}_{\beta,i} - (|\beta| - 1)
+kde $\vec{\alpha}_i = \sum_\beta \vec\alpha_{f_\beta \rightarrow \vec\theta_i} - (|\beta| - 1)
 \vec{1})$.
 
 Při aktualizaci faktoru $\tilde\beta$ tedy cavity distribuce bude:
@@ -198,7 +236,7 @@ q^{\backslash \tilde\beta} (\vec{\theta_i})
 \\
 & \propto
 Dir(\vec{\theta}_i;
-    \vec{\alpha}_i - \hat{\vec{\alpha}}_{\beta, i} + \vec{1})
+    \vec{\alpha}_i - \vec\alpha_{f_\beta \rightarrow \vec\theta_i} + \vec{1})
 \end{align}
 
 Naším cílem je nalézt parametry $\vec{\alpha}^*$ aproximované marginální
@@ -400,8 +438,8 @@ Parametry aproximovaného rozdělení nalezneme následovně
 \alpha_i &= \mathbb{E}[X_i] \alpha_0 \label{eq:6}
 \end{align}
 
-Z rovnice~(\ref{eq:5}) vypočítáme sumu všech parametrů $\alpha_0$, protože
-střední hodnota proměnné z Dirichletovského rozdělení je právě
+Z rovnice~(\ref{eq:5}) vypočítáme sumu všech parametrů $\alpha_0$. 
+Protože střední hodnota proměnné z Dirichletovského rozdělení je právě
 $\frac{\alpha_i}{\alpha_0}$, tak jednotlivé parametry získáme z
 rovnice~(\ref{eq:6}).
 
@@ -412,24 +450,24 @@ rovnice~(\ref{eq:6}).
 \label{alg:ep}
 \begin{algorithmic}
 \State Parametry zpráv z faktoru $\beta$ do množiny parametrů
-    $\vec{\theta}_i$ označíme $\hat{\vec{\alpha}}_{\beta,i}$.
+    $\vec{\theta}_i$ označíme $\vec\alpha_{f_\beta \rightarrow \vec\theta_i}$.
 \State Parametry zpráv z množiny parametrů $\vec{\theta}_i$ do faktoru $\beta$
-    označíme $\vec{\alpha}_i^\beta$.
+    označíme $\vec\alpha_{ \vec\theta_i \rightarrow f_\beta}$.
 \State Parametry marginální distribuce množiny parametrů $\vec{\theta}_i$
     označíme $\vec{\alpha}_i$.
 \Init
     \State Nastav zprávy mezi faktory a proměnnými na $1$.
-    \State Nastav parametry $\hat{\vec{\alpha}}_{\beta,i}$ na $1$.
+    \State Nastav parametry $\vec\alpha_{f_\beta \rightarrow \vec\theta_i}$ na $1$.
     \State Nastav parametry $\vec{\alpha}_i$ na apriorní hodnotu.
 \EndInit
 \Repeat
     \State Vyber faktor $f_{\tilde\beta}$, který se bude aktualizovat.
 
-    \State Spočítej všechny zpravy z parametrů:
+    \State Spočítej všechny zprávy z parametrů:
     \For{každý parametr $\vec{\theta}_i$ spojený s faktorem $f_{\tilde\beta}$}
         \State Parametry zprávy z $\vec{\theta}_i$ do $f_{\tilde\beta}$:
-            $\vec{\alpha}_i^{\tilde\beta} = \vec{\alpha}_i -
-            \hat{\vec{\alpha}}_{\tilde\beta, i} + 1$.
+            $\vec\alpha_{ \vec\theta_i \rightarrow f_\beta} = \vec{\alpha}_i -
+            \vec\alpha_{f_\beta \rightarrow \vec\theta_i } + 1$.
     \EndFor
 
     \State Aktualizuj zprávy z faktoru do proměnných:
@@ -441,7 +479,7 @@ rovnice~(\ref{eq:6}).
             \sum_{\vec{x}: x_j = \tilde{x}_j}
                 \mathbb{E}_{q^\backslash}(\theta_{\rho(\vec{x^\prime}), x_0})
                 \prod_{i \ne j}
-                    q^\backslash(x_i) $
+                    m_{x_i \rightarrow f_{\tilde\beta}} (x_i)$
     \EndFor
 
     \State Aktualizuj marginální pravděpodobnost parametrů:
@@ -450,27 +488,27 @@ rovnice~(\ref{eq:6}).
             rozdělení, které nejlépe
         \State aproximuje cílovou marginální distribuci
             (\ref{eq:marginaltheta}). Metoda popsána
-        \State v sekci \ref{FIXME}
+        \State v předchozí sekci.
         \State Parametry zprávy z $f_{\tilde\beta}$ do $\vec{\theta}_i$:
         \State
             \hskip\algorithmicindent
-            $\hat{\vec{\alpha}}_{\beta, i} =
+            $\vec\alpha_{f_\beta \rightarrow \vec\theta_i} =
                 \vec{\alpha}_i^*
-                - \vec{\alpha}_i^{\backslash \tilde\beta}
+                - \vec\alpha_{ \vec\theta_i \rightarrow f_\beta}
                 + 1$
         \State Aktualizuj parametry marginální distribuce $q(\vec{\theta}_i)$
         \State
             \hskip\algorithmicindent
             $\vec{\alpha}_i = \vec{\alpha}_i^* =
-                \hat{\vec{\alpha}}_{\tilde\beta, i}
-                + \vec{\alpha}_i^{\backslash \beta}$.
+                \vec\alpha_{f_\beta \rightarrow \vec\theta_i}
+                + \vec\alpha_{ \vec\theta_i \rightarrow f_\beta} - 1$
     \EndFor
     \For{každou proměnnou $X_i$, spojenou s faktorem $f_{\tilde\beta}$}
         \State Aktualizuj zprávy z proměnných do faktoru:
         \State
             \hskip\algorithmicindent
-            $q^{\backslash\beta}(x_i) =
-                \prod_{\beta \ne \tilde\beta} \hat{f}_\beta(x_l)$
+            $m_{x_i \rightarrow f_{\tilde\beta}}(x_i) =
+                \prod_{\beta \ne \tilde\beta} m_{f_\beta \rightarrow x_i}(x_i)$
     \EndFor
 \Until{konvergence}
 \end{algorithmic}
