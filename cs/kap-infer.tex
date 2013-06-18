@@ -1,2 +1,65 @@
 % !TEX root = prace.tex
-\chapter{Inference v grafických modelech}
+\chapter{Bayesovské sítě a inference}
+
+\section{Bayesovské sítě}
+
+Bayesovské sítě jsou pravděpodobnostní grafický model, který využívá podmíněných nezávislostí pro úspornou reprezentaci sdružené pravděpodobnosti.
+Bayesovská sít je orientovaný acyklický graf, jeho vrcholy jsou náhodné proměnné a hrany odpovídají přímé závislosti jednoho uzlu na druhý.
+Pro každou náhodnou proměnnou v síti platí, že její pravděpodobnost je jednoznačně určena jejími rodiči v grafu.
+Podmíněná pravděpodobnostní distribuce (CPD) proměnné $X$ popisuje pravděpodobnost proměnné $X$ dáno její rodiče, $P(X \mid parents(X))$.
+Pokud proměnná nemá žádná rodiče, pak její podmíněná pravděpodobnostní distribuce je ekvivalentní marginální pravděpodobnostní distribuci.
+
+Příklad Student~\cite{koller2009probabilistic}: firma zvažuje, zda-li přijme studenta.
+Firma chce přijímat chytré studenty, ale nesmí je testovat na inteligenci (I) přímo.
+Má však výsledek studentových SAT testů, které ale nemusí stačit pro správné zhodnocení inteligence.
+Požadují tak tedy i doporučení (D) od jednoho z učitelů.
+Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal v jeho předmětu.
+Předměty se ovšem liší v obtížnosti (O) a tak je studentova známka v předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
+Grafický model reprezentující tento problém je vyobrazen na obrázku~\ref{fig:student}.
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}
+
+\matrix[row sep=0.75cm, column sep=1.2cm]
+{
+    \node[latent]       (O)     {O};
+    && \node[latent]    (I)     {I};
+    \\
+    &\node[latent]      (Z)     {Z};
+    &&\node[latent]     (S)     {SAT};
+    \\
+    &\node[latent]      (D)     {D};
+    \\
+};
+
+\edge{O}{Z}
+\edge{I}{Z}
+\edge{I}{S}
+\edge{Z}{D}
+
+\end{tikzpicture}
+\end{center}
+\label{fig:student}
+\caption{Bayesovská síť pro příklad se studentem.}
+\end{figure}
+
+V tomto modelu je několik nezávislostí. Obtížnost předmětu a inteligence studenta jsou zjevně nezávislé.
+Studentova známka z předmětu je závislá na obtížnosti předmětu a inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentova inteligence.
+Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentova známka.
+
+Sdruženou nezávislot tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s pomocí řetízkového pravidla.
+\begin{equation}
+P(O, I, Z, S, D) = P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
+\end{equation}
+
+Předpokládejme, že obtížnost předmětu, inteligence studenta, doporučující dopis a výsledek SAT jsou binární proměnné.
+Známka z předmětu pak je ternární proměnná.
+Pokud bychom zapsali sdruženou pravděpodobnost ve formě tabulky, tak se dostaneme k 48 položkám.
+Díky rozdělení do podmíněných pravděpodobnostních rozložení, které nám bayesovská síť poskytuje, se dostáváme k $2 + 2 + 12 + 4 + 6 = 26$ položkám.
+Tedy i v tomto jednoduchém modelu dochází k značné úspoře.
+
+\subsection{Šíření informace v bayesovských sítích}
+
+\section{Inference v Bayesovských sítích}
+
+\section{Aproximativní inference}
