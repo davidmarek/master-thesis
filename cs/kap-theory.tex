@@ -199,3 +199,8 @@ Alternativním zjednodušením je rozdělit stav prostředí do skupin.
 Tento přístup se nazývá Hidden Information State (HIS)~\cite{young2010hidden}.
 Základním předpokladem zde musí být, že uživatel nezmění svůj cíl v průběhu dialogu.
 Pak lze efektivně provádět aktualizaci, protože rovnice pro aktualizace pravděpodobnosti se nemění mezi jednotlivými skupinami.
+
+V této práci se budeme zabývat prvním přístupem, tedy použitím Bayesovských sítích.
+Pro inferenci použijeme Loopy Belief Propagation (LBP) algoritmus, který je aproximativní metodou pro sítě s diskrétními náhodnými proměnnými.
+Pro učení parametrů představíme Expectation Propagation (EP) algoritmus.
+EP je zobecněním LBP na libovolné pravděpodobnostní rozložení.

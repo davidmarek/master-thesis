@@ -1,6 +1,18 @@
 % !TEX root = prace.tex
 \chapter{Bayesovské sítě a inference}
 
+V této kapitole představíme Bayesovské sítě, grafický model pro efektivní reprezentaci pravděpodobnostních rozdělení a nezávislostí mezi náhodnými proměnnými.
+Bayesovská síť zároveň vytváří koncept pro inferenci, tedy zodpovídání dotazů nad proměnnými v síti.
+Ukážeme si několik přístupů k inferenci, nejprve naivní výpočet vycházející přímo z definice.
+Následně využijeme vlastností sítě a konceptů dynamického programování pro jeho zlepšení.
+Analýzou složitosti exaktní inference dojdeme k závěru, že pro větší a komplexnější modely bude třeba se uchýlit k aproximacím.
+
+Nejprve aproximujeme sdruženou pravděpodobnostní distribuci součinem marginálních distribucí a představíme Loopy Belief Propagation algoritmus.
+Stále můžeme použít pouze diskrétní pravděpodobnostní distribuce se známými parametry.
+Pro učení parametrů lze použít Expectation Maximization metodu, pro dialogové systémy je ovšem těžké získat dostatek učících dat.
+Nakonec se dostaneme k metodě Expectation Propagation, která je zobecněním LBP a je tedy možné ji použít pro libovolné rozdělení.
+Díky ní budeme schopní vytvořit generativní model pro aktualizaci dialogového stavu, který bude pracovat stejně jako LBP, ale bude schopen adaptace.
+
 \section{Bayesovské sítě}
 
 Bayesovské sítě jsou pravděpodobnostní grafický model, který využívá podmíněných nezávislostí pro úspornou reprezentaci sdružené pravděpodobnosti.
@@ -58,8 +70,73 @@ Pokud bychom zapsali sdruženou pravděpodobnost ve formě tabulky, tak se dosta
 Díky rozdělení do podmíněných pravděpodobnostních rozložení, které nám bayesovská síť poskytuje, se dostáváme k $2 + 2 + 12 + 4 + 6 = 26$ položkám.
 Tedy i v tomto jednoduchém modelu dochází k značné úspoře.
 
-\subsection{Šíření informace v bayesovských sítích}
-
 \section{Inference v Bayesovských sítích}
 
-\section{Aproximativní inference}
+Bayesovské sítě reprezentují pravděpodobnostní model a umožňují nám nad ním provádět dotazy.
+Můžeme se například ptát na marginální pravděpodobnost jednotlivých proměnných. 
+Tu získáme marginalizací sdružené pravděpodobnosti, pokud vezmeme příklad se studentem a budeme chtít znát marginální pravděpodobnost známek, musíme vysčítat všechny ostatní proměnné.
+
+\begin{equation}
+P(Z) = \sum_{O, I, S, D} P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
+\end{equation}
+
+Další a asi nejčastější dotaz nastává, pokud některé náhodné proměnné pozorujeme. 
+Pak chceme znát pravděpodobnost jiných proměnných dáno naše pozorování, $P(\vec{X} \mid \vec{E} = \vec{e})$, kde $\vec{X}$ jsou dotazované proměnné, $\vec{E}$ jsou pozorované proměnné a $\vec{e}$ jsou pozorované hodnoty.
+Z definice podmíněné pravděpodobnosti dostáváme
+
+\begin{equation}
+P(\vec{X} \mid \vec{E} = \vec{e}) = \frac{P(\vec{X}, \vec{E} = \vec{e})}{P(\vec{E} = \vec{e})}
+\end{equation}
+
+Každou instanci jmenovatele $P(\vec{X}, \vec{E} = \vec{e})$ jde spočítat sumou sdružených pravděpodobností s ohodnoceními proměnných, které jsou kompatibilní s pozorováním a aktuální instancí. 
+Pokud počítáme instanci $P(\vec{X} = \vec{x}, \vec{E} = \vec{e})$, pak získáme výsledek marginalizací všech proměnných, kromě $\vec{X}$ a $\vec{E}$, které jsou fixovány.
+Pokud tedy množinu všech proměnných bez $\vec{X}$ a $\vec{E}$ označíme $\mathcal{W} = \mathcal{X} - \vec{X} - \vec{E}$, pak pravděpodobnost dané instance je
+
+\begin{equation}
+P(\vec{X} = \vec{x}, \vec{E} = \vec{e}) = \sum_{\vec{w}} P(\vec{x}, \vec{e}, \vec{w})
+\end{equation}
+
+Pro výpočet normalizační konstanty $P(\vec{E})$ musíme opět marginalizovat sdruženou pravděpodobnost, anebo si můžeme povšimnout, že platí
+\begin{equation}
+P(\vec{E} = \vec{e}) = \sum_{\vec{x}} P(\vec{x}, \vec{e})
+\end{equation}
+a tedy můžeme použít už vypočítané hodnoty.
+
+\subsection{Přesná inference}
+
+V předchozí části jsme viděli, že pomocí definice podmíněné pravděpodobnosti a marginalizace sdružené pravděpodobnosti lze najít odpověď na libovolný dotaz. 
+Nyní si ukážeme algoritmus, který využívá struktury Bayesovské sítě pro inferenci a navíc díky metodám dynamického programování umožňuje samotný výpočet urychlit.
+Nakonec ovšem zjistíme, že pro velké sítě, které nás většinou zajímají nejvíce, nám přesná inference nebude stačit a musíme se uchýlit k aproximacím.
+
+Začneme s inferencí v jednoduchém modelu $A \rightarrow B \rightarrow C \rightarrow D$.
+Sdružená pravděpodobnost $P(A, B, C, D)$ je součinem jednotlivých podmíněných pravděpodobnostních distribucí
+\begin{equation}
+P(A, B, C, D) = P(D \mid C) P(C \mid B) P(B \mid A) P(A)
+\end{equation}
+
+Pokud nyní budeme chtít spočítat marginální distribuci $D$, tak musíme marginalizovat všechny ostatní proměnné
+\begin{equation}
+P(D) = \sum_{A, B, C} P(D \mid C) P(C \mid B) P(B \mid A) P(A)
+\end{equation}
+
+Můžeme si povšimnout, že spousta členů se bude počítat vícekrát.
+Využitím metod dynamického programování a přeuspořádáním sum si můžeme mezivýsledky uložit a použít vícekrát.
+\begin{equation}
+P(D) = \sum_C P(D \mid C) \sum_B P(C \mid B) \sum_A P(B \mid A) P(A)
+\end{equation}
+
+Při výpočtu pak nejprve spočítáme $\psi_1(A, B) =  P(B \mid A) P(A)$,  pak vysčítáme proměnnou $A$ a získáme $\tau_1(B) = \sum_A \psi_1(A, B)$.
+Pokračujeme obdobně
+\begin{align}
+    \psi_2(B, C) &= P(C \mid B) \tau_1(B) \\
+    \tau_2(C) &= \sum_B \psi_2(B, C)
+\end{align}
+A nakonec spočítáme finální marginální pravděpodobnost
+\begin{align}
+    \psi_3(D, C) &= P(D \mid C) \tau_2(C) \\
+    P(D) &= \sum_C \psi_3(D, C)
+\end{align}
+
+
+
+\subsection{Aproximativní inference}
