@@ -137,6 +137,36 @@ A nakonec spočítáme finální marginální pravděpodobnost
     P(D) &= \sum_C \psi_3(D, C)
 \end{align}
 
+\begin{definice}
+Nechť $\mathcal{X}$ je množina náhodných proměnných. 
+Potom definujeme faktor $\phi$ jako zobrazení z $Val(\mathcal{X})$ do $\mathbb{R}$. Faktor je nezáporný, pokud všechny jeho obrazy jsou nezáporné. Množina proměnných $\mathcal{X}$ je doménou faktoru a značíme ji jako $Dom(\phi)$.
+\end{definice}
+
+Faktor, jehož doménu tvoří diskrétní proměnné, si můžeme představit jako tabulku, která obsahuje jednu hodnotu pro každé možné ohodnocení proměnných z domény.
+
+\begin{definice}
+...
+\end{definice}
+
+\begin{definice}
+Nechť $\vec{X}$ je množina náhodných proměnných a $Y \not\in \vec{X}$ náhodná proměnná. 
+Nechť $\phi(\vec{X}, Y)$ je faktor.
+Definujeme marginalizaci $Y$ v $\phi$, značenou $\sum_Y \phi$, jako faktor $\psi$ s doménou $\vec{X}$ takový, že
+\begin{equation*}
+    \psi(\vec{X}) = \sum_Y \phi(\vec{X}, Y)
+\end{equation*}
+Této operaci také říkáme vysčítání $Y$ ve $\phi$.
+\end{definice}
+
+Faktory se při počítání chovají jako čísla, všechny operace probíhají po prvcích, pro které je ohodnocení náhodných proměnných z průniku domén faktorů stejné.
+Proto platí komutativita $\phi_1 \cdot \phi_2 = \phi_2 \cdot \phi_1$ a $\sum_X \sum_Y \phi = \sum_Y \sum_X \phi$.
+Dále platí asociativita součinu $(\phi_1 \cdot \phi_2) \cdot \phi_3 = \phi_1 \cdot (\phi_2 \cdot \phi_3)$.
+Nakonec můžeme vyměnit sumu a součin, pokud $X \not\in Dom(\phi_1)$, potom $\sum_X (\phi_1 \cdot \phi_2) = \phi_1 \sum_X \phi_2$.
+
+Sdruženou pravděpodobnost z minulého příkladu tedy můžeme přepsat do formy faktorů.
+\begin{equation}
+    P(A, B, C, D) = \phi_A \cdot \phi_B \cdot \phi_C \cdot \phi_D
+\end{equation}
 
 
 \subsection{Aproximativní inference}
