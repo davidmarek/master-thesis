@@ -102,7 +102,7 @@ P(\vec{E} = \vec{e}) = \sum_{\vec{x}} P(\vec{x}, \vec{e})
 \end{equation}
 a tedy můžeme použít už vypočítané hodnoty.
 
-\subsection{Přesná inference}
+\subsection{Exaktní inference}
 
 V předchozí části jsme viděli, že pomocí definice podmíněné pravděpodobnosti a marginalizace sdružené pravděpodobnosti lze najít odpověď na libovolný dotaz. 
 Nyní si ukážeme algoritmus, který využívá struktury Bayesovské sítě pro inferenci a navíc díky metodám dynamického programování umožňuje samotný výpočet urychlit.
@@ -145,8 +145,16 @@ Potom definujeme faktor $\phi$ jako zobrazení z $Val(\mathcal{X})$ do $\mathbb{
 Faktor, jehož doménu tvoří diskrétní proměnné, si můžeme představit jako tabulku, která obsahuje jednu hodnotu pro každé možné ohodnocení proměnných z domény.
 
 \begin{definice}
-...
+Nechť $\vec{X}, \vec{Y}, \vec{Z}$ jsou tři disjunktní množiny náhodných proměnných.
+Nechť $\phi_1(\vec{X}, \vec{Y})$ a $\phi_2(\vec{Y}, \vec{Z})$ jsou faktory.
+Definujeme součin faktorů $\phi_1 \times \phi_2$ jako faktor $\psi: Val(\vec{X}, \vec{Y}, \vec{Z}) \rightarrow \mathbb{R}$ následovně:
+\begin{equation*}
+\psi(\vec{X}, \vec{Y}, \vec{Z}) = \phi_1(\vec{X}, \vec{Y}) \cdot \phi_2(\vec{Y}, \vec{Z})
+\end{equation*}
 \end{definice}
+
+Násobíme prvky, které mají stejné ohodnocení společných proměnných $\vec{Y}$.
+Stejný princip použijeme pro všechny matematické operace.
 
 \begin{definice}
 Nechť $\vec{X}$ je množina náhodných proměnných a $Y \not\in \vec{X}$ náhodná proměnná. 
@@ -168,5 +176,98 @@ Sdruženou pravděpodobnost z minulého příkladu tedy můžeme přepsat do for
     P(A, B, C, D) = \phi_A \cdot \phi_B \cdot \phi_C \cdot \phi_D
 \end{equation}
 
+Opět se pokusíme spočítat marginální pravděpodobnost proměnné $D$.
+\begin{align}
+P(D) &= \sum_C \sum_B \sum_A \phi_A \phi_B \phi_C
+\\
+&= \sum_C 
+	\phi_D \cdot 
+	\left( 
+		\sum_B 
+			\phi_C \cdot 
+			\left( 
+				\sum_A 
+					\phi_A \cdot \phi_B
+			\right)
+	\right)
+\end{align}
+
+Přesuny sum můžeme provést díky doméně jednotlivých faktorů.
+Faktory $\phi_C$ a $\phi_D$ neobsahují proměnnou $A$ a tedy je můžeme vytknout před sumu přes $A$.
+Stejně tak faktor $\phi_D$ neobsahuje proměnnou $B$ a opět jej můžeme vytknout před sumu přes $B$.
+Tyto úpravy můžeme provádět v libovolném pořadí, pokud vždy platí, že vysčítáme proměnnou $X$ až poté, co spolu vynásobíme všechny faktory, které ji obsahují.
+
+V obecnosti vždy počítáme výraz, který je ve tvaru
+\[
+\sum_X \prod_{\phi \in \Phi} \phi.
+\]
+
+Z tohoto také vychází název pro tuto metodu: sum-product.
+Jednoduchý algoritmus pro exaktní inferenci využívající tuto metodu se nazývá eliminace proměnných.
+Základní myšlenka je, že máme dán seznam náhodných proměnných v pořadí, v jakém se mají eliminovat.
+Pro eliminaci proměnné je třeba nejprve vynásobit všechny faktory, které ji obsahují a následně ji vysčítat.
+Tak získáme faktor, který už tuto proměnnou neobsahuje, tedy jsme ji eliminovali.
+Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
+
+\begin{algorithm}[H]
+\caption{Eliminace proměnných}
+\label{alg:ve}
+\begin{algorithmic}
+\Function{Sum-Product-VE}{$\Phi$, $\vec{X}$, $\prec$}
+\State{$\Phi$ množina všech faktorů.} 
+\State{$\vec{X}$ množina náhodných proměnných, které mají být eliminovaný.}
+\State{$\prec$ pořadí proměnných, v jakém mají být eliminovány.}
+\State
+
+\State Nechť $X_1, \dots, X_k$ je seřazení proměnných z $\vec{X}$, t.ž. $X_i \prec X_j \Leftrightarrow i < j$.
+\For{$i = 1 \dots k$}
+	\State $\Phi \gets$ Sum-Product-Eliminate-Var($\Phi$, $Z_i$)
+\EndFor
+\State $\phi^* \gets \prod_{\phi \in \Phi} \phi$
+\State \Return $\phi^*$
+\EndFunction
+\State
+\Function{Sum-Product-Eliminate-Var}{$\Phi$, $X$}
+\State{$\Phi$ množina všech faktorů.}
+\State{$X$, proměnná, která má být eliminována.}
+\State
+
+\State $\Phi^\prime \gets \{\phi \in \Phi: X \in Dom(\phi)\}$
+\State $\Phi^{\prime \prime} \gets \Phi - \Phi^\prime$
+\State $\psi \gets \prod_{\phi \in \Phi^\prime} \phi$
+\State $\tau \gets \sum_X \psi$
+\State \Return $\Psi^{\prime\prime} \bigcup \{\tau\}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}
+Nechť $\vec{X}$ je množina náhodných proměnných, nechť $\Phi$ je množina faktorů, t.ž. pro každé $\phi \in \Phi$, $Dom(\phi) \subseteq \vec{X}$.
+Nechť $\vec{Y} \subset \vec{X}$ je množina dotazovaných náhodných proměnných a nechť $\vec{Z} = \vec{X} - \vec{Y}$.
+Pak pro každé seřazení $\prec$ nad $\vec{Z}$, Sum-Product-VE($\Phi$, $\vec{Z}$, $\prec$) vrátí faktor $\phi^*(\vec{Y})$ takový, že
+\[
+\phi^*(\vec{Y}) = \sum_Z \prod_{\phi \in \Phi} \phi
+\]
+\end{theorem}
+
+Nyní provedeme analýzu algoritmu eliminace proměnných.
+Předpokládejme, že na vstupu je $n$ proměnných.
+Bayesovská síť obsahuje pro každou proměnnou jeden faktor.
+Pro jednoduchost budeme předpokládat, že algoritmus bude eliminovat všechny proměnné.
+Běh algoritmu se skládá z jednotlivých eliminačních kroků, při kterých je vždy eliminována jedna proměnná.
+
+Při jednom eliminačním kroku je vybrána proměnná $X_i$, všechny faktory, které ji obsahují jsou pronásobeny a vytvoří jeden velký faktor $\psi_i$, proměnná $X_i$ je pak vysčítána z tohoto faktoru.
+Počet operací pro jeden eliminační krok tedy závisí na velikosti faktoru $\psi_i$, označme ji $N_i$.
+Maximum z velikostí faktorů označme $N_max = max_i N_i$.
+
+Nyní se zaměříme na počet násobení.
+Celkem vznikne $n+m$ faktorů, kde $m$ je počet faktorů, které vznikly vysčítáním proměnné.
+Každý z těchto faktorů je zahrnut do součinu pouze jednou, pokud je eliminována nějaká proměnná, kterou obsahuje.
+Cena násobení faktorů pro vznik $\psi_i$ je nejvýše $N_i$.
+Celkový počet násobení tedy bude nejvýše $(n+m)N_{max}$ což je $\mathcal{O}(nN_{max})$.
+
+Pokud $k$ je maximum z velikostí domén proměnných, pak velikost faktoru obsahujícího $n$ proměnných může být až $k^n$.
+Složitost eliminace proměnných je tedy dominována velikostí faktorů, které vznikají při výpočtu a je exponenciální.
+Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP těžký.
 
 \subsection{Aproximativní inference}
