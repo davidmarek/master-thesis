@@ -19,19 +19,17 @@ Přijetí bylo zpočátku chladné a veřejnost byla
 
 \section{Cíle}
 
-Dialogové systémy často využívají pouze nejlepší hypotézu ze systému porozumění přirozené řeči.
-Většina ovšem umí vytvořit seznam $n$ nejlepších hypotéz.
-Tato práce si klade za cíl představit metodu pro inferenci dialogového stavu v dialogovém systému s využitím více hypotéz.
-Představená metoda bude založena na reprezentaci dialogového stavu pomocí dynamických bayesovských sítí.
-
-Bude představen algoritmus Loopy Belief Propagation, který bude implementován pro využití v reálných systémech pro odhad dialogového stavu.
-Algoritmus bude otestován na datech z reálného dialogového systému Let's Go a porovnán s dalšími systémy, které se účastnily soutěže Dialog State Tracking Challenge 2013.
-Důležitou části algoritmů pro inferenci je určení pořadí, v jakém má inference probíhat.
-Práce bude obsahovat implementaci několika strategií pro inferenci, které budou umožňovat efektivní inferenci pro různé druhy bayesovských sítí (stromy, dynamické sítě, obecné grafy).
-
-Nakonec se práce bude zabývat učením parametrů sítě a představí algoritmus Expectation Propagation, který umožňuje inferenci v bayesovských sítích se spojitými náhodnými proměnnými.
-Algoritmus Expectation Propagation je pouze konceptem, do kterého je třeba zasadit výpočet parametrů pravděpodobnostních rozložení z konkrétního grafického modelu.
-Cílem práce není vytvořit obecný systém pro inferenci v libovolném grafickém modelu.
-Takový cíl není ani reálný, protože při většině reálných použití dochází k aproximacím a úprávám v závislosti na ontologii problému, aby bylo možné inferenci provádět v reálném čase.
-Cílem této práce tedy je vytvořit základní funkcionalitu potřebnou pro inferenci s EP, s kterou bude možné jednoduše vytvořit funkční systém, impolementovaný s doménově specifickými informacemi.
-Jako příklad bude ukázán systém pro učení parametrů pravděpodobnostního rozložení pro pozorování v generickém modelu pro reprezentaci dialogového stavu.
+\begin{enumerate}
+\item Dialogové systémy často využívají pouze nejlepší hypotézu ze systému porozumění přirozené řeči.
+    Většina ovšem umí vytvořit seznam $n$ nejlepších hypotéz.
+    Tato práce si klade za cíl představit metody pro inferenci dialogového stavu v dialogovém systému s využitím více hypotéz.
+    Představené metody budou založeny na reprezentaci dialogového stavu pomocí dynamických bayesovských sítí.
+\item Bude představen algoritmus Loopy Belief Propagation, který bude implementován pro využití v reálných systémech pro odhad dialogového stavu.
+\item Algoritmus bude otestován na datech z reálného dialogového systému Let's Go a porovnán s dalšími systémy, které se účastnily soutěže Dialog State Tracking Challenge 2013.
+\item Důležitou části algoritmů pro inferenci je určení pořadí, v jakém má inference probíhat.
+    Práce bude obsahovat implementaci několika strategií pro inferenci, které budou umožňovat efektivní inferenci pro různé druhy bayesovských sítí (stromy, dynamické sítě, obecné grafy).
+\item Nakonec se práce bude zabývat učením parametrů sítě a představí algoritmus Expectation Propagation, který umožňuje inferenci v bayesovských sítích se spojitými náhodnými proměnnými.
+\item Při většině reálných použití dochází k aproximacím a úpravám modelu v závislosti na problému tak, aby bylo možné inferenci provádět v reálném čase.
+Práce bude obsahovat implementaci frameworku, do kterého je možné jednoduše zasadit vlastní moduly pro aproximaci pravděpodobnostních rozdělení, které bude algoritmus Expectation Propagation používat.
+\item Jako příklad bude ukázán systém pro učení parametrů pravděpodobnostního rozložení pro pozorování v generickém modelu pro reprezentaci dialogového stavu.
+\end{enumerate}
