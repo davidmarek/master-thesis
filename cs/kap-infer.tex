@@ -258,7 +258,7 @@ Běh algoritmu se skládá z jednotlivých eliminačních kroků, při kterých 
 
 Při jednom eliminačním kroku je vybrána proměnná $X_i$, všechny faktory, které ji obsahují jsou pronásobeny a vytvoří jeden velký faktor $\psi_i$, proměnná $X_i$ je pak vysčítána z tohoto faktoru.
 Počet operací pro jeden eliminační krok tedy závisí na velikosti faktoru $\psi_i$, označme ji $N_i$.
-Maximum z velikostí faktorů označme $N_max = max_i N_i$.
+Maximum z velikostí faktorů označme $N_{max} = max_i N_i$.
 
 Nyní se zaměříme na počet násobení.
 Celkem vznikne $n+m$ faktorů, kde $m$ je počet faktorů, které vznikly vysčítáním proměnné.
@@ -268,6 +268,226 @@ Celkový počet násobení tedy bude nejvýše $(n+m)N_{max}$ což je $\mathcal{
 
 Pokud $k$ je maximum z velikostí domén proměnných, pak velikost faktoru obsahujícího $n$ proměnných může být až $k^n$.
 Složitost eliminace proměnných je tedy dominována velikostí faktorů, které vznikají při výpočtu a je exponenciální.
-Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP těžký.
+Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP těžký~\cite{arnborg1987complexity}.
 
 \subsection{Aproximativní inference}
+
+Algoritmy exaktní inference naráží při reálném použití na příliš velkou složitost násobení faktorů.
+Hlavním problémem je velikost sdružené pravděpodobnosti, která roste exponenciálně s počtem náhodných proměnných.
+Většinou nás ovšem zajímá marginální pravděpodobnost jedné nebo jen mála proměnných.
+Je tedy zbytečné počítat celou sdruženou pravděpodobnost, abychom z ní pak vysčítali většinu proměnných.
+Řešení se nabízí ve formě faktorizace sdružené pravděpodobnosti.
+
+\begin{equation*}
+    P(X_1, \dots, X_n) = \prod_i P(X_i)
+\end{equation*}
+
+Pro výpočet s faktorizovanou distribucí si zavedeme novou datovou strukturu, tzv. faktor graf.
+Faktor graf je bipartitní graf, kde jednu partitu tvoří faktory a druhou partitu tvoří náhodné proměnné.
+Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, který ji obsahuje.
+
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}
+    
+\matrix[row sep=0.75cm, column sep=1.2cm]
+{
+    \node[latent]   (X1)    {$X_1$};
+    &
+    \factor         {fa}    {$f_a$}{}{};
+    &
+    \node[latent]   (X2)    {$X_2$};
+    &
+    \factor         {fb}    {$f_b$}{}{};
+    &
+    \node[latent]   (X3)    {$X_3$};
+    \\
+    &&
+    \factor         {fc}    {left:$f_c$}{}{};
+    \\
+    &&
+    \node[latent]   (X4)    {$X_4$}{}{};
+    \\
+};
+\edge[-]{X1,X2} {fa}
+\edge[-]{X3,X2} {fb}
+\edge[-]{X2,X4} {fc}
+
+\end{tikzpicture}
+\end{center}
+\caption{Příklad faktor grafu se třemi náhodnými proměnnými $X_1, X_2, X_3$ a třemi faktory $f_a, f_b, f_c$.}
+\end{figure}
+
+Nejprve začneme s inferencí na stromech.
+Pokud zafixujeme jednu náhodnou proměnnou $X$ ve faktor grafu, pak sdruženou pravděpodobnost můžeme spočítat jako
+\begin{equation}
+    P(\vec{X}) = \prod_{s \in ne(X)} F_s(X, \vec{X}_s),
+\label{eq:fs}
+\end{equation}
+kde $ne(X)$ jsou faktory obsahující proměnnou $X$ (tedy sousedi ve faktor grafu), $F_s$ je součin všech faktorů v podstromu určeném faktorem $f_s$ a $\vec{X}_s$ je množina všech proměnných v daném podstromu.
+
+Pro výpočet marginální pravděpodobnosti $X$ substitujeme~(\ref{eq:fs}) do výpočtu marginální pravděpodobnosti ze sdružené a po výměně sumy a produktu dostaneme
+\begin{align}
+P(X) &= \prod_{s \in ne(X_i)} \sum_{\vec{X}_s} F_s(X, \vec{X}_s)
+\\
+&= \prod_{s \in ne(X)} \mu_{f_s \rightarrow X}(X)
+\label{eq:margx}
+\end{align}
+
+Zavedli jsme funkce
+\begin{equation}
+    \mu_{f_s \rightarrow X} \equiv \sum_{\vec{X}_s} F_s(X, \vec{X}_s),
+\label{eq:defmsgfx}
+\end{equation}
+které můžeme nazývat zprávami z faktoru $f_s$ do proměnné $X$.
+
+Každé $F_s(X, \vec{X}_s)$ je popsáno faktor grafem a tedy může být znova faktorizováno.
+Namísto proměnné $X$ nyní vezmeme faktor $f_s$.
+Náhodné proměnné sousedící s faktorem $f_s$ bez $X$ si označíme $X_1, \dots, X_M$.
+Součin faktorů v podstromech určených těmito proměnnými označíme $G_i(X_i, \vec{X}_{si})$.
+Faktor $F_s(X, \vec{X}_s)$ tedy můžeme přepsat jako
+\begin{equation}
+F_s(X, \vec{X}_s) = f_s(X, X_1, \dots, X_M) G_1(X_1, \vec{X}_{s1}), \dots, G_M(X_M, \vec{X}_{sM})
+\end{equation}
+
+Pokud substitujeme přepsaný faktor $F_s(X, \vec{X}_s)$ do definice zprávy z faktoru, dostaneme
+\begin{align}
+\mu_{f_s \rightarrow X}(X) &=
+    \sum_{X_1} \dots \sum_{X_M}
+        f_s(X, X_1, \dots, X_M)
+        \prod_{m \in ne(f_s) \backslash X}
+            \sum_{\vec{X}_{sm}}
+                G_m(X_m, \vec{X}_{sm})
+\\
+&= \sum_{X_1} \dots \sum_{X_M}
+    f_s(X, X_1, \dots, X_M)
+    \prod_{m \in ne(f_s) \backslash X}
+        \mu_{X_m \rightarrow f_s}(X_m)
+\label{eq:mfsx}
+\end{align}
+
+Zavedli jsme další funkce 
+\begin{equation}
+    \mu_{X_m \rightarrow f_s}(X_m) \equiv \sum_{\vec{X}_{sm}} G_m(X_m, \vec{X}_{sm}),
+\label{eq:defmsgxf}
+\end{equation}
+které budeme nazývat zprávami z proměnné $X_m$ do faktoru $f_s$.
+
+Z rovnice~\ref{eq:margx} vidíme, že marginální pravděpodobnost proměnné vypočítáma jako součin zpráv ze všech okolních faktorů.
+Každou z těchto zpráv můžeme spočítat jako součin faktoru a zpráv přicházejících z proměnných, které s tímto faktorem sousedí, kromě proměnné, které chceme zprávu posílat. Zbývá nám tedy zjistit v jakém tvaru jsou zprávy z proměnných do faktoru.
+
+Stejně jako u $F_s(X, \vec{X}_s)$ nám tady $G_m(X_m, \vec{X}_{sm})$ definuje podgraf faktor grafu. 
+V kořeni tohoto podgrafu leží proměnná $X_m$ a tím se dostáváme na už známý případ.
+Budeme ignorovat faktor $f_s$, protože neleží v podgrafu určeném $G_m(X_m, \vec{X}_{sm})$, a pak 
+\begin{equation}
+    G_m(X_m, \vec{X}_{sm}) = \prod_{l \in ne(X_m) \backslash f_s} F_l(X_m, \vec{X}_{ml})
+\end{equation}
+Přepsáno ve formě zpráv
+\begin{align}
+\mu_{X_m \rightarrow f_s}(X_m)
+&= \prod_{l \in ne(X_m) \backslash f_s}
+    \sum_{\vec{X}_{ml}}
+        F_l(X_m, \vec{X}_{ml})
+\\
+&= \prod_{l \in ne(X_m) \backslash f_s}
+    \mu_{f_l \rightarrow X_m}(X_m)
+\end{align}
+Zpráva z náhodné proměnné je tedy součinem zpráv ze všech ostatních faktorů.
+
+Zprávy tedy dokážeme počítat rekurzivně, chybí nám ovšem pravidla pro zprávy z uzlů, které jsou listy.
+V případě faktoru je odchozí zpráva ekvivalentní faktoru.
+\begin{equation}
+    \mu_{f \rightarrow X}(X) = f(X)
+\end{equation}
+V případě náhodné proměnné je odchozí zpráva 
+\begin{equation}
+    \mu_{X \rightarrow f}(X) = 1
+\end{equation}
+Pro pozorovanou proměnnou je zpráva vždy rovna pozorované hodnotě, bez ohledu na sousední faktory.
+
+\subsubsection{Belief Propagation}
+
+Algoritmus exaktní inference na stromech s pomocí posílání zpráv se nazývá belief propagation~\cite{pearl1988probabilistic}.
+Zpráva z vrcholu faktor grafu může být poslána do jiného vrcholu, až když byly obdrženy zprávy ze všech ostatních vrcholů.
+Jakmile vrchol obdržel zprávy ze všech vrcholů, tak lze spočítat jeho marginální pravděpodobnost.
+Strom vždy můžeme zakořenit v nějaké náhodné proměnné a posílat zprávy z listů do kořene.
+Kořen pak obdrží všechny zprávy ze všech sousedních faktorů a tedy je možné spočítat jeho marginální pravděpodobnost.
+Tomuto se říká dopředný krok propagace.
+
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}
+
+\matrix[row sep=0.75cm, column sep=1.2cm]
+{
+    \node[latent]   (X1)    {$X_1$};
+    &
+    \factor         {fa}    {$f_a$}{}{};
+    &
+    \node[latent]   (X2)    {$X_2$};
+    &
+    \factor         {fb}    {$f_b$}{}{};
+    &
+    \node[latent]   (X3)    {$X_3$};
+    \\
+    &&
+    \factor         {fc}    {left:$f_c$}{}{};
+    \\
+    &&
+    \node[latent]   (X4)    {$X_4$}{}{};
+    \\
+};
+\edge{X1}{fa}
+\edge{fa}{X2}
+\edge{X4}{fc}
+\edge{fc}{X2}
+\edge{X2}{fb}
+\edge{fb}{X3}
+
+\end{tikzpicture}
+\end{center}
+\caption{Směr posílání zpráv pro strom zakořeněný ve vrcholu $X_3$ v dopředném kroce.}
+\end{figure}
+
+Belief propagation algoritmus tedy umožňuje na stromech spočítat marginální pravděpodobnost jedné proměnné s linárním počtem poslaných zpráv.
+Při rozšíření na spočítání marginální pravděpodobnosti všech proměnných není třeba algoritmus pouštět $n$-krát.
+Stačí si uvědomit, že všem vrcholům chybí pouze zpráva od faktoru na cestě ke kořenu.
+A my můžeme z kořene poslat zprávy zpět k listům hned, jak obdržíme všechny příchozí zprávy.
+Této části se říká zpětný krok propagace.
+
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}
+
+\matrix[row sep=0.75cm, column sep=1.2cm]
+{
+    \node[latent]   (X1)    {$X_1$};
+    &
+    \factor         {fa}    {$f_a$}{}{};
+    &
+    \node[latent]   (X2)    {$X_2$};
+    &
+    \factor         {fb}    {$f_b$}{}{};
+    &
+    \node[latent]   (X3)    {$X_3$};
+    \\
+    &&
+    \factor         {fc}    {left:$f_c$}{}{};
+    \\
+    &&
+    \node[latent]   (X4)    {$X_4$}{}{};
+    \\
+};
+\edge{fa}{X1}
+\edge{X2}{fa}
+\edge{fc}{X4}
+\edge{X2}{fc}
+\edge{fb}{X2}
+\edge{X3}{fb}
+
+\end{tikzpicture}
+\end{center}
+\caption{Směr posílání zpráv pro strom zakořeněný ve vrcholu $X_3$ ve zpětném kroce.}
+\end{figure}
+
+Po propagaci všech zpráv až k listům už každá proměnná získala zprávy od všech sousedních faktorů a tedy je možné spočítat marginální pravděpodobnost všech proměnných.
