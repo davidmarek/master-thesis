@@ -176,6 +176,8 @@ nosetests.xml
 *.dvi
 *.lof
 *.out
+*.bbl
+*.blg
 prace.ps
 prace.pdf
 dp_uprava.pdf
