@@ -270,7 +270,7 @@ Pokud $k$ je maximum z velikostí domén proměnných, pak velikost faktoru obsa
 Složitost eliminace proměnných je tedy dominována velikostí faktorů, které vznikají při výpočtu a je exponenciální.
 Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP těžký~\cite{arnborg1987complexity}.
 
-\subsection{Aproximativní inference}
+\subsection{Posílání zpráv ve faktor grafu}
 
 Algoritmy exaktní inference naráží při reálném použití na příliš velkou složitost násobení faktorů.
 Hlavním problémem je velikost sdružené pravděpodobnosti, která roste exponenciálně s počtem náhodných proměnných.
@@ -405,7 +405,7 @@ V případě náhodné proměnné je odchozí zpráva
 \end{equation}
 Pro pozorovanou proměnnou je zpráva vždy rovna pozorované hodnotě, bez ohledu na sousední faktory.
 
-\subsubsection{Belief Propagation}
+\subsection{Belief Propagation}
 
 Algoritmus exaktní inference na stromech s pomocí posílání zpráv se nazývá belief propagation~\cite{pearl1988probabilistic}.
 Zpráva z vrcholu faktor grafu může být poslána do jiného vrcholu, až když byly obdrženy zprávy ze všech ostatních vrcholů.
@@ -491,3 +491,118 @@ Této části se říká zpětný krok propagace.
 \end{figure}
 
 Po propagaci všech zpráv až k listům už každá proměnná získala zprávy od všech sousedních faktorů a tedy je možné spočítat marginální pravděpodobnost všech proměnných.
+
+\subsection{Loopy Belief Propagation}
+
+Algoritmus Belief Propagation funguje pro inferenci na stromech.
+Hlavní důvod proč nelze použít Belief Propagation na obecných grafech je, že můžeme narazit na cyklus v grafu, což znamená, že žádný z vrcholů v tomto cyklu nebude nikdy mít dostatek příchozích zpráv, aby mohl nějakou zprávu odeslat.
+
+Algoritmus Loopy Belief Propagation řeší tento problém relaxací podmínky na příchozí zprávy.
+Pro odeslání není třeba znát příchozí zprávy ze všech sousedních vrcholů, kromě toho, kterému je zpráva určena.
+Chybějící zprávy jsou nastaveny na jedničku.
+Loopy Belief Propagation je iterativní algoritmus.
+V grafu nemusí existovat vrchol, který může posílat zprávu k nějakému ze svých sousedů.
+Je tedy třeba vybrat vrchol podle nějaké strategie a z něj poslat zprávy do všech sousedních vrcholů.
+V další iteraci je pak vybrán zase jiný vrchol, který bude posílat zprávy.
+Iterace končí ve chvíli, kdy se už nemění marginální pravděpodobnosti proměnných.
+
+Vzhledem k tomu, že posílané zprávy už neodpovídají skutečným faktorům, je důležitá otázka, zda-li Loopy Belief Propagation vůbec nalezne správné marginální pravděpodobnosti.
+Existují podmínky za kterých algoritmus bude konvergovat~\cite{tatikonda2002loopy}.
+V obecném případě ovšem může algoritmus konvergovat ke špatným pravděpodobnostem, anebo nemusí konvergovat vůbec a pak dochází k oscilacím.
+Pokud algoritmus nekonverguje ke správným pravděpodobnostem, tak není ani možné se k nim přiblížit nebo je odvodit z oscilací~\cite{murphy1999loopy}.
+V praxi ovšem k problémům většinou nedochází a inference konverguje v rozumném čase.
+
+\begin{algorithm}
+\caption{Loopy Belief Propagation}
+\label{alg:lbp}
+\begin{algorithmic}
+\Function{LBP}{$F$, $S$}
+\State{$F$ -- faktor graf}
+\State{$S$ -- strategie}
+\State
+
+\State{$\textsc{Init-Factor-Graph}(F)$}
+\Repeat
+    \For{vrchol $v \in F$ vybraný podle strategie $S$}
+        \For{soused $n$ vrcholu $v$}
+            \If{$v$ je faktor}
+                \State{$\mu_{v \rightarrow n}(n) \gets \textsc{Message-To-Var}(v, n)$}
+            \Else
+                \State{$\mu_{v \rightarrow n}(v) \gets \textsc{Message-To-Factor}(v, n)$}
+            \EndIf
+        \EndFor
+    \EndFor
+\Until{konvergence}
+
+\For{každá proměnná $X$}
+    \State{$P(X) = \prod_{f \in ne(X)} \mu_{f \rightarrow X}(X)$}
+\EndFor
+\EndFunction
+
+\State
+
+\Function{Init-Factor-Graph}{$F$}
+\State{$F$ -- faktor graf}
+\State
+
+\For{každou proměnnou $X \in F$}
+    \For{sousední faktor $f$}
+        \State{$\mu_{X \rightarrow f}(X) \gets 1$}
+        \State{$\mu_{f \rightarrow X}(X) \gets 1$}
+    \EndFor
+\EndFor
+\EndFunction
+
+\State
+
+\Function{Message-To-Var}{$f$, $v$}
+\State{$f$ -- zdrojový faktor}
+\State{$v$ -- cílová proměnná}
+\State
+
+\State{$\vec{X} \gets \text{Dom}(f)$}
+\State{$\mu_{f \rightarrow v}(v) \gets \sum_{\vec{X} \backslash v} f(\vec{X}) \prod_{u \in ne(f) \backslash v} \mu_{u \rightarrow f}(u)$}
+\EndFunction
+
+\State
+
+\Function{Message-To-Factor}{$v$, $f$}
+\State{$v$ -- zdrojová proměnná}
+\State{$f$ -- cílový faktor}
+\State
+
+\State{$\mu_{v \rightarrow f}(v) \gets \prod_{g \in ne(v) \backslash f} \mu_{g \rightarrow v}(v)$ }
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Popis LBP}
+
+Popis Loopy Belief Propagation je v algoritmu~(\ref{alg:lbp}).
+Při inferenci ve faktor grafu je nejprve třeba inicializovat všechny zprávy.
+Posílání zpráv budeme iterovat dokud zprávy nedokonvergují, anebo můžeme nastavit pevný počet iterací.
+Pak vybíráme vrcholy a z každého pošleme zprávu do všech okolních.
+Způsobem výběru vrcholů se budeme zabývat později.
+I kdybychom vybírali vrcholy v náhodném pořadí, tak se můžeme dobrat k výsledku, pouze to bude nejspíš trvat déle.
+
+Poslání zprávy se liší podle toho, zda posíláme z proměnné do faktoru, anebo naopak.
+V obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů, kromě toho, do kterého zprávu posíláme.
+Při posílání zprávy z faktoru zprávy vynásobíme faktorem a marginalizujeme všechny proměnné, kromě té, které zprávu posíláme.
+
+Ve faktor grafu se tedy zprávy šíří pouze přes pravděpodobnostní rozdělení jedné proměnné.
+To může právě vést k oscilacím anebo konvergenci ke špatným hodnotám. 
+Příkladem může být skrytý markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
+Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k rovnoměrnému rozdělení. A tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
+
+\subsection{Strategie výběru vrcholu v LBP algoritmu}
+
+Inference v grafu se může lišit podle typu faktor grafu, ale také podle nároků, které na výsledek máme.
+Nejjednodušší metodou pro výběr je nechat pořadí na uživateli algoritmu.
+Pro stromy máme speciální strategii, která zaručí konvergenci po jednom dopředném a jednom zpětném kroku propagace.
+V dialogových systémech je často používána dynamická bayesovská síť a nás zajímá pravděpodobnost proměnných v poslední vrstvě sítě.
+V takovém případě můžeme některé zprávy zanedbat, protože už příliš neovlivní proměnné, které nás zajímají.
+
+\subsubsection{Inference na stromě}
+
+Pro efektivní inferenci je třeba si pro každý vrchol pamatovat, kolik mu chybí zpráv, aby mohl odeslat zprávu.
+Pro každý vrchol $v$ s $k$ sousedy je na začátku počet chybějících zpráv $k-1$.
