@@ -594,6 +594,18 @@ To může právě vést k oscilacím anebo konvergenci ke špatným hodnotám.
 Příkladem může být skrytý markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
 Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k rovnoměrnému rozdělení. A tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
 
+Při počítání zpráv často musíme pronásobit spoustu zpráv z okolních vrcholů.
+Přitom se zprávy zas tak často nemění.
+Častou optimalizací je pro každý vrchol si pamatovat součin všech jeho zpráv
+\begin{equation}
+    b(v) = \begin{cases}
+        \prod_{u \in ne(v)} \mu_{u \rightarrow v}(v) & \mbox{$v$ je proměnná} \\
+        f_v(\vec{X}) \prod_{u \in ne(v)} \mu_{u \rightarrow v}(u) & \mbox{$v$ je faktor} \\
+    \end{cases}
+\end{equation}
+Pak můžeme při odesílání zprávy z vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělit zprávou $\mu_{u \rightarrow v}$, pro faktory marginalizovat, a zpráva je připravena k odeslání.
+$b(v)$ můžeme aktualizovat po výběru vrcholu $v$ pro posílání zpráv, anebo po každém přijetí zprávy.
+
 \subsection{Strategie výběru vrcholu v LBP algoritmu}
 
 Inference v grafu se může lišit podle typu faktor grafu, ale také podle nároků, které na výsledek máme.
@@ -604,5 +616,205 @@ V takovém případě můžeme některé zprávy zanedbat, protože už příli�
 
 \subsubsection{Inference na stromě}
 
-Pro efektivní inferenci je třeba si pro každý vrchol pamatovat, kolik mu chybí zpráv, aby mohl odeslat zprávu.
+Pro efektivní inferenci je třeba si pro každý vrchol pamatovat, kolik mu chybí zpráv, aby mohl jednu sám odeslat.
 Pro každý vrchol $v$ s $k$ sousedy je na začátku počet chybějících zpráv $k-1$.
+Strom na alespoň dvou vrcholech obsahuje alespoň dva listy.
+Budeme tedy postupně odebírat vrcholy, jejichž počet chybějících zpráv je nulový.
+Rozešleme z nich zprávu do souseda, z kterého ještě zpráva nepřišla a snížíme jeho počet chybějících zpráv.
+Odebráním listu ze stromu vždy dostaneme opět strom.
+Postupně tak zmenšujeme strom, až dostaneme právě jeden vrchol, který získal všechny zprávy.
+
+Po vypočtení marginální pravděpodobnosti ve stromě o jednom vrcholu můžeme zase přídávat vrcholy v obráceném pořadí než v jakém jsme je odebírali.
+Do každého přidaného vrcholu pak můžeme poslat zprávu a spočítat jeho marginální pravděpodobnost.
+
+\subsubsection{Inference v dynamické bayesovské síti}
+
+Dynamická bayesovská síť je nejčastější reprezentace dialogového stavu.
+V jedné vrstvě sítě je popsána jedna obrátka dialogu.
+Vrcholy v jedné vrstvě většinou závisí pouze na vrcholech ve stejné nebo předchozí vrstvě.
+Po každé obrátce nás pro účely dialogového manageru zajímají hlavně pravděpodobnosti proměnných v poslední vrstvě, tedy po aktuální obrátce.
+
+Inferenci provádíme způsobem podobným indukci.
+Pro první vrstvu provedeme inferenci libovolným způsobem, může dokonce platit, že v rámci jedné vrstvy se jedná o strom.
+Po přidání $k$-té vrstvy předpokládáme, že byla provedena inference na předchozích $k-1$ vrstvách a tedy zprávy v této části grafu jsou správné.
+Zprávy ve směru k nové vrstvě jsou stále správné, neznáme ovšem hodnotu zpráv z předposlední vrstvy do nové vrstvy a hodnotu zpráv v nové vrstvě.
+Pošleme tedy zprávy z předposlední vrstvy a provedeme inferenci v nové vrstvě, opět můžeme použít libovolnou heuristiku.
+
+Stále ještě zbývají zprávy z nové vrstvy zpět v síti.
+Čím dál do historie ovšem jdeme, tím menší vliv naše nová pozorování budou mít na vrcholy v dané vrstvě.
+Proto se většinou omezíme jen na posledních několik vrstev (1 až 3).
+
+Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude popsána v kapitole~\ref{sec:impl}.
+
+\section{Propagace s aproximovanými zprávami}
+
+V předchozí sekci byla faktorizována sdružená pravděpodobnost a tak došlo k zjednodušení inference.
+Mezi jednotlivými vrcholy byly stále posílány posílány exaktní zprávy.
+V této sekci se zaměříme na inferenci v modelech, kde není možné spočítat zprávy exaktně a je třeba je aproximovat.
+Příkladem jsou například modely se spojitými náhodnými proměnnými.
+
+Předpokládáme, že máme pravděpodobnostní grafický model, reprezentující sdruženou pravděpodobnost dat a pozorování pomocí součinu faktorů.
+\begin{equation}
+P(\vec{X}, \vec{E}) = \prod_i f_i(\vec{X})
+\end{equation}
+Nás zajímá aposteriorní distribuce $P(\vec{X} \mid \vec{E})$ pro zjištění stavu, stejně tak jako pravděpodobnost pozorování $P(\vec{E})$ pro normalizaci.
+Aposteriorní distribuci vyjádříme ze sdružené.
+\begin{equation}
+P(\vec{X} \mid \vec{E}) = \frac{1}{P(\vec{E})} \prod_i f_i(\vec{X})
+\end{equation}
+a pravděpodobnost pozorování je dána
+\begin{equation}
+P(\vec{E}) = \int \prod_i f_i(\vec{X}) \mathrm{d}\vec{X}
+\end{equation}
+
+Pro aproximativní inferenci ukážeme algoritmus Expectation propagation (EP)~\cite{minka2001expectation}.
+Vytvoříme aproximaci aposteriorní distribuce, která je také dána součinem faktorů
+\begin{equation}
+q(\vec{X}) = \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X}),
+\end{equation}
+kde každý faktor $\tilde{f}_i$ je aproximace odpovídající skutečnému faktoru $f_i$ a faktor $\frac{1}{Z}$ je normalizační konstanta.
+Aproximované faktory musíme zkonstruovat tak, abychom byli schopni provádět inferenci.
+
+Pro měření vzdálenosti aproximovaného rozdělení od skutečného používáme Kullback-Leiblerovu divergenci (KL)~\cite{kullback1997information}.
+KL divergence, také známá jako relativní entropie, mezi dvěma pravděpodobnostními rozděleními $p(x)$ a $q(x)$ je
+\begin{equation}
+KL(p \| q) = \int p(x) \frac{p(x)}{q(x)} \mathrm{d}x.
+\end{equation}
+Divergence splňuje tři vlastnosti:
+\begin{enumerate}
+\item $KL(p \| p) = 0$,
+\item $KL(p \| q) = 0$ právě tehdy když $p = q$,
+\item $KL(p \| q) > 0$ pro všechna $p, q$.
+\end{enumerate}
+
+\subsection{Rodina exponenciálních rozdělení}
+
+Rodina exponenciálních rozdělení~\cite{bernardo2009bayesian} přes $\vec{X}$, dáno parametry $\vec\eta$ je definována jako množina distribucí ve tvaru
+\begin{equation}
+P(\vec{X} \mid \vec\eta) = h(\vec{X}) g(\vec\eta) \exp \big(\vec\eta^T u(\vec{X})\big),
+\label{eq:gj}
+\end{equation}
+kde $\vec{X}$ jsou náhodné proměnné, které mohou být diskrétní nebo spojité, $\vec\eta$ jsou nazývány přirozené parametry rozdělení, $u(\vec{X})$ je funkce $\vec{X}$.
+Funkce $g(\vec\eta)$ může být interpretována jako koeficient, který zajišťuje, že je distribuce normalizována a tedy splňuje
+\begin{equation}
+g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X})\big) \mathrm{d}\vec{X} = 1
+\label{eq:g1}
+\end{equation}
+
+Výhody distribucí z exponenciální rodiny si ukážeme na KL divergenci.
+Nechť počítáme divergenci $KL(p \| q)$, kde $p(\vec{X})$ je zafixovaná distribuce a $q(\vec{X})$ je distribuce z exponenciální rodiny.
+Pokud zapíšeme KL divergenci jako funkci $\vec\eta$, tak dostaneme
+\begin{equation}
+KL(p \| q) = - \log g(\vec\eta) - \vec\eta^T \mathbb{E}_{p(\vec{X})}[u(\vec{X})] + \mathrm{const}.
+\end{equation}
+KL divergenci můžeme minimalizovat tak, že nastavíme první derivici podle $\vec\eta$ rovnou nule, z čehož dostaneme
+\begin{equation}
+-\nabla \log g(\vec\eta) = \mathbb{E}_{p(\vec{X})}[u(\vec{X})].
+\label{eq:kl}
+\end{equation}
+
+Nyní se musíme podívat na $- \nabla \log g(\vec\eta)$.
+Vezmeme derivaci obou stran (\ref{eq:g1}) podle $\vec\eta$.
+Získáme
+\begin{align}
+& \nabla g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X}) \big) \mathrm{d}\vec{X} \\
+& + g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X})\big) u(\vec{X}) \mathrm{d}\vec{X} = 0 \nonumber
+\end{align}
+Přeuspořádáním a znova použitím (\ref{eq:gj}) a (\ref{eq:g1}) získáme
+\begin{equation}
+-\frac{1}{g(\vec\eta)}\nabla g(\vec\eta)
+= g(\vec\eta) \int h(\vec{X}) \exp\big(\vec\eta^T u(\vec{X})\big) u(\vec{X}) \mathrm{d}\vec{X} = \mathbb{E}[u(\vec{X})].
+\end{equation}
+Ve výsledku získáváme 
+\begin{equation}
+- \nabla \log g(\vec\eta) = \mathbb{E}[u(\vec{X})]
+\label {eq:ge}
+\end{equation}
+
+Nový poznatek o funkci $g(\vec\eta)$ z (\ref{eq:ge}) můžeme substituovat do (\ref{eq:kl}) a získáme
+\begin{equation}
+\mathbb{E}_{q(\vec{X})}[u(\vec{X})] = \mathbb{E}_{p(\vec{X})}[u(\vec{X})],
+\label{eq:ee}
+\end{equation}
+z čehož vidíme, že pro minimalizaci KL divergence nám stačí najít parametry rozdělení $q(\vec{X})$ tak, aby mělo stejné očekávané statistiky jako $p(\vec{X})$.
+
+\subsection{Expectation Propagation}
+
+Expectation propagation je algoritmus založený na aproximaci aposteriorní distribuce součinem aproximovaných faktorů
+\begin{equation}
+q(\vec{X}) = \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X}).
+\end{equation}
+Z praktických důvodů uvedených v předchozí sekci jsou aproximované faktory z exponenciální rodiny.
+Díky tomu bude jejich součin také z exponenciální rodiny.
+
+Aproximující distribuci bychom chtěli nalézt pomocí minimalizace KL divergence mezi skutečnou a aproximovanou distribucí.
+\begin{equation}
+KL(p \| q) = KL\bigg(\frac{1}{p(\vec{E})} \prod_i f_i(\vec{X}) \bigg\| \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X} \bigg)
+\end{equation}
+Pro počítání KL divergence ovšem potřebujeme umět počítat se skutečnou pravděpodobností a když už s ní umíme efektivně počítat, tak proč ztrácet čas s aproximací.
+
+Další možností je aproximovat jednotlivé faktory, díky tomu bychom v jednom kroku nalezli aproximace pro všechny faktory a měli bychom hotovo.
+Naším cílem je ale nalézt nejlepší aproximaci celé aposteriorní pravděpodobnosti a to není v tomto případě zaručeno.
+
+Expectation propagation~\cite{bishop2006pattern} sice aproximuje jednotlivé faktory, ale vždy v kontextu všech ostatních.
+Nejprve jsou všechny inicializovány a pak jsou procházeny jeden po druhém a každý je aktualizován.
+Tento přístup je podobný metodám, které byly ukázány v předešlých sekcí.
+Předpokládejme, že chceme aktualizovat faktor $\tilde{f}_j (\vec{X})$.
+Nejprve odstraníme faktor z produktu $\prod_{i \ne j} \tilde{f}_i(\vec{X})$.
+Následně nalezneme novou hodnotu pro faktor $\tilde{f}_j$ tak, aby pravděpodobnostní rozložení
+\begin{equation}
+q^{new}(\vec{X}) \propto \tilde{f}_j(\vec{X}) \prod_{i \ne j} \tilde{f}_i(\vec{X})
+\label{eq:qnew}
+\end{equation}
+bylo co nejblíže 
+\begin{equation}
+f_j(\vec{X})\prod_{i \ne j} \tilde{f}_i(\vec{X}).
+\end{equation}
+Všechny faktory $i \ne j$ necháváme zafixované. 
+Díky tomu zajistíme, že nová aproximace faktoru je nejpřesnější v oblastech, které mají největší aposteriorní pravděpodobnost definovanou zbývajícími faktory.
+
+Odstranění faktoru $\tilde{f}_j(\vec{X})$ z aktuální aproximace aposteriorní distribuce provedeme vytvořením nenormalizované distribuce
+\begin{equation}
+q^{\backslash j}(\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}
+\end{equation}
+Mohli bychom počítat $q^{\backslash j}(\vec{X})$ jako součin všech faktorů kromě $j$, ale v praxi je dělení rychlejší.
+Této nenormalizované distribuci se říká cavity distribuce.
+Její kombinací se skutečným faktorem $f_j(\vec{X})$ dostaneme distribuci
+\begin{equation}
+    \frac{1}{Z_j} f_j(\vec{X}) q^{\backslash j}(\vec{X}),
+\label{eq:aprox}
+\end{equation}
+kde $Z_j$ je normalizační konstanta, dána
+\begin{equation}
+    Z_j = \int f_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X}.
+\label{eq:zj}
+\end{equation}
+
+Nyní můžeme nalézt novou hodnotu pro faktor $\tilde{f}_j$ minimalizací KL divergence
+\begin{equation}
+    KL\bigg(\frac{f_j(\vec{X}) q^{\backslash j}(\vec{X})}{Z_j} \bigg\| q^{new}(\vec{X})\bigg).
+\end{equation}
+To uděláme jednoduše použitím poznatku z (\ref{eq:ee}), který říká, že nám stačí najít parametry $q^{new}$ tak, aby jeho postačující statistiky odpovídali momentům aproximovaného rozdělení (\ref{eq:aprox}).
+
+Z nalezené aproximace $q^{new}$ pak získáme novou hodnotu faktoru $\tilde{f}_j$ z (\ref{eq:qnew}) vydělením zbývajících faktorů
+\begin{equation}
+    \tilde{f}_j(\vec{X}) = K \frac{q^{new}(\vec{X})}{q^{\backslash j}(\vec{X})}
+\label{eq:newfj}
+\end{equation}
+
+Koeficient $K$ získáme tak, že obě strany (\ref{eq:newfj}) vynásobíme $q^{\backslash j}(\vec{X})$ a zintegrováním, čímž získáme
+\begin{equation}
+    K = \int \tilde{f}_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X},
+\end{equation}
+použili jsme navíc toho, že $q^{new}(\vec{X})$ je normalizovaná distribuce.
+Hodnota $K$ pak může být nalezena srovnáním
+\begin{equation}
+    \int \tilde{f}_j (\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X} = \int f_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X}
+\end{equation}
+Z čehož zjistíme, že $K = Z_j$ a tedy může být nalezeno přímo z (\ref{eq:zj}).
+
+V praxi je třeba provést několik iterací, a v každé aktualizovat všechny faktory.
+
+\begin{algorithm}
+\caption{Expectation propagation}
+\end{algorithm}
