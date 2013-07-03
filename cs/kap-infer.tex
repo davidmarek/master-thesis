@@ -817,4 +817,21 @@ V praxi je třeba provést několik iterací, a v každé aktualizovat všechny 
 
 \begin{algorithm}
 \caption{Expectation propagation}
+\label{alg:ep}
+\begin{algorithmic}
+\State Inicializujeme všechny aproximativní faktory $\tilde{f}_i(\vec{X})$ na neinformativní.
+\State Inicializujeme aposteriorní aproximace nastavením: $$q(\vec{X}) \propto \prod_i \tilde{f}_i(\vec{X})$$
+\Repeat
+    \State Vyber faktor $\tilde{f}_j(\vec{X})$, který bude aktualizován.
+    \State Odeber $\tilde{f}_j(\vec{X})$ z aposteriorní distribuce vydělením: $$q^{\backslash j} (\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}$$
+    \State Vypočítej novou aposteriorní distribuci nastavením momentů $q^{new}$ na 
+    \State hodnotu momentů $q^{\backslash j}(\vec{X})f_j(\vec{X})$, včetně vyhodnocení normalizační 
+    \State konstanty $$Z_j = \int q^{\backslash j}(\vec{X}) f_j(\vec{X}) \mathrm{d}\vec{X}$$
+    \State Nastav novou hodnotu faktoru: $$\tilde{f}_j(\vec{X}) = Z_j \frac{q^{new}(\vec{X})}{q^{\backslash j}(\vec{X})}$$
+\Until{konvergence}
+\State Spočítej aproximaci pozorování: $$p(\vec{E}) \simeq \int \prod_i \tilde{f}_i(\vec{X}) \mathrm{d}\vec{X}$$
+\end{algorithmic}
 \end{algorithm}
+
+Stejně jako u LBP zde nemáme žádnou garanci, že bude algoritmus konvergovat.
+Pro aproximace $q(\vec{X})$ v exponenciální rodině, pokud iterace konverguje, pak nalezené řešení je stacionární bod specifické potenciální energie~\cite{minka2001expectation}.

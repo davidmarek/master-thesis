@@ -1,4 +1,181 @@
 % !TEX root = prace.tex
 \chapter{Implementace}
 V předchozích kapitolách byly popsány teoretické základy nutné pro implementaci inference v bayesovských sítích.
-V této kapitole kapitole bude popsána 
+V této kapitole bude popsána vytvořená knihovna pro dialogové systémy.
+Celá knihovna se skládá z několika vrstev, každá z nich stojí na předchozí.
+Nejnižší vrstva implementuje efektivní počítání s faktory.
+Nad ní stojí vrstva reprezentující jednotlivé vrcholy ve faktor grafu.
+Tato vrstva také obsahuje funkcionalitu pro počítání zpráv.
+Nejvyšší vrstva se zaměřuje na samotnou propagaci zpráv.
+
+\section{Diskrétní faktor}
+
+Faktor je základním stavebním kamenem.
+Operace s faktory musí být efektivní, pro výpočet jedné zprávy je potřeba několik násobení faktorů, následně je třeba je marginalizovat atd.
+Faktory je třeba úsporně reprezentovat, každá zpráva, každé pravděpodobnostní rozhraní je samo o sobě faktor.
+
+\subsection{Reprezentace faktorů}
+
+Každý diskrétní faktor má seznam diskrétních proměnných, které tvoří jeho doménu.
+Každá z těchto proměnných může mít jinou kardinalitu, některé proměnné jsou binární, jiné mají mnohem více hodnot.
+Faktor je tedy ve své podstatě multidimenzionální tabulka.
+Pro implementaci je tato tabulka zploštěná do jednoduchého pole.
+
+Knihovna je napsaná v Pythonu a pro matematické operace používá knihovnu Numpy~\cite{oliphant-2006-guide}.
+Pole pak využíváji implementaci z knihovny Numpy, díky které jsou matematické operace napsané v rychlejším jazyku (C, Fortran) než je Python a jsou navíc vektorizované.
+
+Jak je tedy možné reprezentovat multidimenzionální tabulku jednodimenzionálním polem?
+Proměnné jsou seřazené a pro zjednodušení můžeme předpokládat, že hodnoty proměnných jsou čísla z $\{0, \dots, n-1\}$, kde $n$ je kardinalita proměnné.
+Každá hodnota v poli je pak hodnotou faktoru pro nějaké přiřazení hodnot proměnným, např. $(0, 1, 0)$.
+Jednotlivé hodnoty jsou v poli seřazeny lexikograficky.
+Pro každou proměnnou si pamatujeme její kardinalitu a také tzv. krok.
+Krok určuje kolik pro každou proměnnou o kolik hodnot v tabulce se musíme posunout, abychom se dostali na další hodnotu této proměnné se zachováním hodnot všech následujících.
+
+Příklad faktoru je v tabulce \ref{tab:stride}.
+Doménu faktoru tvoří dvě binární proměnné $X$ a $Y$, jejich kardinalita je tedy 2.
+Pro proměnnou $X$ je krok 2, pro proměnnou $Y$ je krok 1.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|r|}
+\hline
+$X$ & $Y$ & Hodnota \\
+\hline
+\hline
+0 & 0 & 0.2 \\
+\hline
+0 & 1 & 0.3 \\
+\hline
+1 & 0 & 0.1 \\
+\hline
+1 & 1 & 0.4 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Příklad faktoru s dvěma proměnnými $X$ a $Y$.}
+\label{tab:stride}
+\end{table}
+
+\subsection{Operace s faktory}
+
+Implementace diskrétního faktoru obsahuje všechny základní matematické operace, ale také speciální operace, které jsou využity specificky pro pravděpodobnostní rozložení, např. marginalizace anebo normalizace.
+Operace jako násobení a marginalizace jsou používány při každém výpočtu zprávy a tedy je třeba je napsat tak, aby fungovaly co nejefektivněji.
+
+Operace s faktory musí fungovat ve třech různých situacích, příklady uvedeme na násobení.
+\begin{enumerate}
+    \item Násobení faktoru s faktorem, oba se stejnou doménou,
+    \item násobení dvou faktorů, které sdíli jen některé proměnné,
+    \item násobení faktoru konstantou.
+\end{enumerate}
+
+Násobení faktoru konstantou je triviální, každá položka faktoru bude vynásobena konstantou.
+Tato operace může být jednoduše vektorizována.
+
+Při násobení dvou faktorů se stejnou doménou je třeba pronásobit prvky se stejným přiřazením proměnných.
+Což znamená pronásobit hodnoty na stejných místech v poli.
+Opět se tedy jedná o operaci, která je jednoduše vektorizovatelná.
+
+\subsubsection{Operace s různými doménami}
+
+Poslední možnost je, že se snažíme provést matematickou operaci s dvěma faktory, které ovšem nemají stejnou doménu.
+Pak musí výsledkem být nový faktor, jehož doména je sjednocením domén vstupních faktorů.
+Jednotlivé prvky nového faktoru jsou pak výsledkem aplikace operace na prvky ze vstupních faktorů, které sdílí ohodnocení společných proměnných. 
+Příklad s násobením:
+\begin{equation*}
+\begin{array}{|c|c|r|}
+    \hline
+    \multicolumn{3}{|c|}{f_1} \\
+    \hline
+    X & Y & Hodnota \\
+    \hline
+    \hline
+    0 & 0 & 0.2 \\
+    \hline
+    0 & 1 & 0.3 \\
+    \hline
+    1 & 0 & 0.1 \\
+    \hline
+    1 & 1 & 0.4 \\
+    \hline
+\end{array}
+\times
+\begin{array}{|c|c|r|}
+    \hline
+    \multicolumn{3}{|c|}{f_2} \\
+    \hline
+    Y & Z & Hodnota \\
+    \hline
+    \hline
+    0 & 0 & 0.2 \\
+    \hline
+    0 & 1 & 0.2 \\
+    \hline
+    1 & 0 & 0.2 \\
+    \hline
+    1 & 1 & 0.4 \\
+    \hline
+\end{array}
+=
+\begin{array}{|c|c|c|r|}
+    \hline
+    \multicolumn{4}{|c|}{f_r} \\
+    \hline
+    X & Y & Z & Hodnota \\
+    \hline
+    \hline
+    0 & 0 & 0 & 0.04 \\
+    \hline
+    0 & 0 & 1 & 0.04 \\
+    \hline
+    0 & 1 & 0 & 0.06 \\
+    \hline
+    0 & 1 & 1 & 0.12 \\
+    \hline
+    1 & 0 & 0 & 0.02 \\
+    \hline
+    1 & 0 & 1 & 0.02 \\
+    \hline
+    1 & 1 & 0 & 0.08 \\
+    \hline
+    1 & 1 & 1 & 0.16\\
+    \hline
+\end{array}
+\end{equation*}
+
+Výsledek násobení faktorů $f_1$ a $f_2$ je ve faktoru $f_r$.
+Faktory sdílí pouze proměnnou $Y$, takže je potřeba pronásobit všechny přiřazení z $f_1$ se všemi přiřazeními z $f_2$, které mají stejnou hodnotu $Y$.
+Příkladem je například přiřazení $(0, 1)$ s hodnotou $0.3$ vynásobené s hodnotou $(1, 1)$ s hodnotou $0.4$.
+Výsledek je uložen ve faktoru $f_r$ s přiřazením $(0, 1, 1)$ a správnou hodnotou $0.3 \cdot 0.4 = 0.12$.
+
+\subsection{Algoritmus pro operace s různými doménami}
+
+Předvedli jsme možné případy operací s faktory a ukázali, že dva ze tří jsou triviální na implementaci.
+Nyní představíme efektivní implementaci třetí možnosti, tedy aplikace operace na dva faktory s různými doménami (algoritmus \ref{alg:apop}).
+
+Ze vstupních faktorů vytvoříme prázdný faktor pro výsledek.
+Jeho doména je sjednocením domén vstupních faktorů.
+Kardinalita proměnných zůstává stejná.
+Krok jednotlivých proměnných je třeba přepočítat.
+Spočítáme jej jako součin kardinalit proměnných, které následují po té aktuální.
+Velikost pole pro všechny hodnoty je rovna součin všech kardinalit.
+
+Následně přistoupíme k vyplňování tabulky.
+Pro oba vstupní faktory si budeme udržovat index na pozici s ohodnocením proměnných, které odpovídá aktuálně vyplňovanému ohodnocení ve výsledném faktoru.
+Po provedení operace tyto indexy aktualizujeme.
+
+Pokud reprezentujeme ohodnocení proměnných jako číslo (kde každá cifra může mít jinou kardinalitu), pak se přesuneme k dalšímu ohodnocení v řadě tak, že zvýšíme nejméně signifikantní cifru (proměnnou) o jedna.
+Může se stát, že jsme dosáhli kardinality dané proměnné a pak se musíme vrátit na ohodnocení 0 a aplikovat přesun na vyšší cifru.
+Opakovanou aplikací přesunu můžeme upravit všechny proměnné, příkladem je přechod z ohodnocení $(0, 1, 1)$ na $(1, 0, 0)$, všechny proměnné binární.
+Při každé úpravě proměnné také aktualizujeme indexy ve vstupních faktorech.
+
+Pokud se přesunujeme na další hodnotu proměnné, tak stačí k indexu pro faktor přičíst krok upravené proměnné.
+Pokud je třeba se vrátit na ohodnocení 0, pak od indexu pro vstupní faktor odečteme $(c_v - 1) \cdot s_v$, kde $c_v$ je kardinalita proměnné $v$ a $s_v$ je krok proměnné $v$.
+
+\begin{algorithm}
+\caption{Aplikace operace na faktory s různými doménami}
+\label{alg:apop}
+\begin{algorithmic}
+\Function{Apply-Op}{$f_1$, $f_2$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
