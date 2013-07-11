@@ -606,44 +606,6 @@ Přitom se zprávy zas tak často nemění.
 Pak můžeme při odesílání zprávy z vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělit zprávou $\mu_{u \rightarrow v}$, pro faktory marginalizovat, a zpráva je připravena k odeslání.
 $b(v)$ můžeme aktualizovat po výběru vrcholu $v$ pro posílání zpráv, anebo po každém přijetí zprávy.
 
-\subsection{Strategie výběru vrcholu v LBP algoritmu}
-
-Inference v grafu se může lišit podle typu faktor grafu, ale také podle nároků, které na výsledek máme.
-Nejjednodušší metodou pro výběr je nechat pořadí na uživateli algoritmu.
-Pro stromy máme speciální strategii, která zaručí konvergenci po jednom dopředném a jednom zpětném kroku propagace.
-V dialogových systémech je často používána dynamická bayesovská síť a nás zajímá pravděpodobnost proměnných v poslední vrstvě sítě.
-V takovém případě můžeme některé zprávy zanedbat, protože už příliš neovlivní proměnné, které nás zajímají.
-
-\subsubsection{Inference na stromě}
-
-Pro efektivní inferenci je třeba si pro každý vrchol pamatovat, kolik mu chybí zpráv, aby mohl jednu sám odeslat.
-Pro každý vrchol $v$ s $k$ sousedy je na začátku počet chybějících zpráv $k-1$.
-Strom na alespoň dvou vrcholech obsahuje alespoň dva listy.
-Budeme tedy postupně odebírat vrcholy, jejichž počet chybějících zpráv je nulový.
-Rozešleme z nich zprávu do souseda, z kterého ještě zpráva nepřišla a snížíme jeho počet chybějících zpráv.
-Odebráním listu ze stromu vždy dostaneme opět strom.
-Postupně tak zmenšujeme strom, až dostaneme právě jeden vrchol, který získal všechny zprávy.
-
-Po vypočtení marginální pravděpodobnosti ve stromě o jednom vrcholu můžeme zase přídávat vrcholy v obráceném pořadí než v jakém jsme je odebírali.
-Do každého přidaného vrcholu pak můžeme poslat zprávu a spočítat jeho marginální pravděpodobnost.
-
-\subsubsection{Inference v dynamické bayesovské síti}
-
-Dynamická bayesovská síť je nejčastější reprezentace dialogového stavu.
-V jedné vrstvě sítě je popsána jedna obrátka dialogu.
-Vrcholy v jedné vrstvě většinou závisí pouze na vrcholech ve stejné nebo předchozí vrstvě.
-Po každé obrátce nás pro účely dialogového manageru zajímají hlavně pravděpodobnosti proměnných v poslední vrstvě, tedy po aktuální obrátce.
-
-Inferenci provádíme způsobem podobným indukci.
-Pro první vrstvu provedeme inferenci libovolným způsobem, může dokonce platit, že v rámci jedné vrstvy se jedná o strom.
-Po přidání $k$-té vrstvy předpokládáme, že byla provedena inference na předchozích $k-1$ vrstvách a tedy zprávy v této části grafu jsou správné.
-Zprávy ve směru k nové vrstvě jsou stále správné, neznáme ovšem hodnotu zpráv z předposlední vrstvy do nové vrstvy a hodnotu zpráv v nové vrstvě.
-Pošleme tedy zprávy z předposlední vrstvy a provedeme inferenci v nové vrstvě, opět můžeme použít libovolnou heuristiku.
-
-Stále ještě zbývají zprávy z nové vrstvy zpět v síti.
-Čím dál do historie ovšem jdeme, tím menší vliv naše nová pozorování budou mít na vrcholy v dané vrstvě.
-Proto se většinou omezíme jen na posledních několik vrstev (1 až 3).
-
 Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude popsána v kapitole~\ref{sec:impl}.
 
 \section{Propagace s aproximovanými zprávami}

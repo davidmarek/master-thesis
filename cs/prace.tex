@@ -30,11 +30,13 @@
 % Pokud nikoliv:
 \usepackage[czech]{babel}
 \usepackage[T1]{fontenc}
+\usepackage[scaled]{beramono}
 
 %% Použité kódování znaků: obvykle latin2, cp1250 nebo utf8:
 \usepackage[utf8]{inputenc}
 
 %% Ostatní balíčky
+\usepackage{listings}
 \usepackage{tikz}
 \usepackage{todonotes}
 \usepackage{graphicx}
@@ -95,6 +97,17 @@
 
 
 \begin{document}
+
+\lstset{
+  language=Python,
+  showstringspaces=false,
+  formfeed=\newpage,
+  tabsize=4,
+  commentstyle=\itshape,
+  basicstyle=\footnotesize\ttfamily,
+  morekeywords={lambda,>>>,...},
+  frame=single,
+}
 
 % Trochu volnější nastavení dělení slov, než je default.
 \lefthyphenmin=2
