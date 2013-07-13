@@ -5,11 +5,12 @@ all: prace.pdf
 # prace.pdf: prace.dvi
 #	dvipdfm -o $@ -p a4 -r 600 $<
 
-prace.pdf: prace.tex $(wildcard *.tex)
-	pdflatex $<
+prace.pdf: prace.tex $(wildcard *.tex) citace.bib
+	cslatex $<
 	bibtex prace
-	pdflatex $<
-	pdflatex $<
+	cslatex $<
+	cslatex $<
+	dvipdf prace.dvi $@
 #	ps2pdf $< $@
 
 prace.ps: prace.dvi

@@ -386,348 +386,804 @@ Představíme příklady vytvoření a používání jednotlivých komponent, od
 \subsubsection{Faktor}
 
 Třída \texttt{Faktor} je popsána v sekci \ref{sec:repfak}.
-Vytvoření faktoru je ukázáno v kódu~\ref{lst:crfac}.
-Vytvořený faktor obsahuje dvě proměnné, první je požadovaný typ jídla, druhá je hypotéza o požadovaném jídle.
-Tento faktor může pocházet z generativního modelu, pravděpodobnost pozorování závisí na skutečné hodnotě.
-Také je větší pravděpodobnost, že budeme pozorovat typ jídla, který uživatel požaduje.
-Pro indické jídlo je větší pravděpodobnost, že budeme pozorovat opravdu to, co uživatel řekl, v reálném dialogovém systému na tyto pravděpodobnosti může mít vliv například jazykový model, anebo podobnost slov.
+Vytvoření faktoru je ukázáno v příkladu~\ref{lst:crfac}.
+Vytvořený faktor obsahuje dvě proměnné, první je požadovaný typ jídla, druhá je pozorovaný požadovaný typ.
+Faktor může pocházet z generativního modelu, kde pravděpodobnost pozorování závisí na skutečné hodnotě.
+Zde vidíme, že je větší pravděpodobnost pozorování typu jídla, které uživatel opravdu chce.
+Pro indické jídlo je zde pravděpodobnost větší než pro čínské, v reálném dialogovém systému na tyto pravděpodobnosti může mít vliv například jazykový model, anebo podobnost slov.
 
-\begin{lstlisting}[
-	caption={Vytvoření faktoru},
-	label={lst:crfac}
+\begin{example}
+\begin{Verbatim}[
+    commandchars=\\\{\},
 ]
-from factor import Factor
 
-factor = Factor(
-    ['food', 'food_obs'],
-    {
-        'food': ['chinese', 'indian'],
-        'food_obs': ['obs_chinese', 'obs_indian'],
-    },
-    {
-		('indian', 'obs_indian'): 0.9,
-		('indian', 'obs_chinese'): 0.1,
-		('chinese', 'obs_indian'): 0.2,
-		('chinese', 'obs_chinese'): 0.8,
-    })
-\end{lstlisting}
+\PY{k+kn}{from} \PY{n+nn}{factor} \PY{k+kn}{import} \PY{n}{Factor}
 
-Vytvořený faktor můžeme zobrazit \ref{lst:facprt}, stačí použít příkaz \texttt{print}, popřípadě je možné použít metody \texttt{pretty\_print}, která vrátí řetězec s formátovaným výpisem faktoru.
+\PY{n}{factor} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{obs\PYZus{}chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{obs\PYZus{}indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+		\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{obs\PYZus{}indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+		\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{obs\PYZus{}chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+		\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{obs\PYZus{}indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+		\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{obs\PYZus{}chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{)}
+\end{Verbatim}
+\caption{Vytvoření faktoru}
+\label{lst:crfac}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Vytvoření faktoru},
+%	label={lst:crfac}
+%]
+%from factor import Factor
+%
+%factor = Factor(
+%    ['food', 'food_obs'],
+%    {
+%        'food': ['chinese', 'indian'],
+%        'food_obs': ['obs_chinese', 'obs_indian'],
+%    },
+%    {
+%		('indian', 'obs_indian'): 0.9,
+%		('indian', 'obs_chinese'): 0.1,
+%		('chinese', 'obs_indian'): 0.2,
+%		('chinese', 'obs_chinese'): 0.8,
+%    })
+%\end{lstlisting}
+
+Vytvořený faktor můžeme zobrazit (příklad~\ref{lst:facprt}), stačí použít příkaz \texttt{print}, popřípadě je možné použít metodu \texttt{pretty\_print}, která vrátí řetězec s formátovaným výpisem faktoru.
 Nabízí možnost nastavení šířky tabulky a počtu desetinných míst.
 
-\begin{lstlisting}[
-	caption={Zobrazení faktoru},
-	label={lst:facprt},
-	float=h,
-]
->>> print factor
---------------------------------------------------------------------------
-           food                    food_obs                   Value
---------------------------------------------------------------------------
-         chinese                 obs_chinese               0.8000000119
-         chinese                  obs_indian               0.1999999881
-          indian                 obs_chinese              0.09999999404
-          indian                  obs_indian               0.8999999762
---------------------------------------------------------------------------
->>> print factor.pretty_print(width=40, precision=2)
-----------------------------------------
-    food       food_obs       Value
-----------------------------------------
-   chinese    obs_chinese      0.8
-   chinese    obs_indian       0.2
-   indian     obs_chinese      0.1
-   indian     obs_indian       0.9
-----------------------------------------
-\end{lstlisting}
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
 
-Dále obsahuje faktor implementaci matematických operací, je možné je používat se standardními operátory. 
-Příklady budou ukázány na násobení~\ref{lst:facmul}.
-Vytvoříme další faktor, který reprezentuje přechodovou pravděpodobnost.
-V grafickém modelu bychom je zřejmě spolu nenásobili, zde tak provedeme z ilustračních důvodů.
-Operace fungují i s konstantami~\ref{lst:facmulk}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{factor}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         food                    food\PYZus{}obs                 Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{       chinese                 obs\PYZus{}chinese             0.8000000119}
+\PY{g+go}{       chinese                  obs\PYZus{}indian             0.1999999881}
+\PY{g+go}{        indian                 obs\PYZus{}chinese            0.09999999404}
+\PY{g+go}{        indian                  obs\PYZus{}indian             0.8999999762}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{factor}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{n}{width}\PY{o}{=}\PY{l+m+mi}{40}\PY{p}{,} \PY{n}{precision}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    food       food\PYZus{}obs       Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{   chinese    obs\PYZus{}chinese      0.8}
+\PY{g+go}{   chinese    obs\PYZus{}indian       0.2}
+\PY{g+go}{   indian     obs\PYZus{}chinese      0.1}
+\PY{g+go}{   indian     obs\PYZus{}indian       0.9}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}              }
+\end{Verbatim}
+\caption{Zobrazení faktorů}
+\label{lst:facprt}
+\end{example}
 
-\begin{lstlisting}[
-	caption={Násobení faktorů},
-	label={lst:facmul}
-]
->>> factor_trans = Factor(
-    ['food', 'food_next'],
-    {
-        'food': ['chinese', 'indian'],
-        'food_next': ['chinese', 'indian'],
-    },
-    {
-		('indian', 'indian'): 0.9,
-		('indian', 'chinese'): 0.1,
-		('chinese', 'indian'): 0.1,
-		('chinese', 'chinese'): 0.9,
-    })
->>> result = factor * factor_trans
->>> print result.pretty_print(50, 2)
---------------------------------------------------
-    food     food_next    food_obs     Value
---------------------------------------------------
-  chinese     chinese   obs_chinese     0.72
-  chinese     chinese    obs_indian     0.18
-  chinese      indian   obs_chinese     0.08
-  chinese      indian    obs_indian     0.02
-   indian     chinese   obs_chinese     0.01
-   indian     chinese    obs_indian     0.09
-   indian      indian   obs_chinese     0.09
-   indian      indian    obs_indian     0.81
---------------------------------------------------
-\end{lstlisting}
 
-\begin{lstlisting}[
-	caption={Násobení faktorů konstantou},
-	label={lst:facmulk},
-	float=h,
-]
->>> result = factor * 0.5
->>> print result.pretty_print(50, 2)
---------------------------------------------------
-      food          food_obs         Value
---------------------------------------------------
-    chinese       obs_chinese         0.4
-    chinese        obs_indian         0.1
-     indian       obs_chinese         0.05
-     indian        obs_indian         0.45
---------------------------------------------------
-\end{lstlisting}
+%\begin{lstlisting}[
+%	caption={Zobrazení faktoru},
+%	label={lst:facprt},
+%	float=h,
+%]
+%>>> print factor
+%--------------------------------------------------------------------------
+%           food                    food_obs                   Value
+%--------------------------------------------------------------------------
+%         chinese                 obs_chinese               0.8000000119
+%         chinese                  obs_indian               0.1999999881
+%          indian                 obs_chinese              0.09999999404
+%          indian                  obs_indian               0.8999999762
+%--------------------------------------------------------------------------
+%>>> print factor.pretty_print(width=40, precision=2)
+%----------------------------------------
+%    food       food_obs       Value
+%----------------------------------------
+%   chinese    obs_chinese      0.8
+%   chinese    obs_indian       0.2
+%   indian     obs_chinese      0.1
+%   indian     obs_indian       0.9
+%----------------------------------------
+%\end{lstlisting}
 
-Další důležitou metodou, kterou faktory nabízí je marginalizace proměnných.
-Předvedeme si ji na faktoru pro pozorování~\ref{lst:facmar}, pokud bychom chtěli získat pouze pravděpodobnosti pozorování.
-\begin{lstlisting}[
-	caption={Marginalizace faktoru},
-	label={lst:facmar},
-	float=h,
-]
->>> marginalized = factor.marginalize(['food_obs'])
->>> print marginalized.pretty_print(50, 2)
---------------------------------------------------
-        food_obs                   Value
---------------------------------------------------
-       obs_chinese                  0.9
-       obs_indian                   1.1
---------------------------------------------------
-\end{lstlisting}
+Dále obsahuje faktor implementaci matematických operací, je možné používat standardní operátory.
+V příkladu~\ref{lst:facmul} je ukázáno násobení dvou faktorů, již vytvořený faktor s faktorem, který reprezentuje přechodovou pravděpodobnost.
+Operace fungují i s konstantami (příklad~\ref{lst:facmulk}).
+
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{factor\PYZus{}trans} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}
+\PY{g+gp}{... }   \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}next}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZob{}}
+\PY{g+gp}{... }       \PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }       \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}next}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZob{}}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{result} \PY{o}{=} \PY{n}{factor} \PY{o}{*} \PY{n}{factor\PYZus{}trans}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{result}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    food     food\PYZus{}next    food\PYZus{}obs     Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{  chinese     chinese   obs\PYZus{}chinese     0.72}
+\PY{g+go}{  chinese     chinese    obs\PYZus{}indian     0.18}
+\PY{g+go}{  chinese      indian   obs\PYZus{}chinese     0.08}
+\PY{g+go}{  chinese      indian    obs\PYZus{}indian     0.02}
+\PY{g+go}{   indian     chinese   obs\PYZus{}chinese     0.01}
+\PY{g+go}{   indian     chinese    obs\PYZus{}indian     0.09}
+\PY{g+go}{   indian      indian   obs\PYZus{}chinese     0.09}
+\PY{g+go}{   indian      indian    obs\PYZus{}indian     0.81}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+
+\end{Verbatim}
+\caption{Násobení faktorů}
+\label{lst:facmul}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Násobení faktorů},
+%	label={lst:facmul}
+%]
+%>>> factor_trans = Factor(
+%...    ['food', 'food_next'],
+%...    {
+%...        'food': ['chinese', 'indian'],
+%...        'food_next': ['chinese', 'indian'],
+%...    },
+%...    {
+%...        ('indian', 'indian'): 0.9,
+%...        ('indian', 'chinese'): 0.1,
+%...        ('chinese', 'indian'): 0.1,
+%...        ('chinese', 'chinese'): 0.9,
+%...    })
+%>>> result = factor * factor_trans
+%>>> print result.pretty_print(50, 2)
+%--------------------------------------------------
+%    food     food_next    food_obs     Value
+%--------------------------------------------------
+%  chinese     chinese   obs_chinese     0.72
+%  chinese     chinese    obs_indian     0.18
+%  chinese      indian   obs_chinese     0.08
+%  chinese      indian    obs_indian     0.02
+%   indian     chinese   obs_chinese     0.01
+%   indian     chinese    obs_indian     0.09
+%   indian      indian   obs_chinese     0.09
+%   indian      indian    obs_indian     0.81
+%--------------------------------------------------
+%\end{lstlisting}
+
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{result} \PY{o}{=} \PY{n}{factor} \PY{o}{*} \PY{l+m+mf}{0.5}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{result}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{      food          food\PYZus{}obs         Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    chinese       obs\PYZus{}chinese         0.4}
+\PY{g+go}{    chinese        obs\PYZus{}indian         0.1}
+\PY{g+go}{     indian       obs\PYZus{}chinese         0.05}
+\PY{g+go}{     indian        obs\PYZus{}indian         0.45}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\caption{Násobení faktorů konstantou}
+\label{lst:facmulk}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Násobení faktorů konstantou},
+%	label={lst:facmulk},
+%	float=h,
+%]
+%>>> result = factor * 0.5
+%>>> print result.pretty_print(50, 2)
+%--------------------------------------------------
+%      food          food_obs         Value
+%--------------------------------------------------
+%    chinese       obs_chinese         0.4
+%    chinese        obs_indian         0.1
+%     indian       obs_chinese         0.05
+%     indian        obs_indian         0.45
+%--------------------------------------------------
+%\end{lstlisting}
+
+Další důležitou metodou, kterou faktory nabízí, je marginalizace proměnných.
+Předvedeme si ji na faktoru pro pozorování (příklad~\ref{lst:facmar}), z kterého chceme získat pouze marginální pravděpodobnosti pozorování.
+
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{marginalized} \PY{o}{=} \PY{n}{factor}\PY{o}{.}\PY{n}{marginalize}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{marginalized}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{        food\PYZus{}obs                   Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{       obs\PYZus{}chinese                  0.9}
+\PY{g+go}{       obs\PYZus{}indian                   1.1}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\caption{Marginalizace faktoru}
+\label{lst:facmar}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Marginalizace faktoru},
+%	label={lst:facmar},
+%	float=h,
+%]
+%>>> marginalized = factor.marginalize(['food_obs'])
+%>>> print marginalized.pretty_print(50, 2)
+%--------------------------------------------------
+%        food_obs                   Value
+%--------------------------------------------------
+%       obs_chinese                  0.9
+%       obs_indian                   1.1
+%--------------------------------------------------
+%\end{lstlisting}
 
 Pokud je faktor použit pro reprezentaci pravděpodobnostního rozdělení, pak je možné, že při některých úkonech bude výsledkem nenormalizované pravděpodobnostní rozdělení.
-Faktor nabízí metodu pro normalizaci hodnot, která navíc bere v úvahu i podmíněné pravděpodobnosti~\ref{lst:facnor}
+Faktor nabízí metodu pro normalizaci hodnot, která navíc bere v úvahu i podmíněné pravděpodobnosti (příklad~\ref{lst:facnor}).
 
-\begin{lstlisting}[
-	caption={Normalizace faktoru},
-	label={lst:facnor}
-]
->>> uniform = Factor(
-    ['food', 'food_next'],
-    {
-        'food': ['chinese', 'indian'],
-        'food_next': ['chinese', 'indian'],
-    },
-    {
-		('indian', 'indian'): 1,
-		('indian', 'chinese'): 1,
-		('chinese', 'indian'): 2,
-		('chinese', 'chinese'): 2,
-    })
->>> uniform.normalize(parents=['food'])
->>> print uniform.pretty_print(50, 2)
---------------------------------------------------
-      food         food_next         Value
---------------------------------------------------
-    chinese         chinese           0.5
-    chinese          indian           0.5
-     indian         chinese           0.5
-     indian          indian           0.5
---------------------------------------------------
-\end{lstlisting}
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
 
-Nakonec faktor nabízí možnost zjistit, které ohodnocení jsou nejpravděpodobnější~\ref{lst:facmop}.
-\begin{lstlisting}[
-	caption={Nejpravděpodobnější hodnoty},
-	label={lst:facmop}
-]
->>> food = Factor(
-    ['food'],
-    {
-        'food': ['chinese', 'indian', 'french'],
-    },
-    {
-		('chinese',): 0.3,
-		('indian',): 0.6,
-		('french',): 0.1,
-    })
->>> food.most_probable(n=2)
-[('indian', 0.6), ('chinese', 0.3)]
-\end{lstlisting}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{uniform} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}
+\PY{g+gp}{... }   \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}next}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZob{}}
+\PY{g+gp}{... }       \PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }       \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}next}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZob{}}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{,}
+\PY{g+go}{...	       (\PYZsq{}indian\PYZsq{}, \PYZsq{}chinese\PYZsq{}): 1,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{uniform}\PY{o}{.}\PY{n}{normalize}\PY{p}{(}\PY{n}{parents}\PY{o}{=}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{uniform}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{      food         food\PYZus{}next         Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    chinese         chinese           0.5}
+\PY{g+go}{    chinese          indian           0.5}
+\PY{g+go}{     indian         chinese           0.5}
+\PY{g+go}{     indian          indian           0.5}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\caption{Normalizace faktoru}
+\label{lst:facnor}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Normalizace faktoru},
+%	label={lst:facnor}
+%]
+%>>> uniform = Factor(
+%...    ['food', 'food_next'],
+%...    {
+%...        'food': ['chinese', 'indian'],
+%...        'food_next': ['chinese', 'indian'],
+%...    },
+%...    {
+%...        ('indian', 'indian'): 1,
+%...	       ('indian', 'chinese'): 1,
+%...        ('chinese', 'indian'): 2,
+%...        ('chinese', 'chinese'): 2,
+%...    })
+%>>> uniform.normalize(parents=['food'])
+%>>> print uniform.pretty_print(50, 2)
+%--------------------------------------------------
+%      food         food_next         Value
+%--------------------------------------------------
+%    chinese         chinese           0.5
+%    chinese          indian           0.5
+%     indian         chinese           0.5
+%     indian          indian           0.5
+%--------------------------------------------------
+%\end{lstlisting}
+
+Nakonec faktor nabízí možnost zjistit, které ohodnocení jsou nejpravděpodobnější (příklad~\ref{lst:facmop}).
+
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{food} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}
+\PY{g+gp}{... }   \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZob{}}
+\PY{g+gp}{... }       \PY{l+s}{\PYZsq{}}\PY{l+s}{food}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{french}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZob{}}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.6}\PY{p}{,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{french}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+\PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{food}\PY{o}{.}\PY{n}{most\PYZus{}probable}\PY{p}{(}\PY{n}{n}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{[(\PYZsq{}indian\PYZsq{}, 0.6), (\PYZsq{}chinese\PYZsq{}, 0.3)]}
+\end{Verbatim}
+\caption{Nejpravděpodobnější hodnoty}
+\label{lst:facmop}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Nejpravděpodobnější hodnoty},
+%	label={lst:facmop}
+%]
+%>>> food = Factor(
+%...    ['food'],
+%...    {
+%...        'food': ['chinese', 'indian', 'french'],
+%...    },
+%...    {
+%...        ('chinese',): 0.3,
+%...        ('indian',): 0.6,
+%...        ('french',): 0.1,
+%...    })
+%>>> food.most_probable(n=2)
+%[('indian', 0.6), ('chinese', 0.3)]
+%\end{lstlisting}
 
 \subsubsection{Vrcholy}
 
 V této sekci ukážeme vytváření jednoduchého grafického modelu a následně poslání zpráv z jednoho vrcholu do druhého.
-V zdrojovém kódu~\ref{lst:nodex} vytvoříme jednoduchý skrytý markovský model pro výběr jídla.
+V příkladu~\ref{lst:nodex} vytvoříme jednoduchý skrytý markovský model pro výběr typu jídla.
 Model bude mít 2 obrátky, v každé bude jedna skrytá a jedna pozorovaná proměnná.
 Tento model bude generativní, bude obsahovat faktor pro generování pozorování na základě skutečné hodnoty a také faktor pro přechodovou pravděpodobnost z jedné obrátky do druhé.
 
-\begin{lstlisting}[
-	caption={Jednoduchý generativní model},
-	label={lst:nodex},
-	float=h
-]
-from alex.ml.bn.node import DiscreteVariableNode, DiscreteFactorNode
-from alex.ml.bn.factor import Factor
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}, fontsize=\relsize{-1}]
 
-hid_1 = DiscreteVariableNode('food_1', ['chinese', 'indian'])
-obs_1 = DiscreteVariableNode('food_obs_1', ['chinese', 'indian'])
-obs_factor_1 = DiscreteFactorNode('food_obs_factor_1', Factor(
-    ['food_1', 'food_obs_1'],
-    {
-        'food_1': ['chinese', 'indian'],
-        'food_obs_1': ['chinese', 'indian'],
-    },
-    {
-        ('chinese', 'chinese'): 0.9,
-        ('chinese', 'indian'): 0.1,
-        ('indian', 'chinese'): 0.1,
-        ('indian', 'indian'): 0.9,
-    }))
+\PY{k+kn}{from} \PY{n+nn}{alex.ml.bn.node} \PY{k+kn}{import} \PY{n}{DiscreteVariableNode}\PY{p}{,} \PY{n}{DiscreteFactorNode}
+\PY{k+kn}{from} \PY{n+nn}{alex.ml.bn.factor} \PY{k+kn}{import} \PY{n}{Factor}
 
-hid_2 = DiscreteVariableNode('food_2', ['chinese', 'indian'])
-obs_2 = DiscreteVariableNode('food_obs_2', ['chinese', 'indian'])
-obs_factor_2 = DiscreteFactorNode('food_obs_factor_2', Factor(
-    ['food_2', 'food_obs_2'],
-    {
-        'food_2': ['chinese', 'indian'],
-        'food_obs_2': ['chinese', 'indian'],
-    },
-    {
-        ('chinese', 'chinese'): 0.9,
-        ('chinese', 'indian'): 0.1,
-        ('indian', 'chinese'): 0.1,
-        ('indian', 'indian'): 0.9,
-    }))
+\PY{n}{hid\PYZus{}1} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}1} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}1} \PY{o}{=} \PY{n}{DiscreteFactorNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}factor\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{)}\PY{p}{)}
 
-trans_factor = DiscreteFactorNode('food_trans_factor', Factor(
-    ['food_1', 'food_2'],
-    {
-        'food_1': ['chinese', 'indian'],
-        'food_2': ['chinese', 'indian'],
-    },
-    {
-        ('chinese', 'chinese'): 0.99,
-        ('chinese', 'indian'): 0.01,
-        ('indian', 'chinese'): 0.01,
-        ('indian', 'indian'): 0.99,
-    }))
+\PY{n}{hid\PYZus{}2} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}2} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}2} \PY{o}{=} \PY{n}{DiscreteFactorNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}factor\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{)}\PY{p}{)}
 
-obs_factor_1.connect(hid_1, parent=True)
-obs_factor_1.connect(obs_1, parent=False)
+\PY{n}{trans\PYZus{}factor} \PY{o}{=} \PY{n}{DiscreteFactorNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}trans\PYZus{}factor}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.99}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.01}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.01}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.99}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{)}\PY{p}{)}
 
-obs_factor_2.connect(hid_2, parent=True)
-obs_factor_2.connect(obs_2, parent=False)
+\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}1}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{obs\PYZus{}1}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
 
-trans_factor.connect(hid_1, parent=True)
-trans_factor.connect(hid_2, parent=False)
-\end{lstlisting}
+\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}2}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{obs\PYZus{}2}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
 
-Pokud máme vytvořený grafický model, dalším krokem je nastavit pozorované hodnoty proměnných~\ref{lst:facobs}.
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}1}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}2}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
+\end{Verbatim}
+\caption{Jednoduchý generativní model}
+\label{lst:nodex}
+\end{example}
+
+
+%\begin{lstlisting}[
+%	caption={Jednoduchý generativní model},
+%	label={lst:nodex},
+%	float=hp
+%]
+%from alex.ml.bn.node import DiscreteVariableNode, DiscreteFactorNode
+%from alex.ml.bn.factor import Factor
+%
+%hid_1 = DiscreteVariableNode('food_1', ['chinese', 'indian'])
+%obs_1 = DiscreteVariableNode('food_obs_1', ['chinese', 'indian'])
+%obs_factor_1 = DiscreteFactorNode('food_obs_factor_1', Factor(
+%    ['food_1', 'food_obs_1'],
+%    {
+%        'food_1': ['chinese', 'indian'],
+%        'food_obs_1': ['chinese', 'indian'],
+%    },
+%    {
+%        ('chinese', 'chinese'): 0.9,
+%        ('chinese', 'indian'): 0.1,
+%        ('indian', 'chinese'): 0.1,
+%        ('indian', 'indian'): 0.9,
+%    }))
+%
+%hid_2 = DiscreteVariableNode('food_2', ['chinese', 'indian'])
+%obs_2 = DiscreteVariableNode('food_obs_2', ['chinese', 'indian'])
+%obs_factor_2 = DiscreteFactorNode('food_obs_factor_2', Factor(
+%    ['food_2', 'food_obs_2'],
+%    {
+%        'food_2': ['chinese', 'indian'],
+%        'food_obs_2': ['chinese', 'indian'],
+%    },
+%    {
+%        ('chinese', 'chinese'): 0.9,
+%        ('chinese', 'indian'): 0.1,
+%        ('indian', 'chinese'): 0.1,
+%        ('indian', 'indian'): 0.9,
+%    }))
+%
+%trans_factor = DiscreteFactorNode('food_trans_factor', Factor(
+%    ['food_1', 'food_2'],
+%    {
+%        'food_1': ['chinese', 'indian'],
+%        'food_2': ['chinese', 'indian'],
+%    },
+%    {
+%        ('chinese', 'chinese'): 0.99,
+%        ('chinese', 'indian'): 0.01,
+%        ('indian', 'chinese'): 0.01,
+%        ('indian', 'indian'): 0.99,
+%    }))
+%
+%obs_factor_1.connect(hid_1, parent=True)
+%obs_factor_1.connect(obs_1, parent=False)
+%
+%obs_factor_2.connect(hid_2, parent=True)
+%obs_factor_2.connect(obs_2, parent=False)
+%
+%trans_factor.connect(hid_1, parent=True)
+%trans_factor.connect(hid_2, parent=False)
+%\end{lstlisting}
+
+Po vytvoření grafického modelu je dalším krokem nastavení pozorovaných hodnoty proměnných (příklad~\ref{lst:facobs}).
 Předpokládejme, že v první obrátce bylo pozorováno čínské jídlo s pravděpodobností $0.6$ a indické s pravděpodobností $0.4$.
 V druhé obrátce bylo pozorováno čínské jídlo s pravděpodobností $0.5$ a indické s pravděpodobností $0.5$.
 Tedy, v první obrátce si myslíme, že uživatel spíše preferuje čínské jídlo, ale z druhé obrátky už nevíme nic. 
 Podíváme se, co z těchto informací zjistí náš grafický model.
 
-\begin{lstlisting}[
-	caption={Nastavení pozorovaných hodnot},
-	label={lst:facobs},
-	float=h
-]
-obs_1.observed({
-	('chinese',): 0.6,
-	('indian',): 0.4,
-})
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
 
-obs_2.observed({
-	('chinese',): 0.5,
-	('indian',): 0.5,
-})
-\end{lstlisting}
+\PY{n}{obs\PYZus{}1}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+	\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.6}\PY{p}{,}
+	\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.4}\PY{p}{,}
+\PY{p}{\PYZcb{}}\PY{p}{)}
 
-Strom zakořeníme ve vrcholu \texttt{trans\_factor} a začneme posílat zprávy od listů ke kořeni a pak zpátky~\ref{lst:facmsg}.
+\PY{n}{obs\PYZus{}2}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+	\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{p}{,}
+	\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{p}{,}
+\PY{p}{\PYZcb{}}\PY{p}{)}
+\end{Verbatim}
+\caption{Nastavení pozorovaných hodnot}
+\label{lst:facobs}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Nastavení pozorovaných hodnot},
+%	label={lst:facobs},
+%    float=h,
+%]
+%obs_1.observed({
+%	('chinese',): 0.6,
+%	('indian',): 0.4,
+%})
+%
+%obs_2.observed({
+%	('chinese',): 0.5,
+%	('indian',): 0.5,
+%})
+%\end{lstlisting}
+
+Strom zakořeníme ve vrcholu \texttt{trans\_factor} a začneme posílat zprávy od listů ke kořeni a pak zpět (příklad~\ref{lst:facmsg}).
 Naším cílem je zjistit aposteriorní marginální pravděpodobnosti skrytých proměnných.
-Před odesláním je vždy třeba aktualizovat vnitřní reprezentaci příchozích zpráv.
+Před odesláním je vždy třeba aktualizovat vnitřní reprezentaci vrcholů.
 Nakonec musíme normalizovat vrcholy s proměnnými.
 
-\begin{lstlisting}[
-	caption={Posílání zpráv},
-	label={lst:facmsg},
-	float=h
-]
-obs_1.message_to(obs_factor_1)
-obs_2.message_to(obs_factor_2)
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
 
-obs_factor_1.update()
-obs_factor_1.message_to(hid_1)
+\PY{n}{obs\PYZus{}1}\PY{o}{.}\PY{n}{message\PYZus{}to}\PY{p}{(}\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{p}{)}
+\PY{n}{obs\PYZus{}2}\PY{o}{.}\PY{n}{message\PYZus{}to}\PY{p}{(}\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{p}{)}
 
-obs_factor_2.update()
-obs_factor_2.message_to(hid_2)
+\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{o}{.}\PY{n}{message\PYZus{}to}\PY{p}{(}\PY{n}{hid\PYZus{}1}\PY{p}{)}
 
-hid_1.update()
-hid_1.message_to(trans_factor)
+\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{o}{.}\PY{n}{message\PYZus{}to}\PY{p}{(}\PY{n}{hid\PYZus{}2}\PY{p}{)}
 
-hid_2.update()
-hid_2.message_to(trans_factor)
+\PY{n}{hid\PYZus{}1}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{hid\PYZus{}1}\PY{o}{.}\PY{n}{message\PYZus{}to}\PY{p}{(}\PY{n}{trans\PYZus{}factor}\PY{p}{)}
 
-trans_factor.update()
-trans_factor.send_messages()
+\PY{n}{hid\PYZus{}2}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{hid\PYZus{}2}\PY{o}{.}\PY{n}{message\PYZus{}to}\PY{p}{(}\PY{n}{trans\PYZus{}factor}\PY{p}{)}
 
-hid_1.update()
-hid_1.normalize()
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{send\PYZus{}messages}\PY{p}{(}\PY{p}{)}
 
-hid_2.update()
-hid_2.normalize()
-\end{lstlisting}
+\PY{n}{hid\PYZus{}1}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{hid\PYZus{}1}\PY{o}{.}\PY{n}{normalize}\PY{p}{(}\PY{p}{)}
 
-\begin{lstlisting}[
-	caption={Výsledek inference},
-	label={lst:facres},
-	float=h
-]
->>> print hid_1.belief.pretty_print(50, 2)
---------------------------------------------------
-         food_1                    Value          
---------------------------------------------------
-         chinese                   0.58           
-         indian                    0.42           
---------------------------------------------------
->>> print hid_2.belief.pretty_print(50, 2)
---------------------------------------------------
-         food_2                    Value          
---------------------------------------------------
-         chinese                   0.58           
-         indian                    0.42           
---------------------------------------------------
-\end{lstlisting}
+\PY{n}{hid\PYZus{}2}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{)}
+\PY{n}{hid\PYZus{}2}\PY{o}{.}\PY{n}{normalize}\PY{p}{(}\PY{p}{)}               
+\end{Verbatim}
+\caption{Posílání zpráv}
+\label{lst:facmsg}
+\end{example}
 
-Ve výsledku~\ref{lst:facres} tedy vidíme, že v druhé obrátce z pozorování nezískáme žádnou informaci, ale díky vysoké pravděpodobnosti přechodu zůstala pravděpodobnost čínského jídla stále vysoká.
+%\begin{lstlisting}[
+%	caption={Posílání zpráv},
+%	label={lst:facmsg},
+%	float=h!
+%]
+%obs_1.message_to(obs_factor_1)
+%obs_2.message_to(obs_factor_2)
+%
+%obs_factor_1.update()
+%obs_factor_1.message_to(hid_1)
+%
+%obs_factor_2.update()
+%obs_factor_2.message_to(hid_2)
+%
+%hid_1.update()
+%hid_1.message_to(trans_factor)
+%
+%hid_2.update()
+%hid_2.message_to(trans_factor)
+%
+%trans_factor.update()
+%trans_factor.send_messages()
+%
+%hid_1.update()
+%hid_1.normalize()
+%
+%hid_2.update()
+%hid_2.normalize()
+%\end{lstlisting}
+
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{hid\PYZus{}1}\PY{o}{.}\PY{n}{belief}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         food\PYZus{}1                    Value          }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         chinese                   0.58           }
+\PY{g+go}{         indian                    0.42           }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{hid\PYZus{}2}\PY{o}{.}\PY{n}{belief}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         food\PYZus{}2                    Value          }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         chinese                   0.58           }
+\PY{g+go}{         indian                    0.42           }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\caption{Výsledek inference}
+\label{lst:facres}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Výsledek inference},
+%	label={lst:facres},
+%	float=h!
+%]
+%>>> print hid_1.belief.pretty_print(50, 2)
+%--------------------------------------------------
+%         food_1                    Value          
+%--------------------------------------------------
+%         chinese                   0.58           
+%         indian                    0.42           
+%--------------------------------------------------
+%>>> print hid_2.belief.pretty_print(50, 2)
+%--------------------------------------------------
+%         food_2                    Value          
+%--------------------------------------------------
+%         chinese                   0.58           
+%         indian                    0.42           
+%--------------------------------------------------
+%\end{lstlisting}
+
+Ve výsledku (příklad ~\ref{lst:facres}) tedy vidíme, že v druhé obrátce z pozorování sice nezískáme žádnou informaci, ale díky vysoké pravděpodobnosti přechodu zůstala pravděpodobnost čínského jídla stále vysoká.
 Toto pozorování zároveň snížilo pravděpodobnost v první obrátce.
 
 \subsubsection{Inference}
 
-Nyní se zbavíme manuálního posílání zpráv z~\ref{lst:facmsg} a nahradíme jej použitím třídy pro Loopy Belief Propagation~\ref{lst:lbpex}. 
+Nyní se zbavíme manuálního posílání zpráv z příkladu~\ref{lst:facmsg} a nahradíme jej použitím třídy pro Loopy Belief Propagation (příklad~\ref{lst:lbpex}). 
 Zvolíme strategii pro stromy a výsledek bude stejný jako v případě s manuálním posíláním zpráv.
 
-\begin{lstlisting}[
-	caption={Inference s pomocí LBP},
-	label={lst:lbpex},
-	float=h
-]
-from alex.ml.bn.lbp import LBP
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
 
-lbp = LBP(strategy='tree')
-lbp.add_nodes([obs_1, obs_2, hid_1, hid_2, obs_factor_1, obs_factor_2,
-               trans_factor])
-lbp.run()
-\end{lstlisting}
+\PY{k+kn}{from} \PY{n+nn}{alex.ml.bn.lbp} \PY{k+kn}{import} \PY{n}{LBP}
+
+\PY{n}{lbp} \PY{o}{=} \PY{n}{LBP}\PY{p}{(}\PY{n}{strategy}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{tree}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+\PY{n}{lbp}\PY{o}{.}\PY{n}{add\PYZus{}nodes}\PY{p}{(}\PY{p}{[}\PY{n}{obs\PYZus{}1}\PY{p}{,} \PY{n}{obs\PYZus{}2}\PY{p}{,} \PY{n}{hid\PYZus{}1}\PY{p}{,} \PY{n}{hid\PYZus{}2}\PY{p}{,} \PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{p}{,} \PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{p}{,}
+               \PY{n}{trans\PYZus{}factor}\PY{p}{]}\PY{p}{)}
+\PY{n}{lbp}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\caption{Inference s pomocí LBP}
+\label{lst:lbpex}
+\end{example}
+
+%\begin{lstlisting}[
+%	caption={Inference s pomocí LBP},
+%	label={lst:lbpex},
+%	float=h
+%]
+%from alex.ml.bn.lbp import LBP
+%
+%lbp = LBP(strategy='tree')
+%lbp.add_nodes([obs_1, obs_2, hid_1, hid_2, obs_factor_1, obs_factor_2,
+%               trans_factor])
+%lbp.run()
+%\end{lstlisting}
+
+\subsection{Učení dirichletovských parametrů}
+
+Nyní grafický model z minulé sekce upravíme tak, aby parametry přechodové pravděpodobnosti pocházely z dirichletovského rozdělení.
+Vše zůstane stejné, pouze faktor pro přechodovou pravděpodobnost nahradíme \texttt{DirichletFactorNode} a k němu připojíme nový vrchol \texttt{DirichletParameterNode}, který bude reprezentovat parametry.
+Vytvoření grafického modelu je v příkladu~\ref{lst:crtep}.
+
+Druhý parametr \texttt{DirichletParameterNode} nyní neurčuje pravděpodobnosti, ale parametry $\alpha$ dirichletovských rozdělení.
+Pro každou kombinaci hodnot rodičů existuje jedno dirichletovské rozdělení popisující apriorní rozdělení nad pravděpodobností proměnné, která je potomkem faktoru.
+V tomto případě je to skrytá proměnná v druhé obrátce.
+Parametry můžou být buď nastaveny bez apriorní znalosti, pak jsou všechny rovny 1, anebo můžeme nějakou naši apriorní znalost přidat.
+V tomto případě budeme předpokládát, že se spíše cíl nemění.
+
+\begin{example}
+\caption{Vytvoření grafického modelu s dirichletovskými parametry}
+\label{lst:crtep}
+\begin{Verbatim}[commandchars=\\\{\}, fontsize=\relsize{-1}]
+
+\PY{k+kn}{from} \PY{n+nn}{alex.ml.bn.node} \PY{k+kn}{import} \PY{p}{(}\PY{n}{DiscreteVariableNode}\PY{p}{,} \PY{n}{DiscreteFactorNode}\PY{p}{,}
+                             \PY{n}{DirichletParameterNode}\PY{p}{,}
+                             \PY{n}{DirichletFactorNode}\PY{p}{)}
+\PY{k+kn}{from} \PY{n+nn}{alex.ml.bn.factor} \PY{k+kn}{import} \PY{n}{Factor}
+\PY{k+kn}{from} \PY{n+nn}{alex.ml.bn.lbp} \PY{k+kn}{import} \PY{n}{LBP}
+
+\PY{n}{obs\PYZus{}probability} \PY{o}{=} \PY{p}{\PYZob{}}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+\PY{p}{\PYZcb{}}
+
+\PY{n}{hid\PYZus{}1} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}1} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}1} \PY{o}{=} \PY{n}{DiscreteFactorNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}factor\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{n}{obs\PYZus{}probability}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{hid\PYZus{}2} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}2} \PY{o}{=} \PY{n}{DiscreteVariableNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}2} \PY{o}{=} \PY{n}{DiscreteFactorNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}factor\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}obs\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{n}{obs\PYZus{}probability}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{trans\PYZus{}factor} \PY{o}{=} \PY{n}{DirichletFactorNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}trans\PYZus{}factor}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+\PY{n}{trans\PYZus{}param} \PY{o}{=} \PY{n}{DirichletParameterNode}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}trans\PYZus{}param}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{Factor}\PY{p}{(}
+    \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}1}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+        \PY{l+s}{\PYZsq{}}\PY{l+s}{food\PYZus{}2}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}1}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{obs\PYZus{}1}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
+
+\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}2}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+\PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{obs\PYZus{}2}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
+
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}1}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{True}\PY{p}{)}
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{hid\PYZus{}2}\PY{p}{,} \PY{n}{parent}\PY{o}{=}\PY{n+nb+bp}{False}\PY{p}{)}
+\PY{n}{trans\PYZus{}factor}\PY{o}{.}\PY{n}{connect}\PY{p}{(}\PY{n}{trans\PYZus{}param}\PY{p}{)}
+\end{Verbatim}
+\end{example}
+
+Tentokrát budou pozorování nastavena tak, že je zřejmé, který typ jídla uživatel požaduje.
+Inferenci provedeme naprosto stejně jako v předchozím případě (příklad~\ref{lst:lbpep}).
+Zajímavý je výsledek inference, protože se nezměnily pouze hodnoty skrytých proměnných, ale také dirichletovský parametr.
+V příkladu~\ref{lst:epres} je vidět, že vypočítané hodnoty skrytých proměnných jsou blízké pozorovaným hodnotám v každé obrátce, to je způsobeno tím, že parametry pro přechodovou pravděpodobnost jsme nenastavili příliš informativně.
+Zároveň je vidět, že byly parametry modifikovány, pokud uživatel v první obrátce chce čínské jídlo, pak je větší pravděpodobnost, že v druhé obrátce jej bude chtít také.
+
+\begin{example}
+\caption{Nastavení pozorovaných proměnných a inference}
+\label{lst:lbpep}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{n}{obs\PYZus{}1}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+\PY{p}{\PYZcb{}}\PY{p}{)}
+
+\PY{n}{obs\PYZus{}2}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{p}{\PYZcb{}}\PY{p}{)}
+
+\PY{n}{lbp} \PY{o}{=} \PY{n}{LBP}\PY{p}{(}\PY{n}{strategy}\PY{o}{=}\PY{l+s}{\PYZsq{}}\PY{l+s}{tree}\PY{l+s}{\PYZsq{}}\PY{p}{)}
+\PY{n}{lbp}\PY{o}{.}\PY{n}{add\PYZus{}nodes}\PY{p}{(}\PY{p}{[}\PY{n}{obs\PYZus{}1}\PY{p}{,} \PY{n}{obs\PYZus{}2}\PY{p}{,} \PY{n}{hid\PYZus{}1}\PY{p}{,} \PY{n}{hid\PYZus{}2}\PY{p}{,} \PY{n}{obs\PYZus{}factor\PYZus{}1}\PY{p}{,} \PY{n}{obs\PYZus{}factor\PYZus{}2}\PY{p}{,}
+               \PY{n}{trans\PYZus{}factor}\PY{p}{,} \PY{n}{trans\PYZus{}param}\PY{p}{]}\PY{p}{)}
+\PY{n}{lbp}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{example}
+
+
+\begin{example}
+\caption{Vypočtené hodnoty skrytých proměnných}
+\label{lst:epres}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{hid\PYZus{}1}\PY{o}{.}\PY{n}{belief}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         food\PYZus{}1                    Value          }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         chinese                   0.86           }
+\PY{g+go}{         indian                    0.14           }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{hid\PYZus{}2}\PY{o}{.}\PY{n}{belief}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         food\PYZus{}2                    Value          }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{         chinese                   0.81           }
+\PY{g+go}{         indian                    0.19           }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{trans\PYZus{}param}\PY{o}{.}\PY{n}{alpha}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{     food\PYZus{}1          food\PYZus{}2          Value      }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    chinese         chinese           2.3       }
+\PY{g+go}{    chinese          indian           0.96      }
+\PY{g+go}{     indian         chinese           1.0       }
+\PY{g+go}{     indian          indian           2.0       }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\end{example}
+
 
 \section{Dialog State Tracking Challenge}
 
@@ -735,9 +1191,9 @@ Knihovna pro inferenci byla použita v Dialog State Tracking Challenge (DSTC) 20
 Nejprve popíšeme problém, následně představíme použitý model a nakonec porovnáme výsledky modelu s ostatními systémy.
 
 Cílem DSTC bylo vytvořit prostředky pro porovnání různých přístupů k inferenci dialogového stavu a vyhodnotit jejich úspěšnost pomocí společné množiny metrik.
-Organizátoři poskytli několik anotovaných množin dat, které pocházejí z reálného použití tří různých dialogových systémů pro úlohu Let's Go.
+Organizátoři poskytli několik anotovaných množin dat, které pocházejí z reálného použití tří různých dialogových systémů pro úlohu Let's Go~\cite{raux2005let}.
 Zároveň poskytli i baseline dialogový systém.
-Cílem účastníků soutěže bylo vytvořit systém odhadu dialového stavu, který správně predikuje dialogový stav dáno vstup uživatele a minulé akce systému.
+Cílem účastníků soutěže bylo vytvořit systém odhadu dialového stavu, který správně predikuje dialogový stav na základě vstupu od uživatele a minulé akce systému.
 
 \subsection{Let's Go}
 
@@ -746,33 +1202,84 @@ Systém rozpoznává 9 různých slotů, některé z nich sestávající z podsl
 Tyto sloty jsou
 \begin{itemize}
 \item \emph{route} -- linka,
-\item \emph{time} -- čas,
+\item \emph{time} -- čas odjezdu nebo příjezdu,
+\item \emph{date} -- datum odjezdu,
 \item \emph{from.description} -- popis místa odjezdu,
 \item \emph{to.description} -- popis místa příjezdu,
 \item \emph{from.monument} -- významný monument v místě odjezdu,
-\item \emph{to.monument} -- význámný monument v místě příjezdu,
+\item \emph{to.monument} -- významný monument v místě příjezdu,
 \item \emph{from.neighborhood} -- část města (sousedství) z které chce uživatel jet,
 \item \emph{to.neighborhood} -- část města (sousedství) kam chce uživatel jet.
 \end{itemize}
-Navíc se sloty \emph{time} a \emph{data} skládají z dalších 5, respektive 4 slotů (např. \emph{time.hour}, \emph{time.minute}).
+Navíc se sloty \emph{time} a \emph{date} skládají z dalších 5, respektive 4 slotů (např. \emph{time.hour}, \emph{time.minute}).
 Systém Let's Go celkem rozpoznával více než 5000 míst a zhruba 150 různých linek.
 
 Jednotlivé dialogy se skládají z obrátek, ve kterých se střídá uživatel a systém.
+Příklad rozhovoru je v tabulce~\ref{tab:exampledialog}.
 Uživatel může informovat systém o hodnotě libovolného slotu.
-Systém se může uživatele požádat o hodnotu libovolného slotu, anebo o potvrzení hodnoty nějakého slotu.
+Systém se může uživatele požádat o hodnotu libovolného slotu, popř. o potvrzení hodnoty slotu.
 Vstup a výstup je reprezentován dialogovými akty.
 Používány jsou pouze dialogové akty \emph{inform}, \emph{deny}, \emph{affirm} a \emph{negate}.
 Zbytek dialogových aktů je ignorován, protože nemění cíle uživatele.
 
+\begin{table}
+\catcode`\-=12
+\begin{center}
+    \begin{tabular}{|c|l|p{10cm}|}
+\hline
+Obrátka & Aktér & Přepis \\
+\hline
+1   & Systém   & \textit{Welcome to the Lets Go! bus information system for Pittsburgh.
+              Where would you like to leave from?}\\
+              & dact  & hello()\&request(from.desc) \\
+\cline{2-3}
+    & Uživatel  & \textit{The South Side.} \\
+    & dact  & inform(from.desc=\uv{the south side}) \\
+\hline
+2   & Systém   & \textit{Leaving from the south side neighborhood. Did I get that
+              right?}\\
+    & dact  & confirm(from.desc=\uv{the south side}) \\
+\cline{2-3}
+    & Uživatel  & \textit{Correct.} \\
+    & dact  & affirm() \\
+\hline
+3   & Systém   & \textit{Where do you wanna go}? \\
+    & dact  & request(to.desc) \\
+\cline{2-3}
+    & Uživatel  & \textit{Oakland.} \\
+    & dact  & inform(to.desc=\uv{Oakland}) \\
+\hline
+4   & Systém   & \textit{When do you wanna travel?} \\
+    & dact  & request(time) \\
+\cline{2-3}
+    & Uživatel  & \textit{Next}. \\
+    & dact  & inform(time=next) \\
+\hline
+5   & Systém   & \textit{The next bus is the 54C, leaving from south eighteenth street at
+              east Carson in the south side at 10:25pm. It arrives at fifth
+              avenue at Bigelow in Oakland at 10:35pm. You may now say. next
+              bus, previous bus, restart, or goodbye.}\\
+    & dact  & ... \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Příklad dialogu mezi uživatelem a dialogovým systémem Let's Go. \textit{dact} znamená dialogový akt.}
+\label{tab:exampledialog}
+\end{table}
+
 Organizátoři poskytli 4 datové sady, které pocházely ze 3 různých dialogových systémů.
-Každá datová sada obsahovala hypotézy z živého běhu dialogového systému.
-Dva z dialogových systémů produkovala seznam $n$ nejlepších hypotéz.
-Jeden systém produkoval pouze nejlepší hypotézu, záznamy hovorů byly zpracovány zpětně pro vygenerování seznamů $n$ nejlepších hypotéz.
-Vygenerované hypotézy ovšem obsahovaly pouze skóre, proto jsme se rozhodli je nepoužít pro pravděpodobnostní inferenci.
+Každá datová sada obsahovala hypotézy z živého běhu dialogového systému (live data).
+Dva dialogové systémy produkovaly seznam $n$ nejlepších hypotéz.
+Jeden systém produkoval pouze první nejlepší hypotézu, záznamy hovorů byly zpracovány zpětně pro vygenerování seznamů $n$ nejlepších hypotéz (batch data).
+Vygenerované hypotézy ovšem obsahovaly pouze skóre, které muselo být přepočítáno pro získání pravděpodobností.
+Organizátoři nevydali žádné informace o povaze skóre.
+
+Data obsahovala zjevně chybné hypotézy, např. v jedné hypotéze se objevily dvě různé hodnoty pro jeden slot.
+Tyto hypotézy byly z dat odstraněny, ještě před samotnou inferencí.
 
 \subsection{Generativní model}
 
-Dialogový stav byl v použitém systému modelován jednoduchým generativním modelem, kde pro každý slot v jedné obrátce existují dva vrcholy, skutečná hodnota slotu $s_t$ a pozorovaná hodnota $o_t$.  
+Dialogový stav byl v použitém systému modelován jednoduchým generativním modelem, kde pro každý slot v jedné obrátce existují dva vrcholy, skutečná hodnota slotu $s_t$ a pozorovaná hodnota $o_t$.
 Stav důvěry skutečné hodnoty slotu $b(s_t)$ závisí pouze na hodnotě v minulé obrátce $s_{t-1}$ a na poslední systémové akci $a_{t-1}$.
 Pozorovaná hodnota $o_t$ závisí pouze na skutečné hodnotě.
 
@@ -807,12 +1314,85 @@ Na základě výsledků dialogového systému na trénovacích dat byly manuáln
 
 Představený model pro pozorování platí pro \emph{inform} dialogové akty, dialogové sloty \emph{affirm} a \emph{negate} byly převedeny na \emph{inform}.
 
-Pro inferenci bylo použito LBP, protože možných hodnot slotů bylo v řádu stovek, tak všechny nepozorované hodnoty jsou stažené do jedné speciální hodnoty a jejich pravděpodobnost je počítána pouze dohromady.
+Pro inferenci bylo použito LBP a protože možných hodnot slotů bylo v řádu stovek, všechny nepozorované hodnoty byly staženy do jedné speciální hodnoty a jejich pravděpodobnost byla počítána pouze dohromady.
 
 \subsection{Evaluace}
 
-Použitý model byl testován na 4 testovacích datových sadách s živými daty a na dvou testovacích datových sadách s doplněnými hypotézami.
+Použitý model byl testován na 4 testovacích datových sadách s live daty a na dvou testovacích datových sadách s batch daty.
 Výsledky byly porovnány s baseline dialogovým systémem vytvořeným organizátory.
 Použité metriky byly přesnost (accuracy) dialogového systému a Brier score.
-Přesnost je spočítána jako procentuální zastoupení obrátek, kdy nejlepší hypotéza systému pro odhad stavu byla ta správná.
-Brier score měří přesnost prediktivní pravděpodobnostní distribuce systému pro odhad stavu~\cite{brier1950verification}.
+Přesnost je podíl obrátek, ve kterých byla nejlepší hypotéza systému pro odhad stavu správná oproti celkovému počtu obrátek.
+Brier score měří přesnost prediktivní pravděpodobnostní distribuce systému pro odhad stavu~\cite{brier1950verification}, čím menší, tím lepší.
+
+Výsledky ukazují (viz tabulka~\ref{t:all:datasets}), že generativní model překonává baseline na všech datových sadách, kromě s batch dat.
+Manuální inspekcí bylo zjištěno, že generativní model je velmi citlivý na vstupní pravděpodobnosti.
+Pravděpodobnosti hypotéz z batch dat, zřejmě kvůli způsobu přepočítání skóre na pravděpodobnosti, jsou velmi blízko sebe a tedy nedávají dostatek informací pro pravděpodobnostní model.
+
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+  \hline
+live data & metric      & BT & GT \\
+\hline
+test1 & přesnost    & 0.77 & 0.88 \\
+        & Brier score & 0.29 & 0.21 \\
+\hline
+test2 & přesnost    & 0.79 & 0.85 \\
+        & Brier score & 0.27 & 0.23 \\
+\hline
+test3  & přesnost    & 0.92 & 0.93 \\
+        & Brier score & 0.14 & 0.16 \\
+\hline
+test4  & přesnost    & 0.82 & 0.87 \\
+        & Brier score & 0.24 & 0.20 \\
+\hline
+\textsc{All}    & přesnost    & 0.83 & 0.88 \\
+        & Brier score & 0.24 & 0.20 \\
+\hline
+\hline
+batch data & metric      & BT & GT \\
+\hline
+test1 & přesnost    & 0.75 & 0.74 \\
+        & Brier score & 0.35 & 0.39 \\
+\hline
+test2 & přesnost    & 0.79 & 0.77 \\
+        & Brier score & 0.30 & 0.33 \\
+\hline
+\textsc{All}    & přesnost    & 0.77 & 0.76 \\
+        & Brier score & 0.32 & 0.36 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Přesnost systému pro odhad stavu na live a batch testovacích datech, kde BS je baseline systém a GS je generativní systém. \textsc{All} značí průměrné skóre přes všechny testovací sady.}
+\label{t:all:datasets}
+\end{table}
+
+Generativní systém byl také porovnán s ostatními dialogovými systémy přihlášenými do DSTC.
+Zde se svou úspěšností zařadil mezi většinu systémů (viz tabulka~\ref{t:DSTC:ranking}).
+Ve výsledcích bude generativní systém veden jako 2. systém týmu číslo 3.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+  \hline
+tým / systém & přesnost & Brier score \\
+\hline
+BT - C         & 0.81 & 0.27\\
+BT          & 0.83 & 0.24\\
+GT          & 0.88 & 0.20\\
+team1       & 0.88 & 0.23\\
+team2       & 0.88 & 0.21\\
+team4         & 0.81 & 0.28\\
+team5         & 0.88 & 0.21\\
+team6         & \textbf{0.91} & \textbf{0.18}\\
+team7         & 0.85 & 0.23\\
+team8         & 0.83 & 0.24\\
+team9         & 0.89 & 0.20\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Přesnost systémů přihlášených do DSTC. BT - C značí baseline systém bez mazání chybných hypotéz, BT je baseline systém, GT je generativní systém a dále následují systémy ostatních týmů. Skóre jsou zprůměrována přes všechny 4 testovací sady dat.}
+\label{t:DSTC:ranking}
+\end{table}
+
+Tabulky výsledků a příklad dialogu byly převzaty z článku popisujícího přihlášené systémy do DSTC a porovnávajícího generativní model s jednoduchým diskriminativním modelem~\cite{zilka2013}.
