@@ -1,31 +1,30 @@
 % !TEX root = prace.tex
 \chapter{Teorie dialogových systémů}
+\label{ch:kap1}
 
 \section{Dialogový systém}
 
 Dialogový systém je počítačový systém, který umožňuje uživatelům komunikovat s počítačem ve formě, která je přirozená a efektivní pro použití.
-Dialogové systémy stále mají spoustu problémů k překonání a pro praktické použití je třeba se uchýlit k několika předpokladům a zjednodušením.
+Vývoj dialogových systémů má před sebou ještě spoustu problémů k překonání a pro praktické použití je třeba se uchýlit k několika předpokladům a zjednodušením.
 Prvním zjednodušením je doménová specializace, v současné době není možné vytvořit dialogový systém, který by se dokázal s uživatelem bavit o libovolném tématu.
-Vždy je potřeba při vývoji dialogového systému mít ontologii určující, jaké informace má systém poskytovat a o čem se může chtít uživatel bavit.
+Z toho plyne i nutnost ontologie, systém potřebuje databázi popisující všechny informace, které může poskytnout a jejich strukturu.
+Systém má definované fráze a věty, které může použít, na rozdíl od živého operátora, který dokáže improvizovat.
 
 Další zjednodušení se týkají přímo dialogu.
 Předpokládá se, že dialog probíhá vždy mezi systémem a jedním uživatelem.
 Navíc se pravidelně střídají v obrátkách.
 Jedna obrátka dialogu je složená z jedné promluvy systému a jedné promluvy uživatele.
 
-Příkladem dialogového systému může být systém pro nalezení spojení pomocí
-městské dopravy. Příkazu od uživatele může vypadat např. takto: \uv{Chci jet z
-Malostranského náměstí na Anděl}. Dialogový systém se nyní může rozhodnout,
-zda-li mu zadané informace stačí pro nalezení spojení. V tomto případě systém
-stále neví, kdy chce uživatel jet. Může předpokládat, že uživatel už na
-zastávce stojí a tak tedy uživateli nalezne nejbližší spojení.
+Příkladem dialogového systému může být systém pro nalezení spojení pomocí městské dopravy.
+Příkaz od uživatele může vypadat např. takto: \uv{Chci jet z Malostranského náměstí na Anděl}.
+Dialogový systém z této věty odvodí, že uživatel hledá spojení, výchozí stanice je Malostranské náměstí a cílová stanice je Anděl.
+Nyní záleží na chování dialogového systému, může například předpokládat, že uživatel chce vždy najít nejdřívější spojení, pokud neřekne jinak.
+V takovém případě už systém může rovnou najít v databázi nejbližší spojení a uživateli jej sdělit.
 
-Důležitou vlastností dialogového systému je robustnost. Pokud budeme používat
-dialogový systém v přirozeném prostředí, musíme se vyrovnat s tím, že často
-nebude uživateli rozumět.
+Důležitou vlastností dialogového systému je robustnost.
+Pokud budeme používat dialogový systém v přirozeném prostředí, musíme se vyrovnat s tím, že často nebude uživateli rozumět.
 Systém může informaci přeslechnout, anebo si nemusí být jistý tím, co slyšel.
-Dialogový systém se proto musí umět uživatele doptat na chybějící informace
-
+Dialogový systém se proto musí umět uživatele doptat na chybějící informace a musí umět pracovat s nejistotou.
 
 \section{Součásti dialogového systému}
 
@@ -40,24 +39,56 @@ Do zvukového záznamu převede text syntetizér řeči (TTS).
 \subsection{Systém rozpoznávání řeči (ASR)}
 
 Systém rozpoznávání řeči slouží k převedení mluveného projevu do textové podoby.
-Po získání textové podoby je teprve možné se zabývat významem textu.
-Aktuálně nejlepší systémy jsou založené na pravděpodobnostním modelu a využívají skryté Markovské modely (HMM) k určení nejpravděpodobnější sekvence slov pro daný zvukový záznam.
+Až po získání textové podoby je možné se zabývat významem textu.
+Aktuálně nejlepší systémy jsou založené na pravděpodobnostním modelu a využívají Skryté Markovské modely (HMM) k určení nejpravděpodobnější sekvence slov pro daný zvukový záznam \cite{juang1991hidden}.
 Pro tuto část dialogového systému existuje řada dostupných otevřených toolkitů, např. systém HTK \cite{young2002htk}, Kaldi \cite{Povey_ASRU2011} nebo SPHINX~\cite{walker2004sphinx}.
 Existuje i celá řada komerčního software od firem jako IBM nebo Nuance.
 
-Úspěšnost systému rozpoznání řeči je závislá na obtížnosti úlohy a na počtu trénovacích dat, pocházejících ze stejné domény.
+Úspěšnost systému rozpoznávání řeči je závislá na obtížnosti úlohy a na počtu trénovacích dat, pocházejících ze stejné domény.
 Pro obecnou doménu se problém stává mnohem těžší a je třeba velké množství dat.
-Word error rate (WER) je častá metrika pro počítání výkonu ASR.
-Pro spočítání WER je třeba nejprve provést zarovnání rozpoznaného a originálního textu. WER je pak počet slov, která jsou změněná, smazaná anebo přidaná, vydělený počtem slov v originálním textu.
-Systém Let's Go!~\cite{raux2006doing} dosahuje průměrné WER $64.3\%$.
+Pro měření výkonu ASR systému se používá metrika Word Error Rate (WER).
+Pro spočítání WER je třeba nejprve provést zarovnání rozpoznaného a originálního textu.
+WER je pak počet slov, která jsou změněná, smazaná, anebo přidaná, vydělený počtem slov v originálním textu.Dialogový systém Let's Go!~\cite{raux2006doing} například dosahuje průměrné WER $64.3\%$.
 
 Systém rozpoznávání řeči může produkovat více hypotéz pro jeden vstup.
 Často existuje pro jeden zvukový záznam více možných slovních sekvencí, z kterých by mohl pocházet.
 Reprezentace možných hypotéz může být seznam slovních sekvencí s jejich věrohodností.
 Věrohodnosti jsou skóre přiřazené hypotézám, které určují jakou důvěru má systém rozpoznávání řeči ve správnost dané slovní sekvence.
-\todo{Přidat příklad seznamu hypotéz}
-V ideálním případě je věrohodnost ekvivalentní aposteriorní pravděpodobnosti sekvence slov, dáno vstupní zvuk.
-Ovšem ne všechny rozpoznávače pracují na pravděpodobnostním principu a pak není možné od nich požadovat skutečné pravděpodobnosti.
+Příklad možného seznamu hypotéz je v tabulce~\ref{tab:sezhyp}.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+Věrohodnost & Hypotéza \\
+\hline
+\hline
+0.676 & poliklinika modřany\\
+\hline
+0.072 & poliklinika\\
+\hline
+0.063 & cheb poliklinika modřany\\
+\hline
+0.054 & poliklinika bory\\
+\hline
+0.045 & poliklinika modřany i\\
+\hline
+0.036 & polikliniky\\
+\hline
+0.027 & cheb poliklinika\\
+\hline
+0.018 & cheb poliklinika bory\\
+\hline
+0.009 & poliklinika i\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Příklad seznamu hypotéz ze systému pro rozpoznávání přirozené řeči.
+Uživatel by rád jel do zastávky Poliklinika Modřany.}
+\label{tab:sezhyp}
+\end{table}
+
+Pro práci s hypotézami je vhodné, aby věrohodnost odpovídala aposteriorní pravděpodobnosti sekvence slov, dáno vstupní zvuk.
 
 Další možností jak reprezentovat výstup je použití konfůzní sítě \cite{bertoldi2005new}.
 Konfůzní síť je vážený orientovaný graf, obsahující startovní a konečný vrchol a hrany označené slovy.
@@ -66,35 +97,132 @@ Váhy hran jsou pravděpodobnosti slova přiřazeného dané hraně.
 Hrany mohou obsahovat i prázdné slovo $\epsilon$.
 Pravděpodobnost sekvence slov je součinem vah po cestě ze startovního do konečného uzlu.
 Výhodou konfůzní sítě je, že umožňuje v komprimované podobě uložit mnohem více hypotéz.
-\todo{Přidat příklad konfůzní sítě}
+Příklad konfůzní sítě je na obrázku~\ref{fig:konnet}.
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->, main/.style={circle, draw}]
+
+
+\node[main] at (0,0) (n0) {};
+\node[main] at (2.5,0) (n1) {};
+\node[main] at (5.5,0) (n2) {};
+\node[main] at (9.5,0) (n3) {};
+\node[main] at (12.5,0) (n4) {};
+
+
+\node at (1.25, 1) (a0) {0.90, jet};
+\node at (1.25, 0.2) (a1) {0.065, $\epsilon$};
+\node at (1.25, -1) (a2) {0.035, jak};
+
+\path[looseness=0.7, out=75, in=105] (n0) edge (n1);
+\path (n0) edge (n1);
+\path[looseness=0.6, bend right, out=285, in=255] (n0) edge (n1);
+
+\node at (4, 2) (b0) {0.65, s};
+\node at (4, 1) (b1) {0.25, se};
+\node at (4, 0.2) (b2) {0.015, ses};
+\node at (4, -1) (b3) {0.025, dnes};
+\node at (4, -2) (b4) {0.06, $\epsilon$};
+
+\path[looseness=1.8, out=90, in=90] (n1) edge (n2);
+\path[looseness=0.7, out=75, in=105] (n1) edge (n2);
+\path (n1) edge (n2);
+\path[looseness=0.6, bend right, out=285, in=255] (n1) edge (n2);
+\path[looseness=1.7, bend right, out=270, in=270] (n1) edge (n2);
+
+\node at (7.5, 2) (c0) {0.61, mnichovské};
+\node at (7.5, 1) (c1) {0.25, smíchovskou};
+\node at (7.5, 0.2) (c2) {0.04, mnichovského};
+\node at (7.5, -1) (c3) {0.03, mnichovská};
+\node at (7.5, -2) (c4) {0.07, $\epsilon$};
+
+\path[looseness=1.3, out=90, in=90] (n2) edge (n3);
+\path[looseness=0.5, out=75, in=105] (n2) edge (n3);
+\path (n2) edge (n3);
+\path[looseness=0.5, bend right, out=285, in=255] (n2) edge (n3);
+\path[looseness=1.3, bend right, out=270, in=270] (n2) edge (n3);
+
+\node at (11, 0.2) (d0) {1.0, nádraží};
+\path (n3) edge (n4);
+
+\end{tikzpicture}
+\caption{Příklad konfůzní sítě.}
+\label{fig:konnet}
+\end{center}
+\end{figure}
 
 \subsection{Porozumění mluvené řeči (SLU)}
 
-Jakmile má systém seznam možných hypotéz toho, co uživatel řekl, musí se pokusit porozumět, co tím uživatel myslel.
-Dialogový systém nepotřebuje vědět, co přesně uživatel řekl, důležité je pouze zjistit, co se uživatel snaží sdělit.
-Pokud například uživatel řekne "Chtěl bych nalézt spojení z Malostranského náměstí na Anděl", anebo "Jak se dostanu na Anděl ze zastávky Malostranské náměstí?", tak výsledek je stejný, uživatel požaduje informace o spojení mezi dvěma zastávkami, i když v jednom případě jde o větu oznamovací a v druhém případě o otázku.
+Po získání hypotéz o promluvě uživatele se musi dialogový systém pokusit porozumět, co se uživatel snažil sdělit.
+Dialogový systém nepotřebuje vědět, co přesně uživatel řekl, důležité je pouze zjistit význam sdělení.
+Pokud například uživatel řekne "Chtěl bych nalézt spojení z Malostranského náměstí na Anděl", anebo "Jak se dostanu na Anděl ze zastávky Malostranské náměstí?", tak pro dialogový systém jsou obě tvrzení ekvivalentní, uživatel požaduje informace o spojení mezi dvěma zastávkami, i když v jednom případě jde o větu oznamovací a v druhém případě o otázku.
 
-Semántická reprezentace sdělení uživatele se nazývá dialogový akt (DA), skládá se z jedné nebo více položek dialogového aktu (DAI), které jsou spojené v konjunkci.
+První rozdělení mezi přesným významem sdělení a jeho účelem se objevilo ve formě tzv. speech aktů~\cite{austin1975things}.
+Následně byla idea speech aktů rozšířena pro potřeby dialogových systémů~\cite{traum1999speech} a výsledek byl nazván dialogovým aktem.
+
+V této práci používáme definici dialogového aktu, která byla použita v soutěži Dialog State Tracking Challenge~\cite{williamsdialog}.
+Semántická reprezentace sdělení uživatele se tedy nazývá dialogový akt (DA), skládá se z jedné nebo více položek dialogového aktu (DAI), které jsou spojené v konjunkci.
 Každá DAI se skládá z typu, názvu slotu a jeho hodnoty. Typy jsou doménově nezávislé, sloty a jejich hodnoty reprezentují koncepty ontologie.
-Příklad dialogového aktu z dialogového systému pro hledání restaurací:
+Příklad dialogového aktu ze systému pro hledání spojení v městské dopravě:
 
 \begin{center}
-{\tt hello()\&inform(food="chinese")}.
+{\tt hello(), inform(route="61a")}.
 \end{center}
 
 Zde se dialogový akt skládá ze dvou položek, první položka má pouze typ {\em hello}, značící pozdrav.
 Druhá položka má typ {\em inform}, tzn. uživatel nás informuje o svém požadavku.
-Název slotu je {\em food} a hodnota je \uv{chinese}, tedy uživatel nám říká, že hledá restauraci, kde servírují čínské jídlo.
+Název slotu je {\em route} a hodnota je \uv{61a}, tedy uživatel nám říká, že hledá spojení linkou 61a.
 
 Typů může být libovolné množství, ale existuje několik základních, jejichž použití je ustálené.
 \begin{itemize}
 \item {\em inform} --- sdělujeme informaci, doplňujeme hodnotu do slotu,
 \item {\em request} --- požadujeme od protějšku doplnění hodnoty pro dotazovaný slot,
 \item {\em confirm} --- chceme potvrdit hodnotu slotu, potvrzení může být implicitní, anebo explicitní.
-	Při explicitním potvrzení očekáváme odpověď buď \uv{Ano} nebo \uv{Ne},
-	U implicitního, pokud se nám nedostane odpovědi předpokládáme, že protějšek souhlasí,
-\item {\em select} --- žádáme protějšek, aby zvolil z nabízených možností.
+	Při explicitním potvrzení očekáváme odpověď \uv{Ano} nebo \uv{Ne},
+	U implicitního, pokud se nám nedostane odpovědi předpokládáme, že protějšek souhlasí.
 \end{itemize}
+
+V tabulce~\ref{tab:dstcdat} jsou ukázány všechny typy dialogových aktů, které může uživatel říct v dialogovém systému Let's Go!~\cite{williamsdialog}.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|}
+\hline
+Typ dialogového aktu \\
+\hline
+\hline
+hello \\
+\hline
+bye \\
+\hline
+goback \\
+\hline
+restart \\
+\hline
+null \\
+\hline
+repeat \\
+\hline
+nextbus \\
+\hline
+prevbus \\
+\hline
+tellchoices \\
+\hline
+affirm \\
+\hline
+negate \\
+\hline
+deny \\
+\hline
+inform \\
+\hline
+\end{tabular}
+\caption{Typy dialogových aktů, které může říct použít uživatel v systému Let's Go!}
+\label{tab:dstcdat}
+\end{center}
+\end{table}
 
 Existuje široké množství technik, které lze použít pro porozumění mluvené řeči.
 Unifikace pomocí šablon anebo gramatiky jsou příklady ručně psaných metod.
@@ -102,8 +230,8 @@ Metody založené na datech jsou například Hidden Vector State model~\cite{he2
 
 \subsection{Dialogový manager (DM)}
 
-Pokud už jsou pravděpodobné dialogové akty dekódovány, je třeba rozhodnout, co bude systém dělat.
-Komponenta tvořící tato rozhodnutí je dialogový manager.
+Pokud už jsou pravděpodobné dialogové akty dekódovány, je třeba rozhodnout, jak bude systém reagovat.
+Komponenta tvořící rozhodnutí o dalším kroku systému se nazývá dialogový manager.
 Odpověď systému je zakódována do formy dialogových aktů a nazývá se systémová akce.
 
 Zvolená systémová akce je vybrána z množiny možných akci $a \in \mathcal{A}$ a závisí na vstupu, který systém obdržel z SLU.
@@ -112,7 +240,7 @@ Tento vstup se nazývá pozorování $o \in \mathcal{O}$, protože obsahuje vše
 Zvolení správné akce potřebuje více znalostí než jen poslední pozorování.
 Celá historie dialogu a také kontext hrají důležitou roli.
 Dialogový manager bere na vše ohled pomocí udržovaní interní reprezentace celého pozorovaného dialogu.
-Tato reprezentace se nazývá dialogový stav, nebo také belief stav, značí se $b \in \mathcal{B}$.
+Tato reprezentace se nazývá dialogový stav, nebo také stav důvěry, značí se $b \in \mathcal{B}$.
 Aktuální dialogový stav závisí na přechodové funkci, která dialogový stav aktualizuje pro každé nové pozorování a systémovou akci.
 Přechodová funkce je tedy mapování $\mathcal{T} : \mathcal{B} \times \mathcal{A} \times \mathcal{O} \longrightarrow \mathcal{B}$.
 V této práci se budeme věnovat právě metodám aktualizace dialogového stavu.
@@ -127,19 +255,19 @@ Pokud je časový okamžik důležitý, jsou pozorování, dialogový stav a akc
 
 \subsection{Generování přirozené řeči (NLG a TTS)}
 
-Posledním krokem v tahu dialogového systému je vytvoření odpovědi pro uživatele.
-Nejprve systém generování přirozené řeči převede dialogové akty na text.
-Následně je text převeden na zvuk pomocí textového syntetizéru řeči.
+Posledním krokem dialogového systému je vytvoření odpovědi pro uživatele.
+Nejprve systém generování přirozené řeči (NLG) převede dialogové akty na text.
+Následně je text převeden na zvuk pomocí textového syntetizéru řeči (TTS).
 
 Nejjednodušším přístup ke generování přirozeného jazyka z dialogových aktů je použití šablon.
-Například pro dialogový akt {\tt inform(type="x")} bude vytvořena šablona \uv{Restaurace servíruje x jídlo}, kde \uv{x} bude nahrazeno například za \uv{čínské}, \uv{indické}, atd.
-Šablony se při generování osvědčily, protože počet možných dialogových je většinou zvládnutelný.
+Například pro dialogový akt {\tt inform(from.stop="x")} bude vytvořena šablona \uv{Pojedete ze zastávky x}, kde \uv{x} bude nahrazeno například za \uv{Malostranská}, \uv{Letňany}, atd.
+Šablony jsou jednoduché a často efektivní řešení, protože počet možných frází je většinou dostatešně malý.
 
 Při syntéze řeči existuje mnoho alternativ.
 Je možné použít segmenty řeči z databáze pro vygenerování zvuků tvořících dohromady celou sekvenci slov.
-Příkladem těchto systémů je Festival~\cite{black2001festival} nebo FLite~\cite{black2001flite}.
+Příkladem těchto systémů je Festival~\cite{black2001festival} nebo jeho odnož  FLite~\cite{black2001flite}.
 
-Alternativní metodou syntézy je použití skrytých Markovských modelů pro generování zvuku, příkladem je HTS systém~\cite{zen2007hmm}.
+Alternativní metodou syntézy je použití Skrytých Markovských modelů pro generování zvuku, příkladem je HTS systém~\cite{zen2007hmm}.
 
 \section{Dialogový stav}
 
@@ -169,10 +297,10 @@ p(s_{t+1} = s^\prime) \propto
 \label{eq:beliefupdate}
 \end{equation}
 
-Nyní můžeme definovat dialogový stav v čase $t$, $b_t$, jako pravděpodobnost přes stavy dáno všechna pozorování až do času $t$.
-Množina všech možných dialogových stavů je pravděpodobnost přes všechny možné stavy prostředí $\mathcal{B} = \prod(\mathcal{S})$.
+Nyní můžeme definovat stav důvěry v čase $t$, $b_t$, jako pravděpodobnost přes stavy dáno všechna pozorování až do času $t$.
+Množina všech možných stavů důvěry je pravděpodobnost přes všechny možné stavy prostředí $\mathcal{B} = \prod(\mathcal{S})$.
 
-Můžeme přepsat rovnici~\eqref{eq:beliefupdate} s pomocí dialogových stavů.
+Můžeme přepsat rovnici~\eqref{eq:beliefupdate} s pomocí stavů důvěry.
 
 \begin{equation}
 b(s_{t+1}) \propto
@@ -188,7 +316,7 @@ V praxi ovšem bude množina možných hodnot pro slot $s_t$ příliš velká, p
 Pokud systém obsahuje sloty, tak každá kombinace hodnot slot je jedním možným cílem uživatele. 
 Tedy velikost stavového prostoru roste exponenciálně.
 
-\subsection{Aktualizace dialogového stavu}
+\subsection{Aktualizace stavu}
 
 Efektivní metodou pro aktualizaci dialogového stavu je použití dynamických bayesovských sítí~\cite{thomson2008bayesian}.
 Bayesovské sítě umoňují efektivní výpočet využitím podmíněných nezávislostí mezi sloty.

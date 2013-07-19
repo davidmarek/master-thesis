@@ -1,5 +1,6 @@
 % !TEX root = prace.tex
 \chapter{Bayesovské sítě a inference}
+\label{ch:kap2}
 
 V této kapitole představíme Bayesovské sítě, grafický model pro efektivní reprezentaci pravděpodobnostních rozdělení a nezávislostí mezi náhodnými proměnnými.
 Bayesovská síť zároveň vytváří koncept pro inferenci, tedy zodpovídání dotazů nad proměnnými v síti.
@@ -10,10 +11,11 @@ Analýzou složitosti exaktní inference dojdeme k závěru, že pro větší a 
 Nejprve aproximujeme sdruženou pravděpodobnostní distribuci součinem marginálních distribucí a představíme Loopy Belief Propagation algoritmus.
 Stále můžeme použít pouze diskrétní pravděpodobnostní distribuce se známými parametry.
 Pro učení parametrů lze použít Expectation Maximization metodu, pro dialogové systémy je ovšem těžké získat dostatek učících dat.
-Nakonec se dostaneme k metodě Expectation Propagation, která je zobecněním LBP a je tedy možné ji použít pro libovolné rozdělení.
-Díky ní budeme schopní vytvořit generativní model pro aktualizaci dialogového stavu, který bude pracovat stejně jako LBP, ale bude schopen adaptace.
+Dostaneme se k metodě Expectation Propagation, která je zobecněním LBP a je možné ji použít pro libovolné rozdělení.
+Díky ní budeme schopní vytvořit generativní model pro aktualizaci dialogového stavu, který bude pracovat stejně jako LBP, ale bude schopen adaptace za běhu dialogového systému.
 
 \section{Bayesovské sítě}
+\label{sec:bn}
 
 Bayesovské sítě jsou pravděpodobnostní grafický model, který využívá podmíněných nezávislostí pro úspornou reprezentaci sdružené pravděpodobnosti.
 Bayesovská sít je orientovaný acyklický graf, jeho vrcholy jsou náhodné proměnné a hrany odpovídají přímé závislosti jednoho uzlu na druhý.
@@ -23,7 +25,7 @@ Pokud proměnná nemá žádná rodiče, pak její podmíněná pravděpodobnost
 
 Příklad Student~\cite{koller2009probabilistic}: firma zvažuje, zda-li přijme studenta.
 Firma chce přijímat chytré studenty, ale nesmí je testovat na inteligenci (I) přímo.
-Má však výsledek studentových SAT testů, které ale nemusí stačit pro správné zhodnocení inteligence.
+Má však výsledek studentových SAT testů, které ovšem nemusí stačit pro správné zhodnocení inteligence.
 Požadují tak tedy i doporučení (D) od jednoho z učitelů.
 Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal v jeho předmětu.
 Předměty se ovšem liší v obtížnosti (O) a tak je studentova známka v předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
@@ -59,7 +61,7 @@ V tomto modelu je několik nezávislostí. Obtížnost předmětu a inteligence 
 Studentova známka z předmětu je závislá na obtížnosti předmětu a inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentova inteligence.
 Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentova známka.
 
-Sdruženou nezávislot tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s pomocí řetízkového pravidla.
+Sdruženou nezávislost tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s pomocí řetízkového pravidla.
 \begin{equation}
 P(O, I, Z, S, D) = P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
 \end{equation}
@@ -137,26 +139,21 @@ A nakonec spočítáme finální marginální pravděpodobnost
     P(D) &= \sum_C \psi_3(D, C)
 \end{align}
 
-\begin{definice}
 Nechť $\mathcal{X}$ je množina náhodných proměnných. 
 Potom definujeme faktor $\phi$ jako zobrazení z $Val(\mathcal{X})$ do $\mathbb{R}$. Faktor je nezáporný, pokud všechny jeho obrazy jsou nezáporné. Množina proměnných $\mathcal{X}$ je doménou faktoru a značíme ji jako $Dom(\phi)$.
-\end{definice}
 
 Faktor, jehož doménu tvoří diskrétní proměnné, si můžeme představit jako tabulku, která obsahuje jednu hodnotu pro každé možné ohodnocení proměnných z domény.
 
-\begin{definice}
 Nechť $\vec{X}, \vec{Y}, \vec{Z}$ jsou tři disjunktní množiny náhodných proměnných.
 Nechť $\phi_1(\vec{X}, \vec{Y})$ a $\phi_2(\vec{Y}, \vec{Z})$ jsou faktory.
 Definujeme součin faktorů $\phi_1 \times \phi_2$ jako faktor $\psi: Val(\vec{X}, \vec{Y}, \vec{Z}) \rightarrow \mathbb{R}$ následovně:
 \begin{equation*}
 \psi(\vec{X}, \vec{Y}, \vec{Z}) = \phi_1(\vec{X}, \vec{Y}) \cdot \phi_2(\vec{Y}, \vec{Z})
 \end{equation*}
-\end{definice}
 
 Násobíme prvky, které mají stejné ohodnocení společných proměnných $\vec{Y}$.
 Stejný princip použijeme pro všechny matematické operace.
 
-\begin{definice}
 Nechť $\vec{X}$ je množina náhodných proměnných a $Y \not\in \vec{X}$ náhodná proměnná. 
 Nechť $\phi(\vec{X}, Y)$ je faktor.
 Definujeme marginalizaci $Y$ v $\phi$, značenou $\sum_Y \phi$, jako faktor $\psi$ s doménou $\vec{X}$ takový, že
@@ -164,7 +161,6 @@ Definujeme marginalizaci $Y$ v $\phi$, značenou $\sum_Y \phi$, jako faktor $\ps
     \psi(\vec{X}) = \sum_Y \phi(\vec{X}, Y)
 \end{equation*}
 Této operaci také říkáme vysčítání $Y$ ve $\phi$.
-\end{definice}
 
 Faktory se při počítání chovají jako čísla, všechny operace probíhají po prvcích, pro které je ohodnocení náhodných proměnných z průniku domén faktorů stejné.
 Proto platí komutativita $\phi_1 \cdot \phi_2 = \phi_2 \cdot \phi_1$ a $\sum_X \sum_Y \phi = \sum_Y \sum_X \phi$.
@@ -215,7 +211,7 @@ Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
 \begin{algorithmic}
 \Function{Sum-Product-VE}{$\Phi$, $\vec{X}$, $\prec$}
 \State{$\Phi$ množina všech faktorů.} 
-\State{$\vec{X}$ množina náhodných proměnných, které mají být eliminovaný.}
+\State{$\vec{X}$ množina náhodných proměnných, které mají být eliminovány.}
 \State{$\prec$ pořadí proměnných, v jakém mají být eliminovány.}
 \State
 
@@ -236,19 +232,17 @@ Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
 \State $\Phi^{\prime \prime} \gets \Phi - \Phi^\prime$
 \State $\psi \gets \prod_{\phi \in \Phi^\prime} \phi$
 \State $\tau \gets \sum_X \psi$
-\State \Return $\Psi^{\prime\prime} \bigcup \{\tau\}$
+\State \Return $\Phi^{\prime\prime} \bigcup \{\tau\}$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
-\begin{theorem}
 Nechť $\vec{X}$ je množina náhodných proměnných, nechť $\Phi$ je množina faktorů, t.ž. pro každé $\phi \in \Phi$, $Dom(\phi) \subseteq \vec{X}$.
 Nechť $\vec{Y} \subset \vec{X}$ je množina dotazovaných náhodných proměnných a nechť $\vec{Z} = \vec{X} - \vec{Y}$.
 Pak pro každé seřazení $\prec$ nad $\vec{Z}$, Sum-Product-VE($\Phi$, $\vec{Z}$, $\prec$) vrátí faktor $\phi^*(\vec{Y})$ takový, že
 \[
 \phi^*(\vec{Y}) = \sum_Z \prod_{\phi \in \Phi} \phi
 \]
-\end{theorem}
 
 Nyní provedeme analýzu algoritmu eliminace proměnných.
 Předpokládejme, že na vstupu je $n$ proměnných.
@@ -256,7 +250,8 @@ Bayesovská síť obsahuje pro každou proměnnou jeden faktor.
 Pro jednoduchost budeme předpokládat, že algoritmus bude eliminovat všechny proměnné.
 Běh algoritmu se skládá z jednotlivých eliminačních kroků, při kterých je vždy eliminována jedna proměnná.
 
-Při jednom eliminačním kroku je vybrána proměnná $X_i$, všechny faktory, které ji obsahují jsou pronásobeny a vytvoří jeden velký faktor $\psi_i$, proměnná $X_i$ je pak vysčítána z tohoto faktoru.
+Při jednom eliminačním kroku je vybrána proměnná $X_i$, všechny faktory, které ji obsahují jsou vynásobeny a vytvoří jeden velký faktor $\psi_i$.
+Proměnná $X_i$ je pak vysčítána z tohoto faktoru.
 Počet operací pro jeden eliminační krok tedy závisí na velikosti faktoru $\psi_i$, označme ji $N_i$.
 Maximum z velikostí faktorů označme $N_{max} = max_i N_i$.
 
@@ -276,7 +271,7 @@ Algoritmy exaktní inference naráží při reálném použití na příliš vel
 Hlavním problémem je velikost sdružené pravděpodobnosti, která roste exponenciálně s počtem náhodných proměnných.
 Většinou nás ovšem zajímá marginální pravděpodobnost jedné nebo jen mála proměnných.
 Je tedy zbytečné počítat celou sdruženou pravděpodobnost, abychom z ní pak vysčítali většinu proměnných.
-Řešení se nabízí ve formě faktorizace sdružené pravděpodobnosti.
+Řešení se nabízí ve formě aproximace faktorizací sdružené pravděpodobnosti.
 
 \begin{equation*}
     P(X_1, \dots, X_n) = \prod_i P(X_i)
@@ -326,7 +321,7 @@ Pokud zafixujeme jednu náhodnou proměnnou $X$ ve faktor grafu, pak sdruženou 
 \end{equation}
 kde $ne(X)$ jsou faktory obsahující proměnnou $X$ (tedy sousedi ve faktor grafu), $F_s$ je součin všech faktorů v podstromu určeném faktorem $f_s$ a $\vec{X}_s$ je množina všech proměnných v daném podstromu.
 
-Pro výpočet marginální pravděpodobnosti $X$ substitujeme~(\ref{eq:fs}) do výpočtu marginální pravděpodobnosti ze sdružené a po výměně sumy a produktu dostaneme
+Pro výpočet marginální pravděpodobnosti $X$ substituujeme~(\ref{eq:fs}) do výpočtu marginální pravděpodobnosti ze sdružené a po výměně sumy a produktu dostaneme
 \begin{align}
 P(X) &= \prod_{s \in ne(X_i)} \sum_{\vec{X}_s} F_s(X, \vec{X}_s)
 \\
@@ -341,7 +336,7 @@ Zavedli jsme funkce
 \end{equation}
 které můžeme nazývat zprávami z faktoru $f_s$ do proměnné $X$.
 
-Každé $F_s(X, \vec{X}_s)$ je popsáno faktor grafem a tedy může být znova faktorizováno.
+Každé $F_s(X, \vec{X}_s)$ je popsáno podgrafem faktor grafu a tedy může být znova faktorizováno.
 Namísto proměnné $X$ nyní vezmeme faktor $f_s$.
 Náhodné proměnné sousedící s faktorem $f_s$ bez $X$ si označíme $X_1, \dots, X_M$.
 Součin faktorů v podstromech určených těmito proměnnými označíme $G_i(X_i, \vec{X}_{si})$.
@@ -373,7 +368,7 @@ Zavedli jsme další funkce
 \end{equation}
 které budeme nazývat zprávami z proměnné $X_m$ do faktoru $f_s$.
 
-Z rovnice~\ref{eq:margx} vidíme, že marginální pravděpodobnost proměnné vypočítáma jako součin zpráv ze všech okolních faktorů.
+Z rovnice~\ref{eq:margx} vidíme, že marginální pravděpodobnost proměnné vypočítáme jako součin zpráv ze všech okolních faktorů.
 Každou z těchto zpráv můžeme spočítat jako součin faktoru a zpráv přicházejících z proměnných, které s tímto faktorem sousedí, kromě proměnné, které chceme zprávu posílat. Zbývá nám tedy zjistit v jakém tvaru jsou zprávy z proměnných do faktoru.
 
 Stejně jako u $F_s(X, \vec{X}_s)$ nám tady $G_m(X_m, \vec{X}_{sm})$ definuje podgraf faktor grafu. 
@@ -409,8 +404,8 @@ Pro pozorovanou proměnnou je zpráva vždy rovna pozorované hodnotě, bez ohle
 
 Algoritmus exaktní inference na stromech s pomocí posílání zpráv se nazývá belief propagation~\cite{pearl1988probabilistic}.
 Zpráva z vrcholu faktor grafu může být poslána do jiného vrcholu, až když byly obdrženy zprávy ze všech ostatních vrcholů.
-Jakmile vrchol obdržel zprávy ze všech vrcholů, tak lze spočítat jeho marginální pravděpodobnost.
-Strom vždy můžeme zakořenit v nějaké náhodné proměnné a posílat zprávy z listů do kořene.
+Jakmile vrchol obdržel zprávy ze všech vrcholů, lze spočítat jeho marginální pravděpodobnost.
+Strom můžeme zakořenit v libovolné náhodné proměnné a posílat zprávy z listů do kořene.
 Kořen pak obdrží všechny zprávy ze všech sousedních faktorů a tedy je možné spočítat jeho marginální pravděpodobnost.
 Tomuto se říká dopředný krok propagace.
 
@@ -493,12 +488,13 @@ Této části se říká zpětný krok propagace.
 Po propagaci všech zpráv až k listům už každá proměnná získala zprávy od všech sousedních faktorů a tedy je možné spočítat marginální pravděpodobnost všech proměnných.
 
 \subsection{Loopy Belief Propagation}
+\label{sec:lbp}
 
 Algoritmus Belief Propagation funguje pro inferenci na stromech.
 Hlavní důvod proč nelze použít Belief Propagation na obecných grafech je, že můžeme narazit na cyklus v grafu, což znamená, že žádný z vrcholů v tomto cyklu nebude nikdy mít dostatek příchozích zpráv, aby mohl nějakou zprávu odeslat.
 
 Algoritmus Loopy Belief Propagation řeší tento problém relaxací podmínky na příchozí zprávy.
-Pro odeslání není třeba znát příchozí zprávy ze všech sousedních vrcholů, kromě toho, kterému je zpráva určena.
+Pro odeslání zprávy do uzlu není třeba znát zprávy ze všech ostatních sousedních vrcholů.
 Chybějící zprávy jsou nastaveny na jedničku.
 Loopy Belief Propagation je iterativní algoritmus.
 V grafu nemusí existovat vrchol, který může posílat zprávu k nějakému ze svých sousedů.
@@ -578,20 +574,20 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 
 \subsubsection{Popis LBP}
 
-Popis Loopy Belief Propagation je v algoritmu~(\ref{alg:lbp}).
+Popis Loopy Belief Propagation je v algoritmu~\ref{alg:lbp}.
 Při inferenci ve faktor grafu je nejprve třeba inicializovat všechny zprávy.
 Posílání zpráv budeme iterovat dokud zprávy nedokonvergují, anebo můžeme nastavit pevný počet iterací.
 Pak vybíráme vrcholy a z každého pošleme zprávu do všech okolních.
 Způsobem výběru vrcholů se budeme zabývat později.
-I kdybychom vybírali vrcholy v náhodném pořadí, tak se můžeme dobrat k výsledku, pouze to bude nejspíš trvat déle.
+I náhodný výběr vrcholů povede k výsledku, dodání externí informace či chytřejší heuristiky ovšem může výpočet výrazně urychlit.
 
-Poslání zprávy se liší podle toho, zda posíláme z proměnné do faktoru, anebo naopak.
+Poslání zprávy se liší podle toho, zda-li posíláme z proměnné do faktoru, anebo naopak.
 V obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů, kromě toho, do kterého zprávu posíláme.
-Při posílání zprávy z faktoru zprávy vynásobíme faktorem a marginalizujeme všechny proměnné, kromě té, které zprávu posíláme.
+Při posílání zprávy z vecholu pro faktor zprávy vynásobíme faktorem a marginalizujeme všechny proměnné, kromě té, které zprávu posíláme.
 
 Ve faktor grafu se tedy zprávy šíří pouze přes pravděpodobnostní rozdělení jedné proměnné.
-To může právě vést k oscilacím anebo konvergenci ke špatným hodnotám. 
-Příkladem může být skrytý markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
+To právě může vést k oscilacím anebo konvergenci ke špatným hodnotám. 
+Příkladem je například skrytý markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
 Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k rovnoměrnému rozdělení. A tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
 
 Při počítání zpráv často musíme pronásobit spoustu zpráv z okolních vrcholů.
@@ -606,14 +602,16 @@ Přitom se zprávy zas tak často nemění.
 Pak můžeme při odesílání zprávy z vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělit zprávou $\mu_{u \rightarrow v}$, pro faktory marginalizovat, a zpráva je připravena k odeslání.
 $b(v)$ můžeme aktualizovat po výběru vrcholu $v$ pro posílání zpráv, anebo po každém přijetí zprávy.
 
-Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude popsána v kapitole~\ref{sec:impl}.
+Pro pozorované proměnné je třeba metodu \textsc{Message-To-Factor} upravit tak, aby pouze posílala pozorovanou hodnotu.
+
+Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude popsána v kapitole~\ref{ch:kap4}.
 
 \section{Propagace s aproximovanými zprávami}
 
 V předchozí sekci byla faktorizována sdružená pravděpodobnost a tak došlo k zjednodušení inference.
-Mezi jednotlivými vrcholy byly stále posílány posílány exaktní zprávy.
+Mezi jednotlivými vrcholy byly stále posílány exaktní zprávy.
 V této sekci se zaměříme na inferenci v modelech, kde není možné spočítat zprávy exaktně a je třeba je aproximovat.
-Příkladem jsou například modely se spojitými náhodnými proměnnými.
+Tento problém nastává u některých modelů se spojitými náhodnými proměnnými.
 
 Předpokládáme, že máme pravděpodobnostní grafický model, reprezentující sdruženou pravděpodobnost dat a pozorování pomocí součinu faktorů.
 \begin{equation}
@@ -640,7 +638,7 @@ Aproximované faktory musíme zkonstruovat tak, abychom byli schopni provádět 
 Pro měření vzdálenosti aproximovaného rozdělení od skutečného používáme Kullback-Leiblerovu divergenci (KL)~\cite{kullback1997information}.
 KL divergence, také známá jako relativní entropie, mezi dvěma pravděpodobnostními rozděleními $p(x)$ a $q(x)$ je
 \begin{equation}
-KL(p \| q) = \int p(x) \frac{p(x)}{q(x)} \mathrm{d}x.
+KL(p \| q) = \int p(x) \log \left(\frac{p(x)}{q(x)}\right) \mathrm{d}x.
 \end{equation}
 Divergence splňuje tři vlastnosti:
 \begin{enumerate}
@@ -650,6 +648,7 @@ Divergence splňuje tři vlastnosti:
 \end{enumerate}
 
 \subsection{Rodina exponenciálních rozdělení}
+\label{sec:expfam}
 
 Rodina exponenciálních rozdělení~\cite{bernardo2009bayesian} přes $\vec{X}$, dáno parametry $\vec\eta$ je definována jako množina distribucí ve tvaru
 \begin{equation}
@@ -669,7 +668,7 @@ Pokud zapíšeme KL divergenci jako funkci $\vec\eta$, tak dostaneme
 \begin{equation}
 KL(p \| q) = - \log g(\vec\eta) - \vec\eta^T \mathbb{E}_{p(\vec{X})}[u(\vec{X})] + \mathrm{const}.
 \end{equation}
-KL divergenci můžeme minimalizovat tak, že nastavíme první derivici podle $\vec\eta$ rovnou nule, z čehož dostaneme
+KL divergenci můžeme minimalizovat tak, že nastavíme první derivaci podle $\vec\eta$ rovnou nule, z čehož dostaneme
 \begin{equation}
 -\nabla \log g(\vec\eta) = \mathbb{E}_{p(\vec{X})}[u(\vec{X})].
 \label{eq:kl}
@@ -701,6 +700,7 @@ Nový poznatek o funkci $g(\vec\eta)$ z (\ref{eq:ge}) můžeme substituovat do (
 z čehož vidíme, že pro minimalizaci KL divergence nám stačí najít parametry rozdělení $q(\vec{X})$ tak, aby mělo stejné očekávané statistiky jako $p(\vec{X})$.
 
 \subsection{Expectation Propagation}
+\label{sec:ep}
 
 Expectation propagation je algoritmus založený na aproximaci aposteriorní distribuce součinem aproximovaných faktorů
 \begin{equation}
@@ -713,12 +713,12 @@ Aproximující distribuci bychom chtěli nalézt pomocí minimalizace KL diverge
 \begin{equation}
 KL(p \| q) = KL\bigg(\frac{1}{p(\vec{E})} \prod_i f_i(\vec{X}) \bigg\| \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X} \bigg)
 \end{equation}
-Pro počítání KL divergence ovšem potřebujeme umět počítat se skutečnou pravděpodobností a když už s ní umíme efektivně počítat, tak proč ztrácet čas s aproximací.
+Pro počítání KL divergence ovšem potřebujeme umět počítat se skutečnou pravděpodobností a když už s ní umíme efektivně počítat, proč ztrácet čas s aproximací.
 
 Další možností je aproximovat jednotlivé faktory, díky tomu bychom v jednom kroku nalezli aproximace pro všechny faktory a měli bychom hotovo.
 Naším cílem je ale nalézt nejlepší aproximaci celé aposteriorní pravděpodobnosti a to není v tomto případě zaručeno.
 
-Expectation propagation~\cite{bishop2006pattern} sice aproximuje jednotlivé faktory, ale vždy v kontextu všech ostatních.
+Expectation propagation sice aproximuje jednotlivé faktory, ale vždy v kontextu všech ostatních~\cite{bishop2006pattern}.
 Nejprve jsou všechny inicializovány a pak jsou procházeny jeden po druhém a každý je aktualizován.
 Tento přístup je podobný metodám, které byly ukázány v předešlých sekcí.
 Předpokládejme, že chceme aktualizovat faktor $\tilde{f}_j (\vec{X})$.
@@ -756,7 +756,7 @@ Nyní můžeme nalézt novou hodnotu pro faktor $\tilde{f}_j$ minimalizací KL d
 \begin{equation}
     KL\bigg(\frac{f_j(\vec{X}) q^{\backslash j}(\vec{X})}{Z_j} \bigg\| q^{new}(\vec{X})\bigg).
 \end{equation}
-To uděláme jednoduše použitím poznatku z (\ref{eq:ee}), který říká, že nám stačí najít parametry $q^{new}$ tak, aby jeho postačující statistiky odpovídali momentům aproximovaného rozdělení (\ref{eq:aprox}).
+To uděláme jednoduše použitím poznatku z (\ref{eq:ee}), který říká, že nám stačí najít parametry $q^{new}$ tak, aby postačující statistiky odpovídali momentům aproximovaného rozdělení (\ref{eq:aprox}).
 
 Z nalezené aproximace $q^{new}$ pak získáme novou hodnotu faktoru $\tilde{f}_j$ z (\ref{eq:qnew}) vydělením zbývajících faktorů
 \begin{equation}
@@ -775,7 +775,8 @@ Hodnota $K$ pak může být nalezena srovnáním
 \end{equation}
 Z čehož zjistíme, že $K = Z_j$ a tedy může být nalezeno přímo z (\ref{eq:zj}).
 
-V praxi je třeba provést několik iterací, a v každé aktualizovat všechny faktory.
+Expectation Propagation je popsán v algoritmu~\ref{alg:ep}.
+Dokud aproximované rozdělení nekonverguje, vybíráme jednotlivé faktory a aktualizujeme je podle popsaného postupu.
 
 \begin{algorithm}
 \caption{Expectation propagation}
@@ -795,5 +796,6 @@ V praxi je třeba provést několik iterací, a v každé aktualizovat všechny 
 \end{algorithmic}
 \end{algorithm}
 
+V praxi je třeba provést několik iterací, a v každé aktualizovat všechny faktory.
 Stejně jako u LBP zde nemáme žádnou garanci, že bude algoritmus konvergovat.
 Pro aproximace $q(\vec{X})$ v exponenciální rodině, pokud iterace konverguje, pak nalezené řešení je stacionární bod specifické potenciální energie~\cite{minka2001expectation}.

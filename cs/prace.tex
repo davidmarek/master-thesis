@@ -53,6 +53,7 @@
 \usepackage{cite}
 \usepackage{setspace}
 \usetikzlibrary{bayesnet}
+\usetikzlibrary{arrows}
 
 %% Balíček hyperref, kterým jdou vyrábět klikací odkazy v PDF,
 %% ale hlavně ho používáme k uložení metadat do PDF (včetně obsahu).
@@ -183,6 +184,32 @@
 \def\PYZrb{]}
 \makeatother
 
+\makeatletter
+% code by Andrew Stacey: http://tex.stackexchange.com/a/27996/3954
+\tikzset{
+  through point/.style={
+    to path={%
+      \pgfextra{%
+        \tikz@scan@one@point\pgfutil@firstofone(\tikztostart)\relax
+        \pgfmathsetmacro{\pt@sx}{\pgf@x * 0.03514598035}%
+        \pgfmathsetmacro{\pt@sy}{\pgf@y * 0.03514598035}%
+        \tikz@scan@one@point\pgfutil@firstofone#1\relax
+        \pgfmathsetmacro{\pt@ax}{\pgf@x * 0.03514598035 - \pt@sx}%
+        \pgfmathsetmacro{\pt@ay}{\pgf@y * 0.03514598035 - \pt@sy}%
+        \tikz@scan@one@point\pgfutil@firstofone(\tikztotarget)\relax
+        \pgfmathsetmacro{\pt@ex}{\pgf@x * 0.03514598035 - \pt@sx}%
+        \pgfmathsetmacro{\pt@ey}{\pgf@y * 0.03514598035 - \pt@sy}%
+        \pgfmathsetmacro{\pt@len}{\pt@ex * \pt@ex + \pt@ey * \pt@ey}%
+        \pgfmathsetmacro{\pt@t}{(\pt@ax * \pt@ex + \pt@ay * \pt@ey)/\pt@len}%
+        \pgfmathsetmacro{\pt@t}{(\pt@t > .5 ? 1 - \pt@t : \pt@t)}%
+        \pgfmathsetmacro{\pt@h}{(\pt@ax * \pt@ey - \pt@ay * \pt@ex)/\pt@len}%
+        \pgfmathsetmacro{\pt@y}{\pt@h/(3 * \pt@t * (1 - \pt@t))}%
+      }
+      (\tikztostart) .. controls +(\pt@t * \pt@ex + \pt@y * \pt@ey, \pt@t * \pt@ey - \pt@y * \pt@ex) and +(-\pt@t * \pt@ex + \pt@y * \pt@ey, -\pt@t * \pt@ey - \pt@y * \pt@ex) .. (\tikztotarget)
+    }
+  }
+}
+\makeatother
 
 % Toto makro definuje kapitolu, která není očíslovaná, ale je uvedena v obsahu.
 \def\chapwithtoc#1{

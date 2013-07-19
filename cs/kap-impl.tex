@@ -1,5 +1,7 @@
 % !TEX root = prace.tex
 \chapter{Implementace}
+\label{ch:kap4}
+
 V předchozích kapitolách byly popsány teoretické základy nutné pro implementaci inference v bayesovských sítích.
 V této kapitole bude popsána vytvořená knihovna pro dialogové systémy.
 Celá knihovna se skládá z několika vrstev, každá z nich stojí na předchozí.
@@ -12,9 +14,8 @@ Nejvyšší vrstva se zaměřuje na samotnou propagaci zpráv.
 
 Faktor je základním stavebním kamenem.
 Operace s faktory musí být efektivní, pro výpočet jedné zprávy je potřeba několik násobení faktorů, následně je třeba je marginalizovat atd.
-Faktory je třeba úsporně reprezentovat, každá zpráva, každé pravděpodobnostní rozhraní je samo o sobě faktor.
-Faktory jsou reprezentovány třídou \texttt{Factor}, která podporuje všechny základní matematické operace a také řadu specifických operací jako je marginalizace, normalizace, nastavení faktoru na pozorovanou hodnotu, vybrání nejpravděpodobnějšího přiřazení, atd.
-Dokumentace třídy je dostupná v příloze \ref{sec:factor}. \todo{Odkaz do dokumentace}
+Faktory je třeba úsporně reprezentovat, každá zpráva, každé pravděpodobnostní rozdělení je samo o sobě faktor.
+Faktory jsou reprezentovány třídou \texttt{Factor} v modulu \texttt{bn/factor.py}, která podporuje všechny základní matematické operace a také řadu specifických operací jako je marginalizace, normalizace, nastavení faktoru na pozorovanou hodnotu, vybrání nejpravděpodobnějšího přiřazení, atd.
 
 \subsection{Reprezentace faktorů}
 \label{sec:repfak}
@@ -25,14 +26,14 @@ Faktor je tedy ve své podstatě multidimenzionální tabulka.
 Pro implementaci je tato tabulka zploštěná do jednoduchého pole.
 
 Knihovna je napsaná v Pythonu a pro matematické operace používá knihovnu Numpy~\cite{oliphant-2006-guide}.
-Pole pak využíváji implementaci z knihovny Numpy, díky které jsou matematické operace napsané v rychlejším jazyku (C, Fortran) než je Python a jsou navíc vektorizované.
+Pole pak využívají implementaci z knihovny Numpy, díky které jsou matematické operace napsané v rychlejším jazyku (C, Fortran) než je Python a jsou navíc vektorizované.
 
 Jak je tedy možné reprezentovat multidimenzionální tabulku jednodimenzionálním polem?
 Proměnné jsou seřazené a pro zjednodušení můžeme předpokládat, že hodnoty proměnných jsou čísla z $\{0, \dots, n-1\}$, kde $n$ je kardinalita proměnné.
 Každá hodnota v poli je pak hodnotou faktoru pro nějaké přiřazení hodnot proměnným, např. $(0, 1, 0)$.
 Jednotlivé hodnoty jsou v poli seřazeny lexikograficky.
 Pro každou proměnnou si pamatujeme její kardinalitu a také tzv. krok.
-Krok určuje kolik pro každou proměnnou o kolik hodnot v tabulce se musíme posunout, abychom se dostali na další hodnotu této proměnné se zachováním hodnot všech následujících.
+Krok určuje pro každou proměnnou o kolik hodnot v tabulce se musíme posunout, abychom se dostali na další hodnotu této proměnné se zachováním hodnot všech následujících proměnných.
 
 Příklad faktoru je v tabulce \ref{tab:stride}.
 Doménu faktoru tvoří dvě binární proměnné $X$ a $Y$, jejich kardinalita je tedy 2.
@@ -64,7 +65,7 @@ $X$ & $Y$ & Hodnota \\
 Implementace diskrétního faktoru obsahuje všechny základní matematické operace, ale také speciální operace, které jsou využity specificky pro pravděpodobnostní rozložení, např. marginalizace anebo normalizace.
 Operace jako násobení a marginalizace jsou používány při každém výpočtu zprávy a tedy je třeba je napsat tak, aby fungovaly co nejefektivněji.
 
-Operace s faktory musí fungovat ve třech různých situacích, příklady uvedeme na násobení.
+Matematické operace s faktory musí fungovat ve třech různých situacích, příklady uvedeme na násobení.
 \begin{enumerate}
     \item Násobení faktoru s faktorem, oba se stejnou doménou,
     \item násobení dvou faktorů, které sdíli jen některé proměnné,
@@ -174,6 +175,7 @@ Při každé úpravě proměnné také aktualizujeme indexy ve vstupních faktor
 Pokud se přesunujeme na další hodnotu proměnné, tak stačí k indexu pro faktor přičíst krok upravené proměnné.
 Pokud je třeba se vrátit na ohodnocení 0, pak od indexu pro vstupní faktor odečteme $(c_v - 1) \cdot s_v$, kde $c_v$ je kardinalita proměnné $v$ a $s_v$ je krok proměnné $v$.
 Pokud proměnná není obsažena v doméně faktoru, pak její krok je roven 0.
+Celá metoda pro aplikaci matematické operace je v algoritmu~\ref{alg:apop}.
 
 \begin{algorithm}
 \caption{Aplikace operace na faktory s různými doménami}
@@ -216,13 +218,14 @@ Na vstupu je faktor a podmnožina proměnných z domény faktoru, které mají z
 Algoritmus je podobný aplikaci matematické operace z předchozí sekce.
 V tomto případě procházíme původní faktor a každou hodnotu přičteme na správnou pozici v novém faktoru.
 Pro aktualizaci indexu v tomto případě musíme projít všechny proměnné, které mají zůstat a u každé zkontrolovat, zda-li se v následujícím kroku změní.
+Postup marginalizace je zapsán v algoritmus~\ref{alg:marg}.
 
 \begin{algorithm}
 \caption{Marginalizace faktoru}
 \label{alg:marg}
 \begin{algorithmic}
 \Function{Marginalize}{$f$, $vars$}
-\State $f$ -- vstupní faktor, pole incializované na 0
+\State $f$ -- vstupní faktor
 \State $vars$ -- seznam proměnných, které mají zůstat
 \State
 \State $f_r \gets$ nový faktor, obsahující pouze proměnné z $vars$
@@ -257,7 +260,7 @@ Zde může být názvosloví matoucí, protože implementace faktorů z předcho
 Vrchol pro proměnnou reprezentuje marginální distribuci proměnné.
 Vrcholy pro faktory reprezentují pouze samotné faktory, z kterých se skládá sdružená distribuce.
 Vrcholy slouží k vytvoření reprezentace grafického modelu a obsahují metody pro výpočet a posílání zpráv.
-Implementace vrcholů je v modulu \texttt{node.py} a jejich dokumentace je v příloze \ref{sec:node}. \todo{Odkaz na dokumentaci}
+Implementace vrcholů je v modulu \texttt{bn/node.py}.
 
 \subsection{Rozhraní vrcholů}
 
@@ -273,19 +276,19 @@ Nejdůležitější jsou metody \texttt{message\_to} a \texttt{message\_from}.
 Vrchol spočítá v metodě \texttt{message\_to} zprávu pro svého souseda.
 Má přístup ke všem ostatním vrcholům a tak pro něj není problém zprávu spočítat.
 Sousední vrchol zprávu přijme tak, že bude zavolána jeho metoda \texttt{message\_from} a v ní mu bude zpráva předána.
-Díky tomu, že na posílání zpráv se podílí odesílatel i příjemce, můžeme kombinovat různé vrcholy, stačí pokud se dohodnout na stejném formátu zprávy.
+Díky tomu, že na posílání zpráv se podílí odesílatel i příjemce, můžeme kombinovat různé vrcholy, stačí pokud se dohodnou na stejném formátu zprávy.
 Dochází tak k oddělení odesílatele od příjemce.
 
 Další metodou, kterou obsahuje každý vrchol je metoda pro inicializaci zpráv \texttt{init\_messages}. 
-Pro stávající implementace vrcholů není třeba ji volat před posíláním zpráv, protože zprávy mezi sousedními vrhcoly jsou inicializovány vždy při zavolání metody \texttt{connect} pro jejich propojení.
-Pokud ovšem budeme provádět více výpočtů nad jedním grafickým modelem, tak je třeba zprávy nastavit na původní hodnoty před dalším výpočtem, jinak by hodnota zpráv z minulého výpočtu ovlivnila ten následující.
+Pro stávající implementace vrcholů není třeba ji volat před posíláním zpráv, protože zprávy mezi sousedními vrcholy jsou inicializovány vždy při zavolání metody \texttt{connect} pro jejich propojení.
+Pokud ovšem budeme provádět více výpočtů nad jedním grafickým modelem, je třeba zprávy nastavit na původní hodnoty před dalším výpočtem, jinak by hodnota zpráv z minulého výpočtu ovlivnila ten následující.
 
 Z optimalizačních důvodů se při odesílání zpráv nepočítá součin všech příchozích vždy znovu, ale je předpočítán a pouze se aktualizuje před odesláním zpráv.
 Pro aktualizaci slouží metoda \texttt{update}.
 Vzhledem k tomu, že při inferenci je každý faktor vybrán jen jednou a pak jsou z něj odeslány zprávy do všech ostatních vrcholů, stačí metodu \texttt{update} volat pro každý faktor v každé iteraci jen jednou.
 Pro odeslání zpráv do všech vrcholů slouží jako zkratka metoda \texttt{send\_messages}.
 
-Implementace vrcholů pro diskrétní proměnné je v třídě \texttt{DiscreteVariableNode}.
+Třída \texttt{DiscreteVariableNode} implementuje funkcionalitu vrcholů pro diskrétní proměnné.
 Implementace vrcholů pro faktory s diskrétními proměnnými je ve třídě \texttt{DiscreteFactorNode}. 
 
 \subsection{Rozhraní vrcholů pro proměnné}
@@ -302,15 +305,16 @@ K tomu slouží metoda \texttt{most\_probable}.
 Vrátí seznam nejpravděpodobnějších přiřazení a jejich pravděpodobností.
 
 \section{Vrcholy pro Dirichletovské parametry}
+\label{sec:vrdir}
 
 V kapitole \ref{ch:ep} jsme ukázali jakým způsobem je možné pro diskrétní proměnné učit parametry.
-V modulu \texttt{node.py} jsou implementované vrcholy pro práci s dirichletovskými parametry.
-Jmenují se \texttt{DirichletParameterNode} a \texttt{DirichletFactorNode}.
+V modulu \texttt{bn/node.py} jsou implementované vrcholy pro práci s dirichletovskými parametry.
+Jedná se o třídy \texttt{DirichletParameterNode} a \texttt{DirichletFactorNode}.
 V rozhraní se neliší od standardních implementací vrcholů.
 
-\texttt{DirichletParameterNode} musí být vždy spojen pouze s \texttt{DirichletFactorNode}, který už ale může být dále propojen se standardními vrcholy pro diskrétní proměnné.
+Vrchol \texttt{DirichletParameterNode} musí být vždy spojen pouze s vrcholem \texttt{DirichletFactorNode}, který už ale může být dále propojen s vrcholy pro diskrétní proměnné.
 Díky tomu, že tyto vrcholy o své existenci navzájem ví, tak je možné použít standardní rozhraní pro posílání zpráv.
-Při připojení vrcholu pro parametr k faktor vrcholu faktor tento pozná, že se k němu připojil speciální vrchol a bude se tak k němu chovat.
+Při připojení vrcholu pro parametr k vrcholu pro faktor tento pozná, že se k němu připojil speciální vrchol a bude se tak k němu chovat.
 Zprávy od něj bude interpretovat jako parametry pro distribuci zbytku proměnných.
 Pro zprávu z faktoru do parametru je třeba provést aproximaci pravděpodobnostní distribuce proměnných a z ní odvodit nové parametry.
 
@@ -318,7 +322,7 @@ Pro zprávu z faktoru do parametru je třeba provést aproximaci pravděpodobnos
 
 V této sekci si popíšeme poslední vrstvu implementovanou v knihovně a to vrstvu starající se o inferenci v grafických modelech.
 Předpokládáme, že již máme vytvořený graf z vrcholů, které byly představeny v předchozí sekci.
-V modulu \texttt{lbp.py} je implementována třída \texttt{LBP}, která implementuje iterativní algoritmus pro aktualizaci grafického modelu a také obsahuje několik implementací strategií pro různé typy grafů.
+V modulu \texttt{bn/lbp.py} je implementována třída \texttt{LBP}, která implementuje iterativní algoritmus pro aktualizaci grafického modelu a také obsahuje několik implementací strategií pro různé typy grafů.
 
 Pro výpočet v grafickém modelu je nejprve třeba zaregistrovat všechny vrcholy z grafu.
 K tomu existuje několik metod, odlišující se podle typu grafu.
@@ -367,7 +371,7 @@ Inferenci provádíme způsobem podobným indukci.
 Pro první vrstvu provedeme inferenci libovolným způsobem, může dokonce platit, že v rámci jedné vrstvy se jedná o strom.
 Po přidání $k$-té vrstvy předpokládáme, že byla provedena inference na předchozích $k-1$ vrstvách a tedy zprávy v této části grafu jsou správné.
 Zprávy ve směru k nové vrstvě jsou stále správné, neznáme ovšem hodnotu zpráv z předposlední vrstvy do nové vrstvy a hodnotu zpráv v nové vrstvě.
-Pošleme tedy zprávy z předposlední vrstvy a provedeme inferenci v nové vrstvě, opět můžeme použít libovolnou heuristiku.
+Pošleme tedy zprávy z předposlední vrstvy a provedeme inferenci v nové vrstvě.
 
 Stále ještě zbývají zprávy z nové vrstvy zpět v síti.
 Čím dál do historie ovšem jdeme, tím menší vliv naše nová pozorování budou mít na vrcholy v dané vrstvě.
@@ -376,17 +380,18 @@ Proto se většinou omezíme jen na posledních několik vrstev (1 až 3).
 \section{Příklady}
 
 Po popisu jednotlivých vrstev v předchozí sekci nyní přejdeme k příkladům použití knihovny.
-Nejprve ukážeme použití jednotlivých tříd a metod, následně se přesuneme k použití v jednoduchých modelech.
+Nejprve ukážeme použití jednotlivých tříd a metod.
 Nakonec bude představen příklad systému použitého v Dialog State Tracking Challenge (DSTC) 2013~\cite{dstc2013}.
 
 \subsection{Použití jednotlivých komponent}
+\label{sec:usage}
 
 Představíme příklady vytvoření a používání jednotlivých komponent, od implementace faktorů až po inferenci v grafickém modelu.
 
 \subsubsection{Faktor}
 
 Třída \texttt{Faktor} je popsána v sekci \ref{sec:repfak}.
-Vytvoření faktoru je ukázáno v příkladu~\ref{lst:crfac}.
+Vytvoření faktoru je ukázáno v příkladu~\ref{lst:crfac}, zde máme jednoduchý generativní model pro výběr restaurace podle typu jídla.
 Vytvořený faktor obsahuje dvě proměnné, první je požadovaný typ jídla, druhá je pozorovaný požadovaný typ.
 Faktor může pocházet z generativního modelu, kde pravděpodobnost pozorování závisí na skutečné hodnotě.
 Zde vidíme, že je větší pravděpodobnost pozorování typu jídla, které uživatel opravdu chce.
@@ -645,7 +650,7 @@ Faktor nabízí metodu pro normalizaci hodnot, která navíc bere v úvahu i pod
 \PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{,}
 \PY{g+gp}{... }   \PY{p}{\PYZob{}}
 \PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{,}
-\PY{g+go}{...	       (\PYZsq{}indian\PYZsq{}, \PYZsq{}chinese\PYZsq{}): 1,}
+\PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{,}
 \PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
 \PY{g+gp}{... }       \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
 \PY{g+gp}{... }   \PY{p}{\PYZcb{}}\PY{p}{)}
@@ -1052,7 +1057,7 @@ Nyní grafický model z minulé sekce upravíme tak, aby parametry přechodové 
 Vše zůstane stejné, pouze faktor pro přechodovou pravděpodobnost nahradíme \texttt{DirichletFactorNode} a k němu připojíme nový vrchol \texttt{DirichletParameterNode}, který bude reprezentovat parametry.
 Vytvoření grafického modelu je v příkladu~\ref{lst:crtep}.
 
-Druhý parametr \texttt{DirichletParameterNode} nyní neurčuje pravděpodobnosti, ale parametry $\alpha$ dirichletovských rozdělení.
+Druhý parametr konstruktoru \texttt{DirichletParameterNode} nyní neurčuje pravděpodobnosti, ale parametry $\alpha$ dirichletovských rozdělení.
 Pro každou kombinaci hodnot rodičů existuje jedno dirichletovské rozdělení popisující apriorní rozdělení nad pravděpodobností proměnné, která je potomkem faktoru.
 V tomto případě je to skrytá proměnná v druhé obrátce.
 Parametry můžou být buď nastaveny bez apriorní znalosti, pak jsou všechny rovny 1, anebo můžeme nějakou naši apriorní znalost přidat.
@@ -1184,20 +1189,53 @@ Zároveň je vidět, že byly parametry modifikovány, pokud uživatel v první 
 \end{Verbatim}
 \end{example}
 
+Nyní ještě ukážeme jak je možné použít stejný model vícekrát, s různými pozorováními.
+Představme si, že nyní máme další hovor o dvou obrátkách, avšak s jinými pozorovanými hodnotami.
+Stačí nastavit nová pozorování, znovu inicializovat zprávy a spustit inferenci.
+Výhodou je, že není třeba znovu vytvářet síť, navíc počítáme už s upraveným dirichletovským parametrem pro přechodovou pravděpodobnost.
+Výsledek je v příkladu~\ref{lst:epint}.
+
+\begin{example}
+\caption{Využití modelu pro nová pozorování}
+\label{lst:epint}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{obs\PYZus{}1}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+\PY{g+gp}{... }    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.1}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.9}\PY{p}{,}
+\PY{g+gp}{... }\PY{p}{\PYZcb{}}\PY{p}{)}      
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{obs\PYZus{}2}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+\PY{g+gp}{... }    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{chinese}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{indian}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }\PY{p}{\PYZcb{}}\PY{p}{)}   
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{lbp}\PY{o}{.}\PY{n}{init\PYZus{}messages}\PY{p}{(}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{lbp}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{trans\PYZus{}param}\PY{o}{.}\PY{n}{alpha}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}        
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{     food\PYZus{}1          food\PYZus{}2          Value      }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    chinese         chinese           2.3       }
+\PY{g+go}{    chinese          indian           0.97      }
+\PY{g+go}{     indian         chinese           0.97      }
+\PY{g+go}{     indian          indian           2.3       }
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\end{example}
+
 
 \section{Dialog State Tracking Challenge}
+\label{sec:dstc}
 
 Knihovna pro inferenci byla použita v Dialog State Tracking Challenge (DSTC) 2013~\cite{dstc2013}.
 Nejprve popíšeme problém, následně představíme použitý model a nakonec porovnáme výsledky modelu s ostatními systémy.
 
 Cílem DSTC bylo vytvořit prostředky pro porovnání různých přístupů k inferenci dialogového stavu a vyhodnotit jejich úspěšnost pomocí společné množiny metrik.
-Organizátoři poskytli několik anotovaných množin dat, které pocházejí z reálného použití tří různých dialogových systémů pro úlohu Let's Go~\cite{raux2005let}.
+Organizátoři poskytli několik anotovaných množin dat, které pocházejí z reálného použití tří různých dialogových systémů pro úlohu Let's Go!~\cite{raux2005let}.
 Zároveň poskytli i baseline dialogový systém.
-Cílem účastníků soutěže bylo vytvořit systém odhadu dialového stavu, který správně predikuje dialogový stav na základě vstupu od uživatele a minulé akce systému.
+Cílem účastníků soutěže bylo vytvořit systém pro odhad dialového stavu, který správně predikuje dialogový stav na základě vstupu od uživatele a minulé akce systému.
 
 \subsection{Let's Go}
 
-Úlohou dialogového systému Let's Go je poskytnout telefonní službu pro zjišťování autobusového spojení v Pittsburghu.
+Úlohou dialogového systému Let's Go! je poskytnout telefonní službu pro zjišťování autobusového spojení v Pittsburghu.
 Systém rozpoznává 9 různých slotů, některé z nich sestávající z podslotů.
 Tyto sloty jsou
 \begin{itemize}
@@ -1217,7 +1255,7 @@ Systém Let's Go celkem rozpoznával více než 5000 míst a zhruba 150 různýc
 Jednotlivé dialogy se skládají z obrátek, ve kterých se střídá uživatel a systém.
 Příklad rozhovoru je v tabulce~\ref{tab:exampledialog}.
 Uživatel může informovat systém o hodnotě libovolného slotu.
-Systém se může uživatele požádat o hodnotu libovolného slotu, popř. o potvrzení hodnoty slotu.
+Systém může uživatele požádat o hodnotu libovolného slotu, popř. o potvrzení hodnoty slotu.
 Vstup a výstup je reprezentován dialogovými akty.
 Používány jsou pouze dialogové akty \emph{inform}, \emph{deny}, \emph{affirm} a \emph{negate}.
 Zbytek dialogových aktů je ignorován, protože nemění cíle uživatele.
@@ -1263,7 +1301,7 @@ Obrátka & Aktér & Přepis \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Příklad dialogu mezi uživatelem a dialogovým systémem Let's Go. \textit{dact} znamená dialogový akt.}
+\caption{Příklad dialogu mezi uživatelem a dialogovým systémem Let's Go! \textit{dact} znamená dialogový akt.}
 \label{tab:exampledialog}
 \end{table}
 
@@ -1275,9 +1313,9 @@ Vygenerované hypotézy ovšem obsahovaly pouze skóre, které muselo být přep
 Organizátoři nevydali žádné informace o povaze skóre.
 
 Data obsahovala zjevně chybné hypotézy, např. v jedné hypotéze se objevily dvě různé hodnoty pro jeden slot.
-Tyto hypotézy byly z dat odstraněny, ještě před samotnou inferencí.
+Tyto hypotézy byly z dat odstraněny ještě před samotnou inferencí.
 
-\subsection{Generativní model}
+\subsection{Popis systému}
 
 Dialogový stav byl v použitém systému modelován jednoduchým generativním modelem, kde pro každý slot v jedné obrátce existují dva vrcholy, skutečná hodnota slotu $s_t$ a pozorovaná hodnota $o_t$.
 Stav důvěry skutečné hodnoty slotu $b(s_t)$ závisí pouze na hodnotě v minulé obrátce $s_{t-1}$ a na poslední systémové akci $a_{t-1}$.
@@ -1288,7 +1326,7 @@ Stav důvěry můžeme vyjádřit ze sdružené pravděpodobnosti generativního
 b(s_t) = \sum_{s_{t-1}, o_t} p(s_t \mid a_{t-1}, s_{t-1}) p(o_t \mid s_t) b(s_{t-1})
 \end{equation}
 
-Pro zrychlení výpočtu bylo využito stažených parametrů~\cite{thomson2010bayesian} s manuálně nastavenými hodnotami:
+Pro zrychlení výpočtu bylo využito stažených parametrů s manuálně nastavenými hodnotami~\cite{thomson2010bayesian}:
 \begin{equation}
 p(s_t \mid a_{t-1}, s_{t-1}) = \begin{cases}
 \theta_t & \text{pokud } s_t = s_{t-1} \\
@@ -1321,10 +1359,10 @@ Pro inferenci bylo použito LBP a protože možných hodnot slotů bylo v řádu
 Použitý model byl testován na 4 testovacích datových sadách s live daty a na dvou testovacích datových sadách s batch daty.
 Výsledky byly porovnány s baseline dialogovým systémem vytvořeným organizátory.
 Použité metriky byly přesnost (accuracy) dialogového systému a Brier score.
-Přesnost je podíl obrátek, ve kterých byla nejlepší hypotéza systému pro odhad stavu správná oproti celkovému počtu obrátek.
-Brier score měří přesnost prediktivní pravděpodobnostní distribuce systému pro odhad stavu~\cite{brier1950verification}, čím menší, tím lepší.
+Přesnost je podíl obrátek, ve kterých byla nejlepší hypotéza systému pro odhad stavu správná, oproti celkovému počtu obrátek.
+Brier score měří přesnost prediktivní pravděpodobnostní distribuce systému pro odhad stavu~\cite{brier1950verification} (čím menší, tím lepší).
 
-Výsledky ukazují (viz tabulka~\ref{t:all:datasets}), že generativní model překonává baseline na všech datových sadách, kromě s batch dat.
+Výsledky ukazují (viz tabulka~\ref{t:all:datasets}), že generativní model překonává baseline na všech datových sadách, kromě batch dat.
 Manuální inspekcí bylo zjištěno, že generativní model je velmi citlivý na vstupní pravděpodobnosti.
 Pravděpodobnosti hypotéz z batch dat, zřejmě kvůli způsobu přepočítání skóre na pravděpodobnosti, jsou velmi blízko sebe a tedy nedávají dostatek informací pro pravděpodobnostní model.
 
@@ -1368,7 +1406,7 @@ test2 & přesnost    & 0.79 & 0.77 \\
 \end{table}
 
 Generativní systém byl také porovnán s ostatními dialogovými systémy přihlášenými do DSTC.
-Zde se svou úspěšností zařadil mezi většinu systémů (viz tabulka~\ref{t:DSTC:ranking}).
+Zde byl rovnocenným soupeřem většině ostatních týmů (viz tabulka~\ref{t:DSTC:ranking}).
 Ve výsledcích bude generativní systém veden jako 2. systém týmu číslo 3.
 
 \begin{table}[h]
@@ -1396,3 +1434,19 @@ team9         & 0.89 & 0.20\\
 \end{table}
 
 Tabulky výsledků a příklad dialogu byly převzaty z článku popisujícího přihlášené systémy do DSTC a porovnávajícího generativní model s jednoduchým diskriminativním modelem~\cite{zilka2013}.
+
+\subsection{Zdrojové kódy}
+
+V příloze v adresáři \texttt{dstc/} jsou všechny potřebné soubory pro spuštění inference na datové sady z DSTC.
+V adresáři \texttt{dstc/data} jsou všechny datové sady.
+Zdrojové kódy jsou v \texttt{dstc/src}.
+
+Kód pro načtení dat je v modulu \texttt{loader.py}, data byla poskytnuta ve formátu JSON~\cite{crockford2006application}.
+Skript \texttt{system\_dm.py} obsahuje kód pro vytvoření grafického modelu z dat a inferenci.
+Použitá datová sada, vstupní a výstupní soubory, parametry grafického modelu a další parametry nutné pro výpočet je možné skriptu zadat buď pomocí přepínačů na příkazové řádce, anebo v konfiguračním souboru.
+Pro všechny testovací datové sady jsou poskytnuty konfigurační soubory (např. \texttt{test1.conf}).
+
+Pro získání metrik z vypočtených dat je třeba spustit skripty poskytnuté organizátory.
+Celý proces byl zjednodušen přidáním skriptu \texttt{test\_run.sh}, který jako jediný parametr očekává konfigurační soubor a sám spustí inferenci a nakonec i vypíše hodnotu metrik.
+
+Bližší dokumentace používání, i s příklady je obsažena v příloze.

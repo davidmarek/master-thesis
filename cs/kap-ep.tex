@@ -2,9 +2,14 @@
 \chapter{Učení parametrů}
 \label{ch:ep}
 
+Představené metody v minulé kapitole fungují pro modely, kde máme nastavené parametry faktorů.
+V této kapitole si představíme grafický model pro diskrétní proměnné, u kterého jsou i parametry faktorů proměnné a je možné pro ně použít inferenci.
+Díky tomu bude možné nalézt aposteriorní distribuci pro tyto parametry a tedy je naučit podle dat.
+
 \section{Grafický model}
 
-Máme vybraný faktor $f$, tento faktor je spojený s několika proměnnými
+Model se skládá z faktorů a proměnných.
+Nechť máme vybraný faktor $f$, tento faktor je spojený s několika proměnnými
 $\vec{x} = (x_0, x_1, \dots, x_{N_x})$
 a množinami parametrů
 $\vec{\Theta} = (\vec{\theta}_1, \dots, \vec{\theta}_{N_\theta})$.
@@ -40,11 +45,11 @@ $$m_{\vec\theta_i \rightarrow f} = q^\backslash (\vec\theta_i)$$
 \subsection{Marginální pravděpodobnost proměnných}
 
 Pokud chceme aktualizovat hodnotu naší aproximace marginální pravděpodobnosti,
-tak je třeba minimalizovat její vzdálenost od skutečné marginální
+je třeba minimalizovat její vzdálenost od skutečné marginální
 pravděpodobnosti:
 \begin{align}
 p^*(\tilde{x}_j) &=
-\sum_{\vec{x}: x_j = \tilde{x}_j}
+\sum_{\vec{x} \backslash x_j}
 	\int_{\vec{\Theta}}
     		\prod_i 
 			q^\backslash(x_i)
@@ -55,7 +60,7 @@ p^*(\tilde{x}_j) &=
 \label{eq:1} 
 \\
 &=
-\sum_{\vec{x}: x_j = \tilde{x}_j} 
+\sum_{\vec{x} \backslash x_j} 
 	\prod_i 
 		q^\backslash(x_i)
     \int_{\vec{\theta_{\rho(\vec{x^\prime})}}}
@@ -63,19 +68,12 @@ p^*(\tilde{x}_j) &=
     \theta_{\rho(\vec{x^\prime}), x_0} \label{eq:2} 
 \\
 &= 
-\sum_{\vec{x}: x_j = \tilde{x}_j} 
+\sum_{\vec{x} \backslash x_j} 
 	\prod_i 
 		q^\backslash(x_i)
     		\mathbb{E}_{q^\backslash} 
 			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \label{eq:3}
-\\
-&= 
-\sum_{\vec{x}: x_j = \tilde{x}_j} 
-	\prod_i 
-		m_{x_i \rightarrow f}(x_i)
-    		\mathbb{E}_{q^\backslash} 
-			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \end{align}
 
 Rovnost~(\ref{eq:1}) vychází z definice výpočtu marginální pravděpodobnosti ze
@@ -89,9 +87,9 @@ distribuce rovná marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
 Marginální pravděpodobnost proměnné $x_i$ tedy je
 \begin{equation}
 p^*(\tilde x) =
-\sum_{\vec{x}: x_j = \tilde{x}_j} 
+\sum_{\vec{x} \backslash x_j} 
 	\prod_i 
-		m_{x_i \rightarrow f}(x_i)
+		q^\backslash(x_i)
     		\mathbb{E}_{q^\backslash} 
 			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \end{equation}
@@ -104,9 +102,9 @@ marginální pravděpodobnosti.
 
 \begin{equation}
 m_{f \rightarrow x_j}(x_j) =
-    \sum_{\vec{x}: x_j = \tilde{x}_j}
+    \sum_{\vec{x} \backslash x_j}
         \prod_{i \ne j}
-            m_{x_i \rightarrow f}(x_i)
+            q^\backslash(x_i)
             \mathbb{E}_{q^\backslash}
                 (\theta_{\rho(\vec{x^\prime}), x_0})
 \label{eq:msgfromftox}
@@ -142,9 +140,6 @@ p^*(\tilde{\vec{\theta}}_j) & = \sum_{\vec{x}} \int_{\vec{\Theta}:
 \\
 & = w_0 q^\backslash(\tilde{\vec{\theta}}_j) + \sum_k w_k
     \tilde{\theta}_{j,k} q^\backslash(\tilde{\vec{\theta}}_j),
-\\
-& = w_0 m_{\tilde{\vec\theta}_j \rightarrow f}(\tilde{\vec{\theta}}_j) + \sum_k w_k
-    \tilde{\theta}_{j,k} m_{\tilde{\vec\theta}_j \rightarrow f}(\tilde{\vec{\theta}}_j),
 \end{align}
 
 kde
@@ -154,7 +149,7 @@ w_0 &=
 	\sum_{l \ne j} 
 		\sum_{\vec{x}: \rho(\vec{x^\prime}) = l} 
 			\prod_i
- 				m_{x_i \rightarrow f}(x_i)
+ 				q^\backslash(x_i)
 				\mathbb{E}_{q^\backslash(\vec{\theta}_l)} (
 					\theta_{l,
 					x_0}) 
@@ -162,11 +157,11 @@ w_0 &=
 w_k &=
 	\sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} 
 		\prod_i
-			m_{x_i \rightarrow f}(x_i)		
+			q^\backslash(x_i)		
 \end{align}
 
-Opět vycházíme z výpočtu marginální pravděpodobnosti ze sdružené
-pravděpodobnosti. V rovnici \eqref{eq:ep:theta_2} jsme rozdělili sumu přes
+Opět vycházíme z výpočtu marginální pravděpodobnosti podle definice.
+V rovnici \eqref{eq:ep:theta_2} jsme rozdělili sumu přes
 $\vec{x}$ na ty, pro které se ve faktoru použije množina parametrů
 $\tilde{\vec{\theta}}_j$ a na ty ostatní. Také jsme z integrálu vytknuli součin
 cavity distribucí pro proměnné. V dalším kroku \eqref{eq:ep:theta_3} jsme opět
@@ -250,7 +245,7 @@ KL(p \| q) =
 \int_{-\infty}^{\infty}
     p(x) \log\left(\frac{p(x)}{q(x)}\right) \mathrm{d}x
 \end{equation}
-Pro nalezení minima použijeme algoritmus Expectation Propagation a budeme tedy
+Pro nalezení minima použijeme algoritmus Expectation Propagation a budeme
 minimalizovat $KL(p^*\| q)$.
 
 Pokud se podíváme na skutečnou marginální pravděpodobnost
@@ -299,7 +294,7 @@ kde
     \sum_{i=0}^k w_i^* &= 1
 \end{align}
 
-Pro minimalizaci KL divergence mezi dvěma rozděleními z exponenciální rozdělení
+Jak bylo ukázáno v sekci~\ref{sec:expfam}, pro minimalizaci KL divergence mezi dvěma rozděleními z exponenciální rodiny
 stačí, pokud se budou rovnat jejich postačující statistiky. Dokážeme jednoduše
 spočítat první dva momenty Dirichletovského rozdělení a tedy použijeme
 aproximaci a budeme počítat pouze s nimi a zbylé momenty zanedbáme.
@@ -324,12 +319,11 @@ Je tedy třeba nalézt střední hodnotu a rozptyl proměnných z $p^*(\vec\thet
 Střední hodnotu proměnných $\vec\theta$ podle rozdělení $p^*$ lze tedy spočítat
 jako vážený součet středních hodnot $\vec\theta$ podle jednotlivých
 Dirichletovských distribucí, z kterých se $p^*$ skládá.
-Střední hodnota proměnné $X_i$ podle Dirichletovského rozdělení je
 
-První moment tedy máme spočítáný, pro výpočet rozptylu můžeme využít přímo
+První moment tedy máme spočítáný, pro výpočet rozptylu můžeme využít
 definici:
 \begin{equation}
-	Var[X] = \mathbb{E}[X^2] - \mathbb{E}[X]^2
+	Var[\vec{\theta}] = \mathbb{E}[\vec{\theta}^2] - \mathbb{E}[\vec\theta]^2
 \end{equation}
 
 Chybí nám tedy ještě výpočet střední hodnoty druhé mocniny proměnné
@@ -446,6 +440,8 @@ rovnice~(\ref{eq:6}).
 
 \section{Algoritmus}
 
+V algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation upravený pro potřeby učení parametrů.
+
 \begin{algorithm}
 \caption{Expectation Propagation pro učení parametrů}
 \label{alg:ep}
@@ -476,11 +472,11 @@ rovnice~(\ref{eq:6}).
     \State Zpráva z $f_{\tilde\beta}$ do $X_i$ podle (\ref{eq:msgfromftox}):
     \State
         \hskip\algorithmicindent
-        $\hat{f}(x_j) =
+        $m_{f_{\tilde{\beta}} \rightarrow x_j} =
             \sum_{\vec{x}: x_j = \tilde{x}_j}
                 \mathbb{E}_{q^\backslash}(\theta_{\rho(\vec{x^\prime}), x_0})
                 \prod_{i \ne j}
-                    m_{x_i \rightarrow f_{\tilde\beta}} (x_i)$
+                    q^\backslash(x_i)$
     \EndFor
 
     \State Aktualizuj marginální pravděpodobnost parametrů:
@@ -508,7 +504,7 @@ rovnice~(\ref{eq:6}).
         \State Aktualizuj zprávy z proměnných do faktoru:
         \State
             \hskip\algorithmicindent
-            $m_{x_i \rightarrow f_{\tilde\beta}}(x_i) =
+            $q^\backslash(x_i) =
                 \prod_{\beta \ne \tilde\beta} m_{f_\beta \rightarrow x_i}(x_i)$
     \EndFor
 \Until{konvergence}

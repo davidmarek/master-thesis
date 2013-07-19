@@ -3,19 +3,45 @@
 \addcontentsline{toc}{chapter}{Úvod}
 
 Dialog je přirozený způsob dorozumívání a sdělování informací mezi lidmi.
-Počítač, který by dokázal vést dialog s uživatelem, byl vždy snem nejen
-příznivců vědecko-fantastické literatury.
-Už pro první počítače vnikaly programy, které se snažily využívat přirozenou
-řeč pro interakci s uživatelem.
-Jedním z takových programů byl například Eliza, program, který předstíral, že
-jej zajímá, co mu uživatel říká.
-Fungoval na principu rozpoznání textu pomocí gramatiky a následné transformace
-textu do promluv dle pravidel.
-Avšak gramatiky a pravidlové systémy se ukázaly nedostačné pro praktické
-aplikace a tak se vývoj přesunul do statistických metod.
-S využitím statistickým metod a metod strojového učení bylo možné začít s
-porozumíváním mluveného slova.
-Přijetí bylo zpočátku chladné a veřejnost byla 
+Počítač, který by dokázal vést dialog s uživatelem, byl vždy snem nejen příznivců vědecko-fantastické literatury.
+Už pro první počítače vnikaly programy, které se snažily využívat přirozenou řeč pro interakci s uživatelem.
+Jedním z takových programů byla například Eliza \cite{weizenbaum1966eliza}, program, který předstíral, že je psychiatrem.
+Fungoval na principu rozpoznání textu pomocí gramatiky a následné transformace textu do promluv dle pravidel.
+Avšak gramatiky a pravidlové systémy se ukázaly nedostačné pro praktické aplikace a tak se vývoj přesunul do statistických metod.
+
+Z počátku byla výkonost a úspěšnost systémů pracujících s přirozeným jazykem nízká a tak bylo jejich přijetí rozpačité.
+Asi téměř všichni si pamatují první pokusy o diktování textu v kancelářských aplikacích.
+Systémy pro rozpoznání přirozeného jazyka se však stále zlepšovaly a dostaly se do fáze, kdy už je možné využít hlas jako vstup pro komplexní systémy.
+
+Tato práce se zabývá doménově omezenými statistickými dialogovými systémy.
+Dialogové systémy mohou vyhledávat spojení v městské dopravě, hledat turistické informace, ovládat navigaci v automobilu, atd.
+Nabízejí spoustu výhod, jsou dostupné pro slepé, mohou pracovat 24 hodin denně a mohou nahradit lidské operátory, což vede k úsporám.
+
+Dialogové systémy jsou však stále daleko od dokonalosti.
+Musí se vyrovnat se špatně rozpoznanými vstupy, šumem a nejasnostmi.
+Na rozdíl od živých operátorů nedokáží improvizovat.
+V některých případech není uživatel spokojený s dialogovým systémem jen proto, že nepochopil otázku a dialogový systém není schopen se zeptat jinak.
+
+První problém se snaží řešit statistické dialogové systémy.
+Pokud si nejsme jisti cílem uživatele, nabízí se řešení v modelování uživatele pomocí statistického modelu.
+Díky němu se pak můžeme vyrovnat s chybami zapříčiněnými špatně rozpoznanými vstupy.
+Tato práce se bude zabývat metodami pro efektivní výpočty nad statistickými modely.
+
+\section*{Rozdělení práce}
+
+Nejprve v kapitole \ref{ch:kap1} popíšeme blíže dialogové systémy a jednotlivé jejich součásti.
+Také se budeme zabývat dialogovým stavem a jeho reprezentací pomocí bayesovského přístupu.
+
+Jako vhodnou strukturu pro reprezentaci dialogového stavu si představíme Bayesovské sítě v kapitole \ref{ch:kap2}.
+Představíme několik metod pro inferenci v Bayesovských sítích, začneme jednoduchou, ale pomalou exaktní inferencí a přesuneme se až k efektivní aproximativní inferenci pomocí algoritmu Loopy Belief Propagation.
+Nakonec ukážeme metodu Expectation Propagation pro inferenci v grafickém modelu s aproximovanými faktory, která je zobecněním předchozích metod.
+
+Pro využití v dialogových systémech je možné buď nastavit pevné parametry (ať už ručně nastavené nebo naučené z dat), anebo zvolit bayesovský přístup i pro parametry.
+Parametry pocházející z Dirichletovského rozdělení jsou prezentovány v kapitole \ref{ch:ep}.
+
+V kapitole \ref{ch:kap4} jsou popsány všechny implementované části a také příklady jejich použití.
+V této kapitole je také popsána soutěž Dialog State Tracking Challenge, do které byl přihlášen generativní systém pro odhad dialogového stavu používající popsanou knihovnu.
+Tato soutěž testovala systémy pro odhad dialogového stavu na datech z reálného dialogového systému.
 
 \section*{Cíle}
 
@@ -25,11 +51,11 @@ Přijetí bylo zpočátku chladné a veřejnost byla
     Tato práce si klade za cíl představit metody pro inferenci dialogového stavu v dialogovém systému s využitím více hypotéz.
     Představené metody budou založeny na reprezentaci dialogového stavu pomocí dynamických bayesovských sítí.
 \item Bude představen algoritmus Loopy Belief Propagation, který bude implementován pro využití v reálných systémech pro odhad dialogového stavu.
-\item Algoritmus bude otestován na datech z reálného dialogového systému Let's Go a porovnán s dalšími systémy, které se účastnily soutěže Dialog State Tracking Challenge 2013.
-\item Důležitou části algoritmů pro inferenci je určení pořadí, v jakém má inference probíhat.
+\item Algoritmus bude otestován na datech z reálného dialogového systému Let's Go a porovnán s dalšími systémy, které se účastnily soutěže Dialog State Tracking Challenge.
+\item Důležitou částí algoritmů pro inferenci je určení pořadí, v jakém má inference probíhat.
     Práce bude obsahovat implementaci několika strategií pro inferenci, které budou umožňovat efektivní inferenci pro různé druhy bayesovských sítí (stromy, dynamické sítě, obecné grafy).
 \item Nakonec se práce bude zabývat učením parametrů sítě a představí algoritmus Expectation Propagation, který umožňuje inferenci v bayesovských sítích se spojitými náhodnými proměnnými.
 \item Při většině reálných použití dochází k aproximacím a úpravám modelu v závislosti na problému tak, aby bylo možné inferenci provádět v reálném čase.
 Práce bude obsahovat implementaci frameworku, do kterého je možné jednoduše zasadit vlastní moduly pro aproximaci pravděpodobnostních rozdělení, které bude algoritmus Expectation Propagation používat.
-\item Jako příklad bude ukázán systém pro učení parametrů pravděpodobnostního rozložení pro pozorování v generickém modelu pro reprezentaci dialogového stavu.
+Jako příklad bude ukázán systém pro učení parametrů pravděpodobnostního rozložení pro pozorování v generickém modelu pro reprezentaci dialogového stavu.
 \end{enumerate}

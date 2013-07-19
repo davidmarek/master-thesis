@@ -1,6 +1,29 @@
+% !TEX root = prace.tex
 \chapter*{Závěr}
 \addcontentsline{toc}{chapter}{Závěr}
 
-Práce splnila všechny vytyčené cíle. 
+Práce splnila všechny vytyčené cíle.
 Výsledkem je implementace metod pro odhad stavu a parametrů v dialogových systémech.
-Byly představeny nejpoužívanější metody pro inferenci v grafických modelech, navíc byl odvozen algoritmus pro inferenci parametrů dirichletovského rozdělení srovnáním momentů.
+Byly představeny metody pro inferenci v grafických modelech založené na posílání zpráv, navíc byl odvozen algoritmus pro inferenci parametrů dirichletovského rozdělení srovnáním momentů.
+Práce obsahuje příklady použití vytvořené knihovny a otestování na reálných datech v rámci soutěže Dialog State Tracking Challenge, kde generativní systém pro odhad stavu používající implementovanou knihovnu dosáhl výsledků srovnatelných s ostatními přihlášenými týmy.
+Bližší detaily podle cílů vytyčených v úvodu práce:
+\begin{enumerate}
+
+\item V kapitole \ref{ch:kap1} byly představeny dialogové systémy a jejich jednotlivé součásti.
+V sekci \ref{sec:bn} pak byly představeny bayesovské sítě, které se nabízí jako ideální model pro reprezentaci dialogového stavu.
+
+\item V kapitole \ref{ch:kap2} jsou prezentovány možné inferenční algoritmy pro odhad stavu v bayesovských sítích.
+V sekci \ref{sec:lbp} je představen algoritmus Loopy Belief Propagation.
+Jeho použití je ukázáno v sekci \ref{sec:usage}.
+
+\item Implementace LBP byla použita pro DSTC a popis celé soutěže i s výsledky je v sekci \ref{sec:dstc}.
+Implementovaný systém pro odhad stavu byl lepší než baseline systém poskytnutý organizátory (tabulka \ref{t:all:datasets}) a systém se navíc umístil příznivě i vzhledem k ostatním přihlášeným týmům (tabulka \ref{t:DSTC:ranking}).
+
+\item Implementované strategie pro výběr vrcholu v LBP algoritmu jsou popsány v sekci \ref{sec:noch}.
+
+\item Algoritmus Expectation Propagation pro inferenci v obecných grafických modelech je představen v sekci \ref{sec:ep}.
+
+\item Knihovna a jednotlivé její součásti jsou popsány v kapitole \ref{ch:kap4}.
+Příklad vrcholů vytvořených speciálně pro použití v EP je v sekci \ref{sec:vrdir}.
+Učení parametrů pro odhad stavu v dialogových systémech je odvozeno v kapitole \ref{ch:ep}.
+\end{enumerate}
