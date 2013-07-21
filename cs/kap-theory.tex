@@ -269,21 +269,25 @@ Příkladem těchto systémů je Festival~\cite{black2001festival} nebo jeho odn
 
 Alternativní metodou syntézy je použití Skrytých Markovských modelů pro generování zvuku, příkladem je HTS systém~\cite{zen2007hmm}.
 
+Pro syntézu řeči existují také komerční systémy, například systém SpeechTech TTS~\cite{speechtech}.
+
 \section{Dialogový stav}
 
-Nejistota je základním problémem, s kterým se dialogový systém musí vypořádat.
-Systémy pro rozpoznávání i porozumění řeči často chybují a tuto možnost musí brát dialogový manager v potaz.
+Dialogový stav je reprezentace všech informací, které lze o aktuálním dialogu získat.
+To znamená všechno co uživatel a systém řekl.
+Ovšem nejistota v tom, co vlastně uživatel řekl a jaké jsou jeho cíle, je základním problémem, s kterým se dialogový systém musí vypořádat.
+Systémy pro rozpoznávání i porozumění řeči často chybují a tuto možnost musí brát dialogový manager také v potaz.
 Vypořádat se s nejistotou lze pomocí jejího zakomponování do modelu pro odhad dialogového stavu.
 
 Cíle uživatele a další vlastnosti prostředí lze považovat za náhodné částečně pozorovatelné proměnné a je možné je odvodit z pozorování.
 Pravděpodobnostní rozložení těchto náhodných proměnných dává dobře definovanou reprezentaci nejistoty, navíc je možné je reprezentovat pomocí Bayesovské sítě.
 
 Jedním z možných modelů dialogového stavu je generativní model.
-Definujeme množinu stavů prostředí, $s \in \mathcal{S}$.
+Definujeme množinu dialogových stavů, $s \in \mathcal{S}$.
 Předpokládáme, že pozorování závisí podmíněně pouze na stavu prostředí a definujeme pravděpodobnostní rozdělení pro pozorování, $p(o \mid s)$.
 Dále předpokládáme, že cíle uživatele se nemění v čase a stav prostředí je tedy závislý pouze na stavu v předchozí obrátce a na poslední akci systému.
 Tato závislost je zachycena v přechodové pravděpodobnosti $p(s_{t+1} \mid s_t, a_t)$.
-Předpoklad, že stav prostředí závisí pouze na minulé hodnotě se nazývá Markovská vlastnost.
+Předpoklad, že dialogový stav závisí pouze na minulé hodnotě se nazývá Markovská vlastnost.
 
 Pokud vezmeme předchozí předpoklady, tak lze využít bayesovský přístup pro počítání s nejistotou.
 Stav v čase $t$ označíme $s_t$.
@@ -298,7 +302,7 @@ p(s_{t+1} = s^\prime) \propto
 \end{equation}
 
 Nyní můžeme definovat stav důvěry v čase $t$, $b_t$, jako pravděpodobnost přes stavy dáno všechna pozorování až do času $t$.
-Množina všech možných stavů důvěry je pravděpodobnost přes všechny možné stavy prostředí $\mathcal{B} = \prod(\mathcal{S})$.
+Množina všech možných stavů důvěry je pravděpodobnost přes všechny možné dialogové stavy $\mathcal{B} = \prod(\mathcal{S})$.
 
 Můžeme přepsat rovnici~\eqref{eq:beliefupdate} s pomocí stavů důvěry.
 
@@ -312,8 +316,8 @@ b(s_{t+1}) \propto
 \end{equation}
 
 Rovnice~\eqref{eq:beliefupdate2} nám dává předpis pro přechodovou funkci $\mathcal{T}$.
-V praxi ovšem bude množina možných hodnot pro slot $s_t$ příliš velká, protože stav musí obsahovat všechny informace potřebné pro rozhodování, to znamená celou historii dialogu a cíle uživatele. 
-Pokud systém obsahuje sloty, tak každá kombinace hodnot slot je jedním možným cílem uživatele. 
+V praxi ovšem bude množina možných hodnot pro stav $s_t$ příliš velká, protože stav musí obsahovat všechny informace potřebné pro rozhodování, to znamená celou historii dialogu a cíle uživatele. 
+Pokud systém obsahuje sloty, tak každá kombinace hodnot slotu je jedním možným cílem uživatele. 
 Tedy velikost stavového prostoru roste exponenciálně.
 
 \subsection{Aktualizace stavu}

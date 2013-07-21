@@ -9,20 +9,49 @@ Díky tomu bude možné nalézt aposteriorní distribuci pro tyto parametry a te
 \section{Grafický model}
 
 Model se skládá z faktorů a proměnných.
-Nechť máme vybraný faktor $f$, tento faktor je spojený s několika proměnnými
+Nechť máme vybraný faktor $f_\beta$, tento faktor je spojený s několika proměnnými
 $\vec{x} = (x_0, x_1, \dots, x_{N_x})$
 a množinami parametrů
 $\vec{\Theta} = (\vec{\theta}_1, \dots, \vec{\theta}_{N_\theta})$.
 Tento faktor reprezentuje podmíněnou pravděpodobnost:
-$$f(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta)$$
+$$f_\beta(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta)$$
+
 Rodičovské proměnné $x_1, \dots, x_{N_x}$ označujeme jako $\vec{x^\prime}$.
 Vektor $\vec{x^\prime}$ určuje, která množina parametrů bude použita.
 Protože množiny parametrů jsou číslovány $1, \dots, N_\theta$ a rodičovské
 proměnné $1, \dots, N_x$, musí být pro vybrání správné množiny parametrů
 použito mapování $\rho(\vec{x^\prime})$.
 Faktor pak může být zapsán zkráceně:
-$$f(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
+$$f_\beta(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 \theta_{\rho(x^\prime), x_0}$$
+
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}[->, main/.style={circle, draw}, factor/.style={draw}]
+    
+\node[main] at (-3.7, 2)    (t1) {$\vec\theta_1$};
+\node[main] at (-4, 0)      (t2) {$\vec\theta_2$};
+\node[main] at (-3.7, -2)   (t3) {$\vec\theta_3$};
+\node[factor] at (0, 0)     (f)  {$f_\beta$};
+\node[main] at (3.7, 2)     (x1) {$X_1$};
+\node[main] at (4, 0)       (x2) {$X_2$};
+\node[main] at (3.7, -2)    (x3) {$X_3$};
+\node[main] at (0, -4)      (x0) {$X_0$};
+
+\path
+	(t1) edge [above right, near start] node {$q^{\backslash \beta}(\vec\theta_1)$} (f)
+	(t2) edge [above, near start] node {$q^{\backslash \beta}(\theta_2)$} (f)
+	(t3) edge [below right, near start] node {$q^{\backslash \beta}(\theta_3)$} (f)
+	(x1) edge [above left, near start] node {$q^{\backslash \beta}(X_1)$} (f)
+	(x2) edge [above, near start] node {$q^{\backslash \beta}(X_2)$} (f)
+	(x3) edge [below left, near start] node {$q^{\backslash \beta}(X_3)$} (f)
+	(f) edge [right, near end] node {$m_{f_\beta \rightarrow X_0}(X_0)$} (x0);
+
+
+\end{tikzpicture}
+\end{center}
+\caption{Vybraný faktor $f_\beta$ pro aktualizaci při učení parametrů.}
+\end{figure}
 
 \section{Výpočet marginálních pravděpodobností}
 
@@ -30,17 +59,17 @@ Pro výpočet sdružené pravděpodobnosti používáme plně faktorizovanou dis
 Pro každou proměnnou anebo množinu parametrů je její marginální pravděpodobnost
 rovna součinu zpráv přicházejících z faktorů, které jsou s danou proměnnou
 nebo množinu parametrů propojeny.
-Pro daný faktor je cavity distribuce $q^\backslash(x_i)$, popř.
-$q^\backslash(\vec{\theta}_i)$ rovna součinu zpráv ze všech ostatních faktorů do $x_i$, popř $\vec\theta_i$.
+Pro daný faktor $f_\beta$ je neúplná distribuce $q^{\backslash \beta}(x_i)$, popř.
+$q^{\backslash \beta}(\vec{\theta}_i)$ rovna součinu zpráv ze všech ostatních faktorů do $x_i$, popř $\vec\theta_i$.
 Aproximovaná marginální pravděpodobnost proměnné je pak součinem cavity
 distribuce a zprávy z faktoru:
-$$q(x_i) = q^\backslash(x_i) m_{f \rightarrow x_i}(x_i)$$
-$$q(\vec{\theta}_i) = q^\backslash(\vec{\theta}_i) m_{f\rightarrow \theta}(\vec{\theta}_i)$$
+$$q(x_i) = q^{\backslash \beta}(x_i) m_{f_\beta \rightarrow x_i}(x_i)$$
+$$q(\vec{\theta}_i) = q^{\backslash \beta}(\vec{\theta}_i) m_{f_\beta \rightarrow \theta}(\vec{\theta}_i)$$
 
-Cavity distribuce je právě zpráva z proměnné, popř. množiny parametrů do faktoru.
+Tyto neúplné distribuce jsou právě zprávy z proměnné, popř. množiny parametrů do faktoru.
 
-$$m_{x_i \rightarrow f} = q^\backslash (x_i)$$
-$$m_{\vec\theta_i \rightarrow f} = q^\backslash (\vec\theta_i)$$
+$$m_{x_i \rightarrow f_\beta} = q^{\backslash \beta}(x_i)$$
+$$m_{\vec\theta_i \rightarrow f_\beta} = q^{\backslash \beta}(\vec\theta_i)$$
 
 \subsection{Marginální pravděpodobnost proměnných}
 
@@ -52,26 +81,26 @@ p^*(\tilde{x}_j) &=
 \sum_{\vec{x} \backslash x_j}
 	\int_{\vec{\Theta}}
     		\prod_i 
-			q^\backslash(x_i)
+			q^{\backslash \beta}(x_i)
 		\prod_l 
-			q^\backslash(\vec{\theta}_l)
-		f(\vec{x};
+			q^{\backslash \beta}(\vec{\theta}_l)
+		f_\beta(\vec{x};
     		  \vec{\Theta})
 \label{eq:1} 
 \\
 &=
 \sum_{\vec{x} \backslash x_j} 
 	\prod_i 
-		q^\backslash(x_i)
+		q^{\backslash \beta}(x_i)
     \int_{\vec{\theta_{\rho(\vec{x^\prime})}}}
-	    q^\backslash(\vec{\theta}_{\rho(\vec{x^\prime})})
+	    q^{\backslash \beta}(\vec{\theta}_{\rho(\vec{x^\prime})})
     \theta_{\rho(\vec{x^\prime}), x_0} \label{eq:2} 
 \\
 &= 
 \sum_{\vec{x} \backslash x_j} 
 	\prod_i 
-		q^\backslash(x_i)
-    		\mathbb{E}_{q^\backslash} 
+		q^{\backslash \beta}(x_i)
+    		\mathbb{E}_{q^{\backslash \beta}} 
 			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \label{eq:3}
 \end{align}
@@ -80,7 +109,7 @@ Rovnost~(\ref{eq:1}) vychází z definice výpočtu marginální pravděpodobnos
 sdružené pravděpodobnosti.
 V~(\ref{eq:2}) byla použita definice faktoru, z integrálu byly vytaženy členy,
 které neobsahují $\Theta$ a nakonec bylo využito toho, že pro
-množiny parametrů, které nejsou spojeny s faktorem $f$, je jejich jejich cavity
+množiny parametrů, které nejsou spojeny s faktorem $f_\beta$, je jejich jejich cavity
 distribuce rovná marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
 1$. V~(\ref{eq:3}) byla použita definice očekávané hodnoty.
 
@@ -89,23 +118,23 @@ Marginální pravděpodobnost proměnné $x_i$ tedy je
 p^*(\tilde x) =
 \sum_{\vec{x} \backslash x_j} 
 	\prod_i 
-		q^\backslash(x_i)
-    		\mathbb{E}_{q^\backslash} 
+		q^{\backslash \beta}(x_i)
+    		\mathbb{E}_{q^{\backslash \beta}} 
 			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \end{equation}
 
 Tady docházíme k výsledku, který je velmi podobný výpočtu marginální
 pravděpodobnosti v Loopy Belief Propagation algoritmu.
 
-Zprávu z faktoru $f$ do vrcholu $x_j$ pak získáme vydělením zprávy z $x_j$ z
+Zprávu z faktoru $f_\beta$ do vrcholu $x_j$ pak získáme vydělením zprávy z $x_j$ z
 marginální pravděpodobnosti.
 
 \begin{equation}
-m_{f \rightarrow x_j}(x_j) =
+m_{f_\beta \rightarrow x_j}(x_j) =
     \sum_{\vec{x} \backslash x_j}
         \prod_{i \ne j}
-            q^\backslash(x_i)
-            \mathbb{E}_{q^\backslash}
+            q^{\backslash \beta}(x_i)
+            \mathbb{E}_{q^{\backslash \beta}}
                 (\theta_{\rho(\vec{x^\prime}), x_0})
 \label{eq:msgfromftox}
 \end{equation}
@@ -116,30 +145,30 @@ Pro množiny parametrů se jejich marginální pravděpodobnost spočítá podob
 pro proměnné.
 \begin{align}
 p^*(\tilde{\vec{\theta}}_j) & = \sum_{\vec{x}} \int_{\vec{\Theta}:
-    \vec{\theta}_j = \tilde{\vec{\theta}}_j} \prod_i q^\backslash(x_i) \prod_l
-    q^\backslash(\vec{\theta}_l) f(\vec{x}; \vec{\Theta}) \label{eq:ep:theta_1}
+    \vec{\theta}_j = \tilde{\vec{\theta}}_j} \prod_i q^{\backslash \beta}(x_i) \prod_l
+    q^{\backslash \beta}(\vec{\theta}_l) f_\beta(\vec{x}; \vec{\Theta}) \label{eq:ep:theta_1}
 \\
 & = \sum_{l \ne j} \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \prod_i
-    q^\backslash(x_i) \int_{\vec{\Theta}: \vec{\theta}_j =
-    \tilde{\vec{\theta}}_j} \prod_k q^\backslash(\vec{\theta}_k) \theta_{l,
+    q^{\backslash \beta}(x_i) \int_{\vec{\Theta}: \vec{\theta}_j =
+    \tilde{\vec{\theta}}_j} \prod_k q^{\backslash \beta}(\vec{\theta}_k) \theta_{l,
     x_0} + \label{eq:ep:theta_2}
 \\
-&   + \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^\backslash(x_i)
+&   + \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^{\backslash \beta}(x_i)
     \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \prod_k
-    q^\backslash(\vec{\theta}_k) \tilde{\theta}_{j, x_0}
+    q^{\backslash \beta}(\vec{\theta}_k) \tilde{\theta}_{j, x_0}
 \nonumber
 \\
 & = \left[ \sum_{l \ne j} \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \prod_i
-    q^\backslash(x_i) \mathbb{E}_{q^\backslash(\vec{\theta}_l)} (\theta_{l,
-    x_0}) \right] q^\backslash(\tilde{\vec{\theta}}_j) + \label{eq:ep:theta_3}
+    q^{\backslash \beta}(x_i) \mathbb{E}_{q^{\backslash \beta}(\vec{\theta}_l)} (\theta_{l,
+    x_0}) \right] q^{\backslash \beta}(\tilde{\vec{\theta}}_j) + \label{eq:ep:theta_3}
 \\
-&   + \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^\backslash(x_i)
-    \tilde{\theta}_{j,x_0} q^\backslash(\tilde{\vec{\theta}}_j)
+&   + \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^{\backslash \beta}(x_i)
+    \tilde{\theta}_{j,x_0} q^{\backslash \beta}(\tilde{\vec{\theta}}_j)
 \label{eq:ep:theta_4}
 \nonumber
 \\
-& = w_0 q^\backslash(\tilde{\vec{\theta}}_j) + \sum_k w_k
-    \tilde{\theta}_{j,k} q^\backslash(\tilde{\vec{\theta}}_j),
+& = w_0 q^{\backslash \beta}(\tilde{\vec{\theta}}_j) + \sum_k w_k
+    \tilde{\theta}_{j,k} q^{\backslash \beta}(\tilde{\vec{\theta}}_j),
 \end{align}
 
 kde
@@ -149,15 +178,15 @@ w_0 &=
 	\sum_{l \ne j} 
 		\sum_{\vec{x}: \rho(\vec{x^\prime}) = l} 
 			\prod_i
- 				q^\backslash(x_i)
-				\mathbb{E}_{q^\backslash(\vec{\theta}_l)} (
+ 				q^{\backslash \beta}(x_i)
+				\mathbb{E}_{q^{\backslash \beta}(\vec{\theta}_l)} (
 					\theta_{l,
 					x_0}) 
 \\
 w_k &=
 	\sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} 
 		\prod_i
-			q^\backslash(x_i)		
+			q^{\backslash \beta}(x_i)		
 \end{align}
 
 Opět vycházíme z výpočtu marginální pravděpodobnosti podle definice.
@@ -168,8 +197,8 @@ cavity distribucí pro proměnné. V dalším kroku \eqref{eq:ep:theta_3} jsme o
 použili toho, že integrál přes $\vec{\Theta}$ je ve skutečnosti několik
 integrálů přes jednotlivé množiny parametrů. A tedy je můžeme vložit mezi
 jednotlivé členy produktu cavity distribucí pro množiny parametrů. Ve výsledku
-získáme $q^\backslash(\tilde{\vec{\theta}}_j) \int_{\vec{\theta}_l}
-q^\backslash(\vec{\theta}_l) \theta_{l, x_0}$ a pak zbylé členy, které zmizí.
+získáme $q^{\backslash \beta}(\tilde{\vec{\theta}}_j) \int_{\vec{\theta}_l}
+q^{\backslash \beta}(\vec{\theta}_l) \theta_{l, x_0}$ a pak zbylé členy, které zmizí.
 
 Docházíme k vyjádření skutečné marginální pravděpodobnosti, ve které není třeba
 integrovat přes všechny množiny parametrů, ale stačí jen očekávaná hodnota
