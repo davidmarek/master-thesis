@@ -1435,18 +1435,4 @@ team9         & 0.89 & 0.20\\
 
 Tabulky výsledků a příklad dialogu byly převzaty z článku popisujícího přihlášené systémy do DSTC a porovnávajícího generativní model s jednoduchým diskriminativním modelem~\cite{zilka2013}.
 
-\subsection{Zdrojové kódy}
-
-V příloze v adresáři \texttt{dstc/} jsou všechny potřebné soubory pro spuštění inference na datové sady z DSTC.
-V adresáři \texttt{dstc/data} jsou všechny datové sady.
-Zdrojové kódy jsou v \texttt{dstc/src}.
-
-Kód pro načtení dat je v modulu \texttt{loader.py}, data byla poskytnuta ve formátu JSON~\cite{crockford2006application}.
-Skript \texttt{system\_dm.py} obsahuje kód pro vytvoření grafického modelu z dat a inferenci.
-Použitá datová sada, vstupní a výstupní soubory, parametry grafického modelu a další parametry nutné pro výpočet je možné skriptu zadat buď pomocí přepínačů na příkazové řádce, anebo v konfiguračním souboru.
-Pro všechny testovací datové sady jsou poskytnuty konfigurační soubory (např. \texttt{test1.conf}).
-
-Pro získání metrik z vypočtených dat je třeba spustit skripty poskytnuté organizátory.
-Celý proces byl zjednodušen přidáním skriptu \texttt{test\_run.sh}, který jako jediný parametr očekává konfigurační soubor a sám spustí inferenci a nakonec i vypíše hodnotu metrik.
-
-Bližší dokumentace používání, i s příklady je obsažena v příloze.
+Popis jednotlivých součástí systému a jeho používání je v příloze~\ref{ap:dstc}.
