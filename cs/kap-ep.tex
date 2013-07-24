@@ -2,8 +2,8 @@
 \chapter{Učení parametrů}
 \label{ch:ep}
 
-Představené metody v minulé kapitole fungují pro modely, kde máme nastavené parametry faktorů.
-V této kapitole si představíme grafický model pro diskrétní proměnné, u kterého jsou i parametry faktorů proměnné a je možné pro ně použít inferenci.
+Představená metoda LBP v minulé kapitole funguje pro modely, kde máme nastavené parametry faktorů.
+V této kapitole si představíme grafický model pro diskrétní proměnné, u kterého jsou i parametry faktorů proměnné a je možné pro ně použít Bayesovský přístup.
 Díky tomu bude možné nalézt aposteriorní distribuci pro tyto parametry a tedy je naučit podle dat.
 
 \section{Grafický model}
@@ -25,7 +25,10 @@ Faktor pak může být zapsán zkráceně:
 $$f_\beta(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 \theta_{\rho(x^\prime), x_0}$$
 
-\begin{figure}[H]
+Příklad faktoru $f_\beta$ je na obrázku~\ref{ex:factor}, pro ilustraci pouze s třemi parametry a čtyřmi proměnnými.
+Správně by měl faktor mít tolik parametrů, kolik je možných přiřazení pro rodičovské proměnné.
+
+\begin{figure}[h]
 \begin{center}
 \begin{tikzpicture}[->, main/.style={circle, draw}, factor/.style={draw}]
     
@@ -40,8 +43,8 @@ $$f_\beta(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 
 \path
 	(t1) edge [above right, near start] node {$q^{\backslash \beta}(\vec\theta_1)$} (f)
-	(t2) edge [above, near start] node {$q^{\backslash \beta}(\theta_2)$} (f)
-	(t3) edge [below right, near start] node {$q^{\backslash \beta}(\theta_3)$} (f)
+	(t2) edge [above, near start] node {$q^{\backslash \beta}(\vec\theta_2)$} (f)
+	(t3) edge [below right, near start] node {$q^{\backslash \beta}(\vec\theta_3)$} (f)
 	(x1) edge [above left, near start] node {$q^{\backslash \beta}(X_1)$} (f)
 	(x2) edge [above, near start] node {$q^{\backslash \beta}(X_2)$} (f)
 	(x3) edge [below left, near start] node {$q^{\backslash \beta}(X_3)$} (f)
@@ -51,6 +54,7 @@ $$f_\beta(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 \end{tikzpicture}
 \end{center}
 \caption{Vybraný faktor $f_\beta$ pro aktualizaci při učení parametrů.}
+\label{ex:factor}
 \end{figure}
 
 \section{Výpočet marginálních pravděpodobností}
@@ -61,15 +65,17 @@ rovna součinu zpráv přicházejících z faktorů, které jsou s danou proměn
 nebo množinu parametrů propojeny.
 Pro daný faktor $f_\beta$ je neúplná distribuce $q^{\backslash \beta}(x_i)$, popř.
 $q^{\backslash \beta}(\vec{\theta}_i)$ rovna součinu zpráv ze všech ostatních faktorů do $x_i$, popř $\vec\theta_i$.
-Aproximovaná marginální pravděpodobnost proměnné je pak součinem cavity
+Aproximovaná marginální pravděpodobnost proměnné je pak součinem neúplné
 distribuce a zprávy z faktoru:
-$$q(x_i) = q^{\backslash \beta}(x_i) m_{f_\beta \rightarrow x_i}(x_i)$$
-$$q(\vec{\theta}_i) = q^{\backslash \beta}(\vec{\theta}_i) m_{f_\beta \rightarrow \theta}(\vec{\theta}_i)$$
+$$q(x_i) = q^{\backslash \beta}(x_i) m_{f_\beta \rightarrow x_i}(x_i), 
+\quad \quad
+q(\vec{\theta}_i) = q^{\backslash \beta}(\vec{\theta}_i) m_{f_\beta \rightarrow \theta}(\vec{\theta}_i)$$
 
 Tyto neúplné distribuce jsou právě zprávy z proměnné, popř. množiny parametrů do faktoru.
 
-$$m_{x_i \rightarrow f_\beta} = q^{\backslash \beta}(x_i)$$
-$$m_{\vec\theta_i \rightarrow f_\beta} = q^{\backslash \beta}(\vec\theta_i)$$
+$$m_{x_i \rightarrow f_\beta} = q^{\backslash \beta}(x_i), 
+\quad \quad
+m_{\vec\theta_i \rightarrow f_\beta} = q^{\backslash \beta}(\vec\theta_i)$$
 
 \subsection{Marginální pravděpodobnost proměnných}
 
@@ -109,13 +115,13 @@ Rovnost~(\ref{eq:1}) vychází z definice výpočtu marginální pravděpodobnos
 sdružené pravděpodobnosti.
 V~(\ref{eq:2}) byla použita definice faktoru, z integrálu byly vytaženy členy,
 které neobsahují $\Theta$ a nakonec bylo využito toho, že pro
-množiny parametrů, které nejsou spojeny s faktorem $f_\beta$, je jejich jejich cavity
+množiny parametrů, které nejsou spojeny s faktorem $f_\beta$, je jejich neúplná
 distribuce rovná marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
 1$. V~(\ref{eq:3}) byla použita definice očekávané hodnoty.
 
 Marginální pravděpodobnost proměnné $x_i$ tedy je
 \begin{equation}
-p^*(\tilde x) =
+p^*(x_i) =
 \sum_{\vec{x} \backslash x_j} 
 	\prod_i 
 		q^{\backslash \beta}(x_i)
@@ -144,48 +150,73 @@ m_{f_\beta \rightarrow x_j}(x_j) =
 Pro množiny parametrů se jejich marginální pravděpodobnost spočítá podobně jako
 pro proměnné.
 \begin{align}
-p^*(\tilde{\vec{\theta}}_j) & = \sum_{\vec{x}} \int_{\vec{\Theta}:
-    \vec{\theta}_j = \tilde{\vec{\theta}}_j} \prod_i q^{\backslash \beta}(x_i) \prod_l
-    q^{\backslash \beta}(\vec{\theta}_l) f_\beta(\vec{x}; \vec{\Theta}) \label{eq:ep:theta_1}
+p^*(\tilde{\vec{\theta}}_j) & = 
+    \sum_{\vec{x}} \; 
+    \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \;
+         \prod_i \;
+             q^{\backslash \beta}(x_i) \;
+         \prod_l \;
+    q^{\backslash \beta}(\vec{\theta}_l) \;
+    f_\beta(\vec{x}; \vec{\Theta}) \label{eq:ep:theta_1}
 \\
-& = \sum_{l \ne j} \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \prod_i
-    q^{\backslash \beta}(x_i) \int_{\vec{\Theta}: \vec{\theta}_j =
-    \tilde{\vec{\theta}}_j} \prod_k q^{\backslash \beta}(\vec{\theta}_k) \theta_{l,
-    x_0} + \label{eq:ep:theta_2}
+& = 
+    \sum_{l \ne j} \;
+        \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \;
+            \prod_i \;
+                q^{\backslash \beta}(x_i) \,
+                \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \;
+                    \prod_k \;
+                        q^{\backslash \beta}(\vec{\theta}_k) \;
+                        \theta_{l, x_0}\; + \label{eq:ep:theta_2}
 \\
-&   + \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^{\backslash \beta}(x_i)
-    \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \prod_k
-    q^{\backslash \beta}(\vec{\theta}_k) \tilde{\theta}_{j, x_0}
+& + 
+    \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \;
+        \prod_i \;
+            q^{\backslash \beta}(x_i) \;
+            \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \;
+                \prod_k \;
+                    q^{\backslash \beta}(\vec{\theta}_k) \; 
+                    \tilde{\theta}_{j, x_0}
 \nonumber
 \\
-& = \left[ \sum_{l \ne j} \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \prod_i
-    q^{\backslash \beta}(x_i) \mathbb{E}_{q^{\backslash \beta}(\vec{\theta}_l)} (\theta_{l,
-    x_0}) \right] q^{\backslash \beta}(\tilde{\vec{\theta}}_j) + \label{eq:ep:theta_3}
+& = 
+    \left[ \;
+        \sum_{l \ne j} \;
+            \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \;
+                \prod_i \;
+                    q^{\backslash \beta}(x_i) \;
+                    \mathbb{E}_{q^{\backslash \beta}(\vec{\theta}_l)} (\theta_{l, x_0}) \;
+    \right] \;
+    q^{\backslash \beta}(\tilde{\vec{\theta}}_j) \; + \label{eq:ep:theta_3}
 \\
-&   + \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \prod_i q^{\backslash \beta}(x_i)
-    \tilde{\theta}_{j,x_0} q^{\backslash \beta}(\tilde{\vec{\theta}}_j)
+& + 
+    \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \;
+        \prod_i \;
+            q^{\backslash \beta}(x_i) \;
+            \tilde{\theta}_{j,x_0} \;
+            q^{\backslash \beta}(\tilde{\vec{\theta}}_j) \;
 \label{eq:ep:theta_4}
 \nonumber
 \\
-& = w_0 q^{\backslash \beta}(\tilde{\vec{\theta}}_j) + \sum_k w_k
-    \tilde{\theta}_{j,k} q^{\backslash \beta}(\tilde{\vec{\theta}}_j),
+& = w_0 \; q^{\backslash \beta}(\tilde{\vec{\theta}}_j) \, + \, \sum_k \; w_k \;
+    \tilde{\theta}_{j,k} \; q^{\backslash \beta}(\tilde{\vec{\theta}}_j),
 \end{align}
 
 kde
 
 \begin{align}
 w_0 &=
-	\sum_{l \ne j} 
-		\sum_{\vec{x}: \rho(\vec{x^\prime}) = l} 
-			\prod_i
- 				q^{\backslash \beta}(x_i)
+	\sum_{l \ne j} \;
+		\sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \;
+			\prod_i \;
+ 				q^{\backslash \beta}(x_i) \;
 				\mathbb{E}_{q^{\backslash \beta}(\vec{\theta}_l)} (
 					\theta_{l,
 					x_0}) 
 \\
 w_k &=
-	\sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} 
-		\prod_i
+	\sum_{\vec{x}: \rho(\vec{x^\prime}) = j, x_0 = k} \; 
+		\prod_i \;
 			q^{\backslash \beta}(x_i)		
 \end{align}
 
@@ -193,10 +224,10 @@ Opět vycházíme z výpočtu marginální pravděpodobnosti podle definice.
 V rovnici \eqref{eq:ep:theta_2} jsme rozdělili sumu přes
 $\vec{x}$ na ty, pro které se ve faktoru použije množina parametrů
 $\tilde{\vec{\theta}}_j$ a na ty ostatní. Také jsme z integrálu vytknuli součin
-cavity distribucí pro proměnné. V dalším kroku \eqref{eq:ep:theta_3} jsme opět
+neúplných distribucí pro proměnné. V dalším kroku \eqref{eq:ep:theta_3} jsme opět
 použili toho, že integrál přes $\vec{\Theta}$ je ve skutečnosti několik
 integrálů přes jednotlivé množiny parametrů. A tedy je můžeme vložit mezi
-jednotlivé členy produktu cavity distribucí pro množiny parametrů. Ve výsledku
+jednotlivé členy produktu neúplných distribucí pro množiny parametrů. Ve výsledku
 získáme $q^{\backslash \beta}(\tilde{\vec{\theta}}_j) \int_{\vec{\theta}_l}
 q^{\backslash \beta}(\vec{\theta}_l) \theta_{l, x_0}$ a pak zbylé členy, které zmizí.
 
@@ -206,12 +237,11 @@ těchto parametrů.
 
 \section{Aproximace marginálních pravděpodobností}
 
-Stále tu ovšem zůstává problém, že spočítat aproximující distribuci
-$q(\vec{\theta}_j)$ může být příliš složité, protože skutečná marginální
-distribuce je směs několika distribucí a ta nemusí být v obecném případě
-vyjádřitelná. Je tedy třeba model dále aproximovat. Pro zjednodušení výpočtu
-jsou zprávy z faktoru do množiny parametrů, $m_{f \rightarrow
-\vec{\theta}_i}(\vec{\theta}_i)$, ve tvaru Dirichletovského rozdělení s
+Při výpočtu aproximující distribuce $q(\vec{\theta}_j)$ se může stát, že skutečná marginální distribuce je v komplikovaném tvaru a pak je aproximace složitá na výpočet a může se odchylovat od skutečné distribuce.
+Například se jedná o směs distribucí.
+Ideální případ je takový, kdy aproximace je stejného typu jako skutečná distribuce.
+
+Pro zjednodušení výpočtů, jak se dále ukáže, zvolíme zprávy z faktoru do množiny parametrů, $m_{f \rightarrow \vec{\theta}_i}(\vec{\theta}_i)$, ve tvaru Dirichletovské distribuce s
 parametry $\vec\alpha_{f \rightarrow \vec\theta_i}$:
 \begin{equation}
 m_{f \rightarrow \vec{\theta}_i}(\vec{\theta}_i) =
@@ -225,34 +255,32 @@ kde $\Gamma$ je Gamma funkce (zobecnění faktoriálu):
     \Gamma(z) = \int_0^\infty \! t^{z-1} \exp(-t) \mathrm{d}t
 \end{equation}
 
-Dirichletovské rozdělení bylo zvoleno, protože má důležité vlastnosti pro
-součin, které budou využity dále pro výpočet cavity distribuce a celkové
+Dirichletovská distribuce byla zvolena, protože má důležité vlastnosti pro
+součin, které budou využity dále pro výpočet neúplné distribuce a celkové
 aproximace. Pokud označíme aproximované faktory indexem $\beta$ a každý bude
 mít vlastní parametry $\vec\alpha_{f_\beta \rightarrow \vec\theta_i}$, tak výsledná aproximace bude
 tvaru:
 \begin{align}
-q(\vec{\theta}_i) &\propto
-    \prod_\beta
-    m_{f_\beta \rightarrow \vec{\theta}_i}(\vec{\theta}_i)
+q(\vec{\theta}_i) \,& \, \propto
+    \prod_\beta \;
+    m_{f_\beta \rightarrow \vec{\theta}_i}(\vec{\theta}_i) \,
+ \propto \,
+    \prod_\beta \;
+        \prod_j \;
+            \theta_{i,j}^{\vec\alpha_{f_\beta \rightarrow \vec\theta_i, j} \,-\, 1}
 \\
-&\propto
-    \prod_\beta
-        \prod_j
-            \theta_{i,j}^{\vec\alpha_{f_\beta \rightarrow \vec\theta_i, j} - 1}
-\\
-&\propto
-    Dir(\vec{\theta}_i;
-        \sum_\beta \vec\alpha_{f_\beta \rightarrow \vec\theta_i} - (|\beta| - 1) \vec{1})
+&\propto \,
+    Dir(\vec{\theta}_i ;\, \sum_\beta \vec\alpha_{f_\beta \rightarrow \vec\theta_i} - (\,|\beta| - 1\,) \, \vec{1})
 \\
 &=
-    Dir(\vec{\theta}_i;
+    Dir(\vec{\theta}_i;\,
         \vec{\alpha}_i)
 \label{eq:ep:aprx_1}
 \end{align}
-kde $\vec{\alpha}_i = \sum_\beta \vec\alpha_{f_\beta \rightarrow \vec\theta_i} - (|\beta| - 1)
+kde $\vec{\alpha}_i = \sum_\beta \vec\alpha_{f_\beta \rightarrow \vec\theta_i} - (\,|\beta| - 1\,)
 \vec{1})$.
 
-Při aktualizaci faktoru $\tilde\beta$ tedy cavity distribuce bude:
+Při aktualizaci faktoru $\tilde\beta$ tedy neúplná distribuce bude:
 \begin{align}
 q^{\backslash \tilde\beta} (\vec{\theta_i})
 &\propto
@@ -274,7 +302,7 @@ KL(p \| q) =
 \int_{-\infty}^{\infty}
     p(x) \log\left(\frac{p(x)}{q(x)}\right) \mathrm{d}x
 \end{equation}
-Pro nalezení minima použijeme algoritmus Expectation Propagation a budeme
+Pro nalezení minima použijeme algoritmus srovnání momentů a budeme
 minimalizovat $KL(p^*\| q)$.
 
 Pokud se podíváme na skutečnou marginální pravděpodobnost
@@ -318,14 +346,14 @@ p^*(\vec{\theta}) =
 \end{equation}
 kde
 \begin{align}
-    w^*_0 &\propto w_0 \\
-    w^*_j &\propto w_j \frac{\alpha_j}{\sum_i \alpha_i} \\
-    \sum_{i=0}^k w_i^* &= 1
+    w^*_0 \propto w_0, \quad \quad
+    w^*_j \propto w_j \frac{\alpha_j}{\sum_i \alpha_i}, \quad \quad
+    \sum_{i=0}^k w_i^* = 1
 \end{align}
 
 Jak bylo ukázáno v sekci~\ref{sec:expfam}, pro minimalizaci KL divergence mezi dvěma rozděleními z exponenciální rodiny
 stačí, pokud se budou rovnat jejich postačující statistiky. Dokážeme jednoduše
-spočítat první dva momenty Dirichletovského rozdělení a tedy použijeme
+spočítat první dva momenty Dirichletovského rozdělení a proto použijeme
 aproximaci a budeme počítat pouze s nimi a zbylé momenty zanedbáme.
 Je tedy třeba nalézt střední hodnotu a rozptyl proměnných z $p^*(\vec\theta)$.
 
@@ -349,7 +377,7 @@ Střední hodnotu proměnných $\vec\theta$ podle rozdělení $p^*$ lze tedy spo
 jako vážený součet středních hodnot $\vec\theta$ podle jednotlivých
 Dirichletovských distribucí, z kterých se $p^*$ skládá.
 
-První moment tedy máme spočítáný, pro výpočet rozptylu můžeme využít
+První moment tedy máme spočítaný, pro výpočet rozptylu můžeme využít
 definici:
 \begin{equation}
 	Var[\vec{\theta}] = \mathbb{E}[\vec{\theta}^2] - \mathbb{E}[\vec\theta]^2
@@ -383,7 +411,7 @@ lze opět jednoduše odvodit z definice.
 \end{align}
 
 Nyní jsme v podobné situaci jako v~(\ref{eq:4}). Budeme postupovat stejně,
-vyjádříme nové Dirichletovské rozdělení.
+vyjádříme novou Dirichletovskou distribuci.
 
 \begin{align}
 \mathbb{E}_{Dir(\vec\alpha)}[x_i^2] &=
@@ -410,18 +438,18 @@ vyjádříme nové Dirichletovské rozdělení.
 
 Vyjádřili jsme $\Gamma(\alpha_0)$ a $\Gamma(\alpha_i)$ s pomocí $\Gamma(\alpha_0 + 2)$ a $\Gamma(\alpha_i + 2)$
 \begin{align}
-\Gamma(\alpha_0) &= \frac{\Gamma(\alpha_0 + 2)}
+\Gamma(\alpha_0) = \frac{\Gamma(\alpha_0 + 2)}
 				{\alpha_0(\alpha_0 + 1)}
-\\
-\Gamma(\alpha_i) &= \frac{\Gamma(\alpha_i + 2)}
+\quad \quad
+\Gamma(\alpha_i) = \frac{\Gamma(\alpha_i + 2)}
 				{\alpha_i(\alpha_i + 1)}
 \end{align}
 
 Následně jsme vytvořili nové parametry $\vec\beta$:
 \begin{align}
-\beta_i &= \alpha_i + 2 \\
-\beta_{j \ne i} &= \alpha_j \\
-\beta_0 &= \sum_i \beta_i
+\beta_i = \alpha_i + 2 \quad \quad
+\beta_{j \ne i} = \alpha_j \quad \quad
+\beta_0 = \sum_i \beta_i
 \end{align}
 
 Nyní tedy dokážeme spočítat $\mathbb{E}_{p^*}[\vec\theta]$ a $\mathbb{E}_{p^*}[\vec\theta^2]$.

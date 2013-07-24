@@ -5,13 +5,13 @@
 \section{Dialogový systém}
 
 Dialogový systém je počítačový systém, který umožňuje uživatelům komunikovat s počítačem ve formě, která je přirozená a efektivní pro použití.
-Vývoj dialogových systémů má před sebou ještě spoustu problémů k překonání a pro praktické použití je třeba se uchýlit k několika předpokladům a zjednodušením.
+Vývoj dialogových systémů má před sebou ještě spoustu problémů k překonání a pro praktické použití je třeba se uchýlit k mnoha předpokladům a zjednodušením.
 Prvním zjednodušením je doménová specializace, v současné době není možné vytvořit dialogový systém, který by se dokázal s uživatelem bavit o libovolném tématu.
 Z toho plyne i nutnost ontologie, systém potřebuje databázi popisující všechny informace, které může poskytnout a jejich strukturu.
 Systém má definované fráze a věty, které může použít, na rozdíl od živého operátora, který dokáže improvizovat.
 
 Další zjednodušení se týkají přímo dialogu.
-Předpokládá se, že dialog probíhá vždy mezi systémem a jedním uživatelem.
+Většinou se předpokládá, že dialog probíhá mezi systémem a jedním uživatelem.
 Navíc se pravidelně střídají v obrátkách.
 Jedna obrátka dialogu je složená z jedné promluvy systému a jedné promluvy uživatele.
 
@@ -19,7 +19,7 @@ Příkladem dialogového systému může být systém pro nalezení spojení pom
 Příkaz od uživatele může vypadat např. takto: \uv{Chci jet z Malostranského náměstí na Anděl}.
 Dialogový systém z této věty odvodí, že uživatel hledá spojení, výchozí stanice je Malostranské náměstí a cílová stanice je Anděl.
 Nyní záleží na chování dialogového systému, může například předpokládat, že uživatel chce vždy najít nejdřívější spojení, pokud neřekne jinak.
-V takovém případě už systém může rovnou najít v databázi nejbližší spojení a uživateli jej sdělit.
+V takovém případě už systém najde v databázi nejbližší spojení a uživateli jej sdělí.
 
 Důležitou vlastností dialogového systému je robustnost.
 Pokud budeme používat dialogový systém v přirozeném prostředí, musíme se vyrovnat s tím, že často nebude uživateli rozumět.
@@ -31,8 +31,8 @@ Dialogový systém se proto musí umět uživatele doptat na chybějící inform
 Dialogový systém se skládá z několika částí, které spolu komunikují.
 Na vstupu je zvukový záznam uživatele, o jeho převedení do textu se stará systém rozpoznávání řeči (ASR).
 Z textu je potřeba získat sémantické informace pomocí systému porozumění mluvené řeči (SLU).
-Nad sémanticky anotovanými informacemi už může pracovat dialogový manager (DM), který zvolí patřičnou odpověď.
-Výstupem dialogového manageru jsou informace, které se mají předat uživateli.
+Nad sémanticky anotovanými informacemi už může pracovat komponenta řízení dialogu, která zvolí patřičnou odpověď.
+Výstupem komponenty řízení dialogu jsou informace, které se mají předat uživateli.
 O jejich převedení do textu se stará systém generování přirozené řeči (NLG).
 Do zvukového záznamu převede text syntetizér řeči (TTS).
 
@@ -48,7 +48,8 @@ Existuje i celá řada komerčního software od firem jako IBM nebo Nuance.
 Pro obecnou doménu se problém stává mnohem těžší a je třeba velké množství dat.
 Pro měření výkonu ASR systému se používá metrika Word Error Rate (WER).
 Pro spočítání WER je třeba nejprve provést zarovnání rozpoznaného a originálního textu.
-WER je pak počet slov, která jsou změněná, smazaná, anebo přidaná, vydělený počtem slov v originálním textu.Dialogový systém Let's Go!~\cite{raux2006doing} například dosahuje průměrné WER $64.3\%$.
+WER je pak počet slov, která jsou změněná, smazaná, anebo přidaná, vydělený počtem slov v originálním textu.
+Dialogový systém Let's Go!~\cite{raux2006doing} například dosahuje průměrné WER $64.3\%$.
 
 Systém rozpoznávání řeči může produkovat více hypotéz pro jeden vstup.
 Často existuje pro jeden zvukový záznam více možných slovních sekvencí, z kterých by mohl pocházet.
@@ -156,13 +157,13 @@ Příklad konfůzní sítě je na obrázku~\ref{fig:konnet}.
 
 Po získání hypotéz o promluvě uživatele se musi dialogový systém pokusit porozumět, co se uživatel snažil sdělit.
 Dialogový systém nepotřebuje vědět, co přesně uživatel řekl, důležité je pouze zjistit význam sdělení.
-Pokud například uživatel řekne "Chtěl bych nalézt spojení z Malostranského náměstí na Anděl", anebo "Jak se dostanu na Anděl ze zastávky Malostranské náměstí?", tak pro dialogový systém jsou obě tvrzení ekvivalentní, uživatel požaduje informace o spojení mezi dvěma zastávkami, i když v jednom případě jde o větu oznamovací a v druhém případě o otázku.
+Pokud například uživatel řekne \uv{Chtěl bych nalézt spojení z Malostranského náměstí na Anděl}, anebo \uv{Jak se dostanu na Anděl ze zastávky Malostranské náměstí?}, tak pro dialogový systém jsou obě tvrzení ekvivalentní, uživatel požaduje informace o spojení mezi dvěma zastávkami, i když v jednom případě jde o větu oznamovací a v druhém případě o otázku.
 
 První rozdělení mezi přesným významem sdělení a jeho účelem se objevilo ve formě tzv. speech aktů~\cite{austin1975things}.
 Následně byla idea speech aktů rozšířena pro potřeby dialogových systémů~\cite{traum1999speech} a výsledek byl nazván dialogovým aktem.
 
 V této práci používáme definici dialogového aktu, která byla použita v soutěži Dialog State Tracking Challenge~\cite{williamsdialog}.
-Semántická reprezentace sdělení uživatele se tedy nazývá dialogový akt (DA), skládá se z jedné nebo více položek dialogového aktu (DAI), které jsou spojené v konjunkci.
+Sémantická reprezentace sdělení uživatele se tedy nazývá dialogový akt (DA), skládá se z jedné nebo více položek dialogového aktu (DAI), které jsou spojené v konjunkci.
 Každá DAI se skládá z typu, názvu slotu a jeho hodnoty. Typy jsou doménově nezávislé, sloty a jejich hodnoty reprezentují koncepty ontologie.
 Příklad dialogového aktu ze systému pro hledání spojení v městské dopravě:
 
@@ -180,7 +181,7 @@ Typů může být libovolné množství, ale existuje několik základních, jej
 \item {\em request} --- požadujeme od protějšku doplnění hodnoty pro dotazovaný slot,
 \item {\em confirm} --- chceme potvrdit hodnotu slotu, potvrzení může být implicitní, anebo explicitní.
 	Při explicitním potvrzení očekáváme odpověď \uv{Ano} nebo \uv{Ne},
-	U implicitního, pokud se nám nedostane odpovědi předpokládáme, že protějšek souhlasí.
+	U implicitního, pokud se nám nedostane odpovědi, předpokládáme, že protějšek souhlasí.
 \end{itemize}
 
 V tabulce~\ref{tab:dstcdat} jsou ukázány všechny typy dialogových aktů, které může uživatel říct v dialogovém systému Let's Go!~\cite{williamsdialog}.
@@ -228,10 +229,10 @@ Existuje široké množství technik, které lze použít pro porozumění mluve
 Unifikace pomocí šablon anebo gramatiky jsou příklady ručně psaných metod.
 Metody založené na datech jsou například Hidden Vector State model~\cite{he2005semantic}, techniky strojového překladu~\cite{wong2007learning}, Combinatory Categorical Grammars~\cite{zettlemoyer2007online} nebo Support Vector Machines~\cite{mairesse2009spoken}.
 
-\subsection{Dialogový manager (DM)}
+\subsection{Komponenta řízení dialogu}
 
 Pokud už jsou pravděpodobné dialogové akty dekódovány, je třeba rozhodnout, jak bude systém reagovat.
-Komponenta tvořící rozhodnutí o dalším kroku systému se nazývá dialogový manager.
+Komponenta tvořící rozhodnutí o dalším kroku systému se nazývá komponenta řízení dialogu.
 Odpověď systému je zakódována do formy dialogových aktů a nazývá se systémová akce.
 
 Zvolená systémová akce je vybrána z množiny možných akci $a \in \mathcal{A}$ a závisí na vstupu, který systém obdržel z SLU.
@@ -239,18 +240,22 @@ Tento vstup se nazývá pozorování $o \in \mathcal{O}$, protože obsahuje vše
 
 Zvolení správné akce potřebuje více znalostí než jen poslední pozorování.
 Celá historie dialogu a také kontext hrají důležitou roli.
-Dialogový manager bere na vše ohled pomocí udržovaní interní reprezentace celého pozorovaného dialogu.
-Tato reprezentace se nazývá dialogový stav, nebo také stav důvěry, značí se $b \in \mathcal{B}$.
-Aktuální dialogový stav závisí na přechodové funkci, která dialogový stav aktualizuje pro každé nové pozorování a systémovou akci.
-Přechodová funkce je tedy mapování $\mathcal{T} : \mathcal{B} \times \mathcal{A} \times \mathcal{O} \longrightarrow \mathcal{B}$.
-V této práci se budeme věnovat právě metodám aktualizace dialogového stavu.
+Komponenta řízení dialogu bere na vše ohled pomocí udržovaní interní reprezentace celého dialogu.
+Všechny informace o historii dialogu a uživatelových cílech nazýváme stavem dialogu.
 
-Chování dialogového stavu definuje dialogová strategie $\pi$.
+Cíle uživatele ovšem neznáme a tedy musíme nějak uvažovat nad jejich možnými hodnotami.
+Pro vyrovnání se s tímto problém se dialog považuje za částečně pozorovatelný Markovský rozhodovací proces (POMDP) a cíle uživatele za skryté proměnné~\cite{williams2007partially}.
+Pravděpodobnostní rozdělení nad možnými dialogovými stavy nazýváme stav důvěry $b \in \mathcal{B}$.
+Aktuální stav důvěry závisí na přechodové funkci, která stav důvěry aktualizuje pro každé nové pozorování a systémovou akci.
+Přechodová funkce je tedy mapování $\mathcal{T} : \mathcal{B} \times \mathcal{A} \times \mathcal{O} \longrightarrow \mathcal{B}$.
+V této práci se budeme věnovat právě metodám pro odhad stavu.
+
+Chování systému definuje dialogová strategie $\pi$.
 Strategie určuje co má systém provést v závislosti na aktuálním dialogovém stavu.
 Obecně strategie vytvoří pravděpodobnostní rozložení přes možné akce.
-Pokud $\prod(\mathcal{A})$ značí množinu těchto distribucí, pak dialogová strategie bude zobrazení z dialogového stavu do této množiny, $\pi: \mathcal{B} \longrightarrow \prod(\mathcal{A})$.
+Pokud $\prod(\mathcal{A})$ značí množinu těchto distribucí, pak dialogová strategie bude zobrazení ze stavu důvěry do této množiny, $\pi: \mathcal{B} \longrightarrow \prod(\mathcal{A})$.
 
-Pozorování, dialogový stav a akce jsou číslovány podle obrátky.
+Pozorování, stav důvěry a akce jsou číslovány podle obrátky.
 Pokud je časový okamžik důležitý, jsou pozorování, dialogový stav a akce z obrátky číslo $t$ označeny $o_t$, $b_t$ a $a_t$.
 
 \subsection{Generování přirozené řeči (NLG a TTS)}
@@ -261,7 +266,7 @@ Následně je text převeden na zvuk pomocí textového syntetizéru řeči (TTS
 
 Nejjednodušším přístup ke generování přirozeného jazyka z dialogových aktů je použití šablon.
 Například pro dialogový akt {\tt inform(from.stop="x")} bude vytvořena šablona \uv{Pojedete ze zastávky x}, kde \uv{x} bude nahrazeno například za \uv{Malostranská}, \uv{Letňany}, atd.
-Šablony jsou jednoduché a často efektivní řešení, protože počet možných frází je většinou dostatešně malý.
+Šablony jsou jednoduché a často efektivní řešení, protože počet možných frází je většinou malý.
 
 Při syntéze řeči existuje mnoho alternativ.
 Je možné použít segmenty řeči z databáze pro vygenerování zvuků tvořících dohromady celou sekvenci slov.
@@ -276,7 +281,7 @@ Pro syntézu řeči existují také komerční systémy, například systém Spe
 Dialogový stav je reprezentace všech informací, které lze o aktuálním dialogu získat.
 To znamená všechno co uživatel a systém řekl.
 Ovšem nejistota v tom, co vlastně uživatel řekl a jaké jsou jeho cíle, je základním problémem, s kterým se dialogový systém musí vypořádat.
-Systémy pro rozpoznávání i porozumění řeči často chybují a tuto možnost musí brát dialogový manager také v potaz.
+Systémy pro rozpoznávání i porozumění řeči často chybují a tuto možnost musí brát komponenta řízení dialogu také v potaz.
 Vypořádat se s nejistotou lze pomocí jejího zakomponování do modelu pro odhad dialogového stavu.
 
 Cíle uživatele a další vlastnosti prostředí lze považovat za náhodné částečně pozorovatelné proměnné a je možné je odvodit z pozorování.
@@ -285,7 +290,7 @@ Pravděpodobnostní rozložení těchto náhodných proměnných dává dobře d
 Jedním z možných modelů dialogového stavu je generativní model.
 Definujeme množinu dialogových stavů, $s \in \mathcal{S}$.
 Předpokládáme, že pozorování závisí podmíněně pouze na stavu prostředí a definujeme pravděpodobnostní rozdělení pro pozorování, $p(o \mid s)$.
-Dále předpokládáme, že cíle uživatele se nemění v čase a stav prostředí je tedy závislý pouze na stavu v předchozí obrátce a na poslední akci systému.
+Dále předpokládáme, že stav prostředí je závislý pouze na stavu v předchozí obrátce a na poslední akci systému.
 Tato závislost je zachycena v přechodové pravděpodobnosti $p(s_{t+1} \mid s_t, a_t)$.
 Předpoklad, že dialogový stav závisí pouze na minulé hodnotě se nazývá Markovská vlastnost.
 
@@ -294,10 +299,12 @@ Stav v čase $t$ označíme $s_t$.
 Podle Bayesova vzorce můžeme spočítat pravděpodobnost stavu v čase $t+1$ po přijetí nového pozorování $o_{t+1} = o^\prime$.
 
 \begin{equation}
+\small
 p(s_{t+1} = s^\prime) \propto
+    p(o_{t+1} = o^\prime \mid s_{t+1} = s^\prime)
     \sum_{s \in \mathcal{S}}
         p(s_t = s)
-        p(s_{t+1} = s^\prime \mid s_t = s, a_t = a) p(o_{t+1} = o^\prime \mid s_{t+1} = s^\prime)
+        p(s_{t+1} = s^\prime \mid s_t = s, a_t = a)
 \label{eq:beliefupdate}
 \end{equation}
 
@@ -308,14 +315,14 @@ Můžeme přepsat rovnici~\eqref{eq:beliefupdate} s pomocí stavů důvěry.
 
 \begin{equation}
 b(s_{t+1}) \propto
+    p(o_{t+1} \mid s_{t+1})
     \sum_{s \in \mathcal{S}}
         b(s_t)
         p(s_{t+1} \mid s_t, a_t)
-        p(o_{t+1} \mid s_{t+1})
 \label{eq:beliefupdate2}
 \end{equation}
 
-Rovnice~\eqref{eq:beliefupdate2} nám dává předpis pro přechodovou funkci $\mathcal{T}$.
+Rovnice~\eqref{eq:beliefupdate2} nám dává předpis pro přechodovou funkci.
 V praxi ovšem bude množina možných hodnot pro stav $s_t$ příliš velká, protože stav musí obsahovat všechny informace potřebné pro rozhodování, to znamená celou historii dialogu a cíle uživatele. 
 Pokud systém obsahuje sloty, tak každá kombinace hodnot slotu je jedním možným cílem uživatele. 
 Tedy velikost stavového prostoru roste exponenciálně.
@@ -323,7 +330,7 @@ Tedy velikost stavového prostoru roste exponenciálně.
 \subsection{Aktualizace stavu}
 
 Efektivní metodou pro aktualizaci dialogového stavu je použití dynamických bayesovských sítí~\cite{thomson2008bayesian}.
-Bayesovské sítě umoňují efektivní výpočet využitím podmíněných nezávislostí mezi sloty.
+Bayesovské sítě umožňují efektivní výpočet využitím podmíněných nezávislostí mezi sloty.
 Stále ovšem zůstává problém s výpočtem, pokud i jednotlivé sloty obsahují příliš mnoho hodnot.
 Lze použít aproximace a počítat jen s $k$ nejpravděpodobnějšími hodnotami~\cite{thomson2010bayesian}.
 

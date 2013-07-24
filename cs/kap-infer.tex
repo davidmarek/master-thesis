@@ -20,15 +20,15 @@ Díky ní budeme schopní vytvořit generativní model pro aktualizaci dialogov�
 Bayesovské sítě jsou pravděpodobnostní grafický model, který využívá podmíněných nezávislostí pro úspornou reprezentaci sdružené pravděpodobnosti.
 Bayesovská sít je orientovaný acyklický graf, jeho vrcholy jsou náhodné proměnné a hrany odpovídají přímé závislosti jednoho uzlu na druhý.
 Pro každou náhodnou proměnnou v síti platí, že její pravděpodobnost je jednoznačně určena jejími rodiči v grafu.
-Podmíněná pravděpodobnostní distribuce (CPD) proměnné $X$ popisuje pravděpodobnost proměnné $X$ dáno její rodiče, $P(X \mid parents(X))$.
-Pokud proměnná nemá žádná rodiče, pak její podmíněná pravděpodobnostní distribuce je ekvivalentní marginální pravděpodobnostní distribuci.
+Podmíněná pravděpodobnostní distribuce (CPD) proměnné $X$ popisuje pravděpodobnost proměnné $X$ dáno jejími rodiče, $P(X \mid parents(X))$.
+Pokud proměnná nemá žádné rodiče, pak její podmíněná pravděpodobnostní distribuce je ekvivalentní marginální pravděpodobnostní distribuci.
 
 Příklad Student~\cite{koller2009probabilistic}: firma zvažuje, zda-li přijme studenta.
 Firma chce přijímat chytré studenty, ale nesmí je testovat na inteligenci (I) přímo.
 Má však výsledek studentových SAT testů, které ovšem nemusí stačit pro správné zhodnocení inteligence.
-Požadují tak tedy i doporučení (D) od jednoho z učitelů.
-Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal v jeho předmětu.
-Předměty se ovšem liší v obtížnosti (O) a tak je studentova známka v předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
+Požadují tedy i doporučení (D) od jednoho z učitelů.
+Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal z jeho předmětu.
+Předměty se ovšem liší v obtížnosti (O) a tak je studentova známka z předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
 Grafický model reprezentující tento problém je vyobrazen na obrázku~\ref{fig:student}.
 \begin{figure}
 \begin{center}
@@ -58,8 +58,8 @@ Grafický model reprezentující tento problém je vyobrazen na obrázku~\ref{fi
 \end{figure}
 
 V tomto modelu je několik nezávislostí. Obtížnost předmětu a inteligence studenta jsou zjevně nezávislé.
-Studentova známka z předmětu je závislá na obtížnosti předmětu a inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentova inteligence.
-Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentova známka.
+Studentova známka z předmětu je závislá na obtížnosti předmětu a inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentovou inteligencí.
+Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentovou známka.
 
 Sdruženou nezávislost tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s pomocí řetízkového pravidla.
 \begin{equation}
@@ -83,7 +83,7 @@ P(Z) = \sum_{O, I, S, D} P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
 \end{equation}
 
 Další a asi nejčastější dotaz nastává, pokud některé náhodné proměnné pozorujeme. 
-Pak chceme znát pravděpodobnost jiných proměnných dáno naše pozorování, $P(\vec{X} \mid \vec{E} = \vec{e})$, kde $\vec{X}$ jsou dotazované proměnné, $\vec{E}$ jsou pozorované proměnné a $\vec{e}$ jsou pozorované hodnoty.
+Pak chceme znát pravděpodobnost jiných proměnných dáno naším pozorováním $P(\vec{X} \mid \vec{E} = \vec{e})$, kde $\vec{X}$ jsou dotazované proměnné, $\vec{E}$ jsou pozorované proměnné a $\vec{e}$ jsou pozorované hodnoty.
 Z definice podmíněné pravděpodobnosti dostáváme
 
 \begin{equation}
@@ -141,7 +141,9 @@ A nakonec spočítáme finální marginální pravděpodobnost
 
 Nechť $\mathcal{X}$ je množina náhodných proměnných. 
 $Val(\mathcal{X})$ definujeme jako množinu možných ohodnocení proměnných $\mathcal{X}$.
-Potom definujeme faktor $\phi$ jako zobrazení z $Val(\mathcal{X})$ do $\mathbb{R}$. Faktor je nezáporný, pokud všechny jeho obrazy jsou nezáporné. Množina proměnných $\mathcal{X}$ je doménou faktoru a značíme ji jako $Dom(\phi)$.
+Potom definujeme faktor $\phi$ jako zobrazení z $Val(\mathcal{X})$ do $\mathbb{R}$. 
+Faktor je nezáporný, pokud všechny jeho obrazy jsou nezáporné. 
+Doménu faktoru $\phi$ a značíme jako $Dom(\phi)$.
 
 Faktor, jehož doménu tvoří diskrétní proměnné, si můžeme představit jako tabulku, která obsahuje jednu hodnotu pro každé možné ohodnocení proměnných z domény.
 
@@ -163,7 +165,7 @@ Definujeme marginalizaci $Y$ v $\phi$, značenou $\sum_Y \phi$, jako faktor $\ps
 \end{equation*}
 Této operaci také říkáme vysčítání $Y$ ve $\phi$.
 
-Faktory se při počítání chovají jako čísla, všechny operace probíhají po prvcích, pro které je ohodnocení náhodných proměnných z průniku domén faktorů stejné.
+Všechny operace s faktory probíhají po prvcích, pro které je ohodnocení náhodných proměnných z průniku domén faktorů stejné.
 Proto platí komutativita $\phi_1 \cdot \phi_2 = \phi_2 \cdot \phi_1$ a $\sum_X \sum_Y \phi = \sum_Y \sum_X \phi$.
 Dále platí asociativita součinu $(\phi_1 \cdot \phi_2) \cdot \phi_3 = \phi_1 \cdot (\phi_2 \cdot \phi_3)$.
 Nakonec můžeme vyměnit sumu a součin, pokud $X \not\in Dom(\phi_1)$, potom $\sum_X (\phi_1 \cdot \phi_2) = \phi_1 \sum_X \phi_2$.
@@ -218,7 +220,7 @@ Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
 
 \State Nechť $X_1, \dots, X_k$ je seřazení proměnných z $\vec{X}$, t.ž. $X_i \prec X_j \Leftrightarrow i < j$.
 \For{$i = 1 \dots k$}
-	\State $\Phi \gets$ Sum-Product-Eliminate-Var($\Phi$, $Z_i$)
+	\State $\Phi \gets$ Sum-Product-Eliminate-Var($\Phi$, $X_i$)
 \EndFor
 \State $\phi^* \gets \prod_{\phi \in \Phi} \phi$
 \State \Return $\phi^*$
@@ -395,7 +397,7 @@ V případě faktoru je odchozí zpráva ekvivalentní faktoru.
 \begin{equation}
     \mu_{f \rightarrow X}(X) = f(X)
 \end{equation}
-V případě náhodné proměnné je odchozí zpráva 
+V případě náhodné proměnné je odchozí zpráva uniformní
 \begin{equation}
     \mu_{X \rightarrow f}(X) = 1
 \end{equation}
@@ -501,7 +503,7 @@ Loopy Belief Propagation je iterativní algoritmus.
 V grafu nemusí existovat vrchol, který může posílat zprávu k nějakému ze svých sousedů.
 Je tedy třeba vybrat vrchol podle nějaké strategie a z něj poslat zprávy do všech sousedních vrcholů.
 V další iteraci je pak vybrán zase jiný vrchol, který bude posílat zprávy.
-Iterace končí ve chvíli, kdy se už nemění marginální pravděpodobnosti proměnných.
+Iterace končí ve chvíli, kdy se už nemění hodnoty zpráv.
 
 Vzhledem k tomu, že posílané zprávy už neodpovídají skutečným faktorům, je důležitá otázka, zda-li Loopy Belief Propagation vůbec nalezne správné marginální pravděpodobnosti.
 Existují podmínky za kterých algoritmus bude konvergovat~\cite{tatikonda2002loopy}.
@@ -577,18 +579,18 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 
 Popis Loopy Belief Propagation je v algoritmu~\ref{alg:lbp}.
 Při inferenci ve faktor grafu je nejprve třeba inicializovat všechny zprávy.
-Posílání zpráv budeme iterovat dokud zprávy nedokonvergují, anebo můžeme nastavit pevný počet iterací.
+Posílání zpráv budeme iterovat dokud zprávy nekonvergují, anebo můžeme nastavit pevný počet iterací.
 Pak vybíráme vrcholy a z každého pošleme zprávu do všech okolních.
 Způsobem výběru vrcholů se budeme zabývat později.
 I náhodný výběr vrcholů povede k výsledku, dodání externí informace či chytřejší heuristiky ovšem může výpočet výrazně urychlit.
 
 Poslání zprávy se liší podle toho, zda-li posíláme z proměnné do faktoru, anebo naopak.
 V obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů, kromě toho, do kterého zprávu posíláme.
-Při posílání zprávy z vecholu pro faktor zprávy vynásobíme faktorem a marginalizujeme všechny proměnné, kromě té, které zprávu posíláme.
+Při posílání zprávy z faktoru $f$ do proměnné musíme navíc vynásobit příchozí zprávy hodnotou $f$, následně vysčítat všechny proměnné, kromě té, které zprávu posíláme.
 
 Ve faktor grafu se tedy zprávy šíří pouze přes pravděpodobnostní rozdělení jedné proměnné.
 To právě může vést k oscilacím anebo konvergenci ke špatným hodnotám. 
-Příkladem je například skrytý markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
+Příkladem je například skrytý Markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
 Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k rovnoměrnému rozdělení. A tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
 
 Při počítání zpráv často musíme pronásobit spoustu zpráv z okolních vrcholů.
@@ -723,7 +725,7 @@ Expectation propagation sice aproximuje jednotlivé faktory, ale vždy v kontext
 Nejprve jsou všechny inicializovány a pak jsou procházeny jeden po druhém a každý je aktualizován.
 Tento přístup je podobný metodám, které byly ukázány v předešlých sekcí.
 Předpokládejme, že chceme aktualizovat faktor $\tilde{f}_j (\vec{X})$.
-Nejprve odstraníme faktor z produktu $\prod_{i \ne j} \tilde{f}_i(\vec{X})$.
+Nejprve odstraníme faktor z produktu a získáme $\prod_{i \ne j} \tilde{f}_i(\vec{X})$.
 Následně nalezneme novou hodnotu pro faktor $\tilde{f}_j$ tak, aby pravděpodobnostní rozložení
 \begin{equation}
 q^{new}(\vec{X}) \propto \tilde{f}_j(\vec{X}) \prod_{i \ne j} \tilde{f}_i(\vec{X})
@@ -741,7 +743,7 @@ Odstranění faktoru $\tilde{f}_j(\vec{X})$ z aktuální aproximace aposteriorn�
 q^{\backslash j}(\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}
 \end{equation}
 Mohli bychom počítat $q^{\backslash j}(\vec{X})$ jako součin všech faktorů kromě $j$, ale v praxi je dělení rychlejší.
-Této nenormalizované distribuci se říká cavity distribuce.
+Tuto nenormalizovanou distribuci budeme nazývat neúplná distribuce.
 Její kombinací se skutečným faktorem $f_j(\vec{X})$ dostaneme distribuci
 \begin{equation}
     \frac{1}{Z_j} f_j(\vec{X}) q^{\backslash j}(\vec{X}),
@@ -770,11 +772,13 @@ Koeficient $K$ získáme tak, že obě strany (\ref{eq:newfj}) vynásobíme $q^{
     K = \int \tilde{f}_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X},
 \end{equation}
 použili jsme navíc toho, že $q^{new}(\vec{X})$ je normalizovaná distribuce.
-Hodnota $K$ pak může být nalezena srovnáním
+Pro nalezení hodnoty $K$ opět použijeme srovnání momentů, v tomto případě nultých momentů:
 \begin{equation}
     \int \tilde{f}_j (\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X} = \int f_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X}
 \end{equation}
-Z čehož zjistíme, že $K = Z_j$ a tedy může být nalezeno přímo z (\ref{eq:zj}).
+Vidíme, že pravá strana je rovna $Z_j$ a tedy platí rovnost $K = Z_j$.
+Díky tomu můžeme $K$ nalézt přímo výpočtem integrálu~(\ref{eq:zj}).
+Bez tohoto poznatku bychom se dostali do problému, protože pro výpočet $K$ by bylo potřeba $\tilde{f}_j$, které ale bez $K$ neznáme.
 
 Expectation Propagation je popsán v algoritmu~\ref{alg:ep}.
 Dokud aproximované rozdělení nekonverguje, vybíráme jednotlivé faktory a aktualizujeme je podle popsaného postupu.

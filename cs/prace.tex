@@ -278,7 +278,7 @@ Matematicko-fyzikální fakulta
 \vspace{15mm}
 
 % Název práce přesně podle zadání
-{\LARGE\bfseries Implementace aproximativních bayesovských metod pro odhad stavu v dialogových systémech}
+{\LARGE\bfseries Implementace aproximativních Bayesovských metod pro odhad stavu v dialogových systémech}
 
 \vfill
 
@@ -354,66 +354,66 @@ Podpis autora
 \setlength\parindent{0mm}
 \setlength\parskip{5mm}
 
-Název práce:
-Implementace aproximativních bayesovských metod pro odhad stavu v dialogových systémech
+\textbf{Název práce:}
+Implementace aproximativních Bayesovských metod pro odhad stavu v dialogových systémech
 % přesně dle zadání
 
-Autor:
+\textbf{Autor}:
 David Marek
 
-Katedra:  % Případně Ústav:
+\textbf{Ústav}:  % Případně Ústav:
 Ústav formální a aplikované lingvistiky
 % dle Organizační struktury MFF UK
 
-Vedoucí diplomové práce:
+\textbf{Vedoucí diplomové práce}:
 Ing. Mgr. Filip Jurčíček, Ph.D., Ústav formální a aplikované lingvistiky
 % dle Organizační struktury MFF UK, případně plný název pracoviště mimo MFF UK
 
-Abstrakt:
+\textbf{Abstrakt}:
 % abstrakt v rozsahu 80-200 slov; nejedná se však o opis zadání diplomové práce
-Každý dialogový systém obsahuje dialogový manager, který vykonává akce dialogového systému na základě dialogového stavu.
-Dialogový stav reprezentuje všechny informace poskytnuté jak uživatelem, tak systémem.
+Každý dialogový systém obsahuje komponentu řízení dialogu, která vykonává akce dialogového systému na základě dialogového stavu.
+Dialogový stav reprezentuje všechny dostupné informace.
 Systém pro odhad stavu slouží k udržování stavu dialogu a integraci nových informací ze systému porozumění.
-Pro efektivní práci dialogového manageru je důležité co nejpřesněji modelovat pravděpodobnostní rozdělení definované nad všemi stavy dialogu. 
-Techto stavů může být velké množství, proto se většinou používají aproximativní techniky.
+Pro efektivní práci komponenty řízení dialogu je důležité co nejpřesněji modelovat pravděpodobnostní rozdělení definované nad všemi stavy dialogu. 
+Těchto stavů může být velké množství, proto se většinou používají aproximativní techniky.
 V této práci se budeme zabývat implementací aproximativních metod pro odhad stavu dialogu pomocí inference v bayesovských sítích.
-Výsledkem bude knihovna použitelná v systému pro odhad stavu reálného dialogového systému.
+Výsledkem je knihovna použitelná v systému pro odhad stavu reálného dialogového systému.
 
 
-Klíčová slova: dialogový systém, odhad dialogového stavu, aproximativní bayesovské metody
+\textbf{Klíčová slova:} dialogový systém, odhad dialogového stavu, aproximativní bayesovské metody
 % 3 až 5 klíčových slov
 
 \vss}\nobreak\vbox to 0.49\vsize{
 \setlength\parindent{0mm}
 \setlength\parskip{5mm}
 
-Title: Approximative Bayes methods for belief monitoring in spoken dialogue systems
+\textbf{Title:} Approximative Bayes methods for belief monitoring in spoken dialogue systems
 % přesný překlad názvu práce v angličtině
 
-Author:
+\textbf{Author:}
 David Marek
 
-Department:
+\textbf{Department:}
 Institute of Formal and Applied Linguistics
 % dle Organizační struktury MFF UK v angličtině
 
-Supervisor:
+\textbf{Supervisor:}
 Ing. Mgr. Filip Jurčíček, Ph.D., Institute of Formal and Applied Linguistics
 % dle Organizační struktury MFF UK, případně plný název pracoviště
 % mimo MFF UK v angličtině
 
-Abstract:
+\textbf{Abstract:}
 % abstrakt v rozsahu 80-200 slov v angličtině; nejedná se však o překlad
 % zadání diplomové práce
-Every dialog system contains a dialog manager, which given a dialog state issues system actions.
-Dialog state represents all of the information received from user and system.
-Dialog state tracker's purpose is to maintain a dialog state and integrate new information from spoken language understanding module.
+The most important component of virtually any dialog system is a dialogue manager.
+The aim of the dialog manager is to propose an action (a continuation of the dialogue) given the last dialog state.
+The dialog state summarises all the past user input and the system input and ideally it includes all information necessary for natural progress in the dialog.
 For the dialog manager to work efficiently, it is important to model the probability distribution over all dialog states as precisely as possible.
 It is possible that the set of dialog states will be very large, so approximative methods usually must be used.
-In this thesis we will discuss an implementation of approximative Bayes methods for belief state monitoring.
-The result will be a library for dialog state monitoring in real dialog systems.
+In this thesis we will discuss an implementation of approximate Bayes methods for belief state monitoring.
+The result is a library for dialog state monitoring in real dialog systems.
 
-Keywords: dialog system, belief state monitoring, approximative Bayes methods
+\textbf{Keywords:} dialog system, belief state monitoring, approximative Bayes methods
 % 3 až 5 klíčových slov v angličtině
 
 \vss}
