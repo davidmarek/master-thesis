@@ -3,61 +3,61 @@
 \addcontentsline{toc}{chapter}{Úvod}
 
 Dialog je přirozený způsob dorozumívání a sdělování informací mezi lidmi.
-Počítač, který by dokázal vést dialog s uživatelem, byl vždy snem nejen příznivců vědecko-fantastické literatury.
-Už pro první počítače vznikaly programy snažící se využít přirozenou řeč pro interakci s uživatelem.
-Jedním z takových programů byla například Eliza \cite{weizenbaum1966eliza}, program jednající jako psychiatr.
+Počítač, který by dokázal vést dialog s~uživatelem, byl vždy snem nejen příznivců vědecko-fantastické literatury.
+Už pro první počítače vznikaly programy snažící se využít přirozenou řeč pro interakci s~uživatelem.
+Jedním z~takových programů byla například Eliza \cite{weizenbaum1966eliza}, program jednající jako psychiatr.
 Fungoval na principu rozpoznání textu pomocí gramatiky a následné transformace textu do promluv dle pravidel.
 Avšak gramatiky a pravidlové systémy se ukázaly nedostačné pro praktické aplikace a tak se vývoj přesunul do statistických metod.
 
-Z počátku byla výkonnost a úspěšnost systémů pracujících s přirozeným jazykem nízká, což vedlo ke skeptickým názorům na jejich budoucnost.
-Asi téměř všichni si pamatují první pokusy o diktování textu v kancelářských aplikacích.
+Z~počátku byla výkonnost a úspěšnost systémů pracujících s~přirozeným jazykem nízká, což vedlo ke skeptickým názorům na jejich budoucnost.
+Asi téměř všichni si pamatují první pokusy o~diktování textu v~kancelářských aplikacích.
 Systémy pro rozpoznání přirozeného jazyka se však stále zlepšovaly a dostaly se do fáze, kdy už je možné využít hlas jako vstup pro komplexní systémy.
 
 Tato práce se zabývá doménově omezenými statistickými dialogovými systémy.
-Dialogové systémy mohou vyhledávat spojení v městské dopravě, hledat turistické informace, ovládat navigaci v automobilu atd.
-Nabízejí spoustu výhod, jsou dostupné pro nevidomé, mohou pracovat 24 hodin denně a mohou nahradit lidské operátory, což může potenciálně vést k úsporám.
+Dialogové systémy mohou vyhledávat spojení v~městské dopravě, hledat turistické informace, ovládat navigaci v~automobilu atd.
+Nabízejí spoustu výhod, jsou dostupné pro nevidomé, mohou pracovat 24 hodin denně a mohou nahradit lidské operátory, což může potenciálně vést k~úsporám.
 
-Dialogové systémy mají stále daleko k dokonalosti.
+Dialogové systémy mají stále daleko k~dokonalosti.
 Neumí se dobře vyrovnat se špatně rozpoznanými vstupy, šumem a nejasnostmi.
 Na rozdíl od živých operátorů nedokáží improvizovat.
-V některých případech není uživatel spokojený s dialogovým systémem jen proto, že nepochopil otázku a dialogový systém není schopen se zeptat jinak.
+V~některých případech není uživatel spokojený s~dialogovým systémem jen proto, že nepochopil otázku a dialogový systém není schopen se zeptat jinak.
 
 První problém se snaží řešit statistické dialogové systémy.
-Pokud si nejsme jisti cílem uživatele, nabízí se řešení v modelování uživatele pomocí pravděpodobnostního modelu.
-Díky němu se pak můžeme vyrovnat s chybami zapříčiněnými špatně rozpoznanými vstupy.
-Tato práce se bude zabývat metodami pro efektivní výpočty ve statistických modelech aplikovatelných v dialogových systémech.
+Pokud si nejsme jisti cílem uživatele, nabízí se řešení v~modelování uživatele pomocí pravděpodobnostního modelu.
+Díky němu se pak můžeme vyrovnat s~chybami zapříčiněnými špatně rozpoznanými vstupy.
+Tato práce se bude zabývat metodami pro efektivní výpočty ve statistických modelech aplikovatelných v~dialogových systémech.
 
 \section*{Rozdělení práce}
 
-Nejprve v kapitole \ref{ch:kap1} popíšeme dialogové systémy a jejich jednotlivé součásti.
+Nejprve v~kapitole \ref{ch:kap1} popíšeme dialogové systémy a jejich jednotlivé součásti.
 Blíže se budeme zabývat dialogovým stavem a jeho reprezentací pomocí Bayesovského přístupu.
 
-Jako vhodnou strukturu pro reprezentaci dialogového stavu si představíme Bayesovské sítě v kapitole \ref{ch:kap2}.
-Ukážeme několik metod pro inferenci v Bayesovských sítích.
-Začneme jednoduchou, ale pomalou exaktní inferencí a přesuneme se až k efektivní aproximativní inferenci pomocí algoritmu Loopy Belief Propagation.
-Nakonec ukážeme metodu Expectation Propagation pro inferenci v grafickém modelu s aproximovanými faktory, která je zobecněním předchozích metod.
+Jako vhodnou strukturu pro reprezentaci dialogového stavu si představíme Bayesovské sítě v~kapitole \ref{ch:kap2}.
+Ukážeme několik metod pro inferenci v~Bayesovských sítích.
+Začneme jednoduchou, ale pomalou exaktní inferencí a přesuneme se až k~efektivní aproximativní inferenci pomocí algoritmu Loopy Belief Propagation.
+Nakonec ukážeme metodu Expectation Propagation pro inferenci v~grafickém modelu s~aproximovanými faktory, která je zobecněním předchozích metod.
 
-Pro využití v dialogových systémech je možné buď nastavit pevné parametry (ať už ručně nastavené nebo naučené z dat), anebo zvolit Bayesovský přístup i pro parametry.
-Parametry pocházející z Dirichletovského rozdělení jsou prezentovány v kapitole \ref{ch:ep}.
+Pro využití v~dialogových systémech je možné buď nastavit pevné parametry (ať už ručně nastavené nebo naučené z~dat), anebo zvolit Bayesovský přístup i pro parametry.
+Parametry pocházející z~Dirichletovského rozdělení jsou prezentovány v~kapitole \ref{ch:ep}.
 
-V kapitole \ref{ch:kap4} jsou popsány všechny implementované části a také příklady jejich použití.
-V této kapitole je také popsána soutěž Dialog State Tracking Challenge, do které byl přihlášen generativní systém pro odhad dialogového stavu používající popsanou knihovnu.
-Tato soutěž testovala systémy pro odhad dialogového stavu na datech z reálného dialogového systému.
+V~kapitole \ref{ch:kap4} jsou popsány všechny implementované části a také příklady jejich použití.
+V~této kapitole je také popsána soutěž Dialog State Tracking Challenge, do které byl přihlášen generativní systém pro odhad dialogového stavu používající popsanou knihovnu.
+Tato soutěž testovala systémy pro odhad dialogového stavu na datech z~reálného dialogového systému.
 
 \section*{Cíle}
 
 \begin{enumerate}
 \item Dialogové systémy často využívají pouze nejlepší hypotézu ze systému porozumění přirozené řeči.
     Většina ovšem umí vytvořit seznam $n$ nejlepších hypotéz.
-    Tato práce si klade za cíl představit metody pro inferenci dialogového stavu v dialogovém systému s využitím více hypotéz.
+    Tato práce si klade za cíl představit metody pro inferenci dialogového stavu v~dialogovém systému s~využitím více hypotéz.
     Představené metody budou založeny na reprezentaci dialogového stavu pomocí dynamických bayesovských sítí.
-\item Bude představen algoritmus Loopy Belief Propagation a implementován pro využití v reálných systémech pro odhad dialogového stavu.
-\item Algoritmus bude otestován na datech z reálného dialogového systému Let's Go! a porovnán s dalšími účastníky soutěže Dialog State Tracking Challenge.
-\item Důležitou částí algoritmů pro inferenci je určení pořadí, v jakém má inference probíhat.
-    Práce bude obsahovat implementaci několika strategií pro inferenci. Díky nim bude možné zvolit strategii pro efektivní inferenci v různých druzích Bayesovských sítí (stromy, dynamické sítě, obecné grafy).
+\item Bude představen algoritmus Loopy Belief Propagation a implementován pro využití v~reálných systémech pro odhad dialogového stavu.
+\item Algoritmus bude otestován na datech z~reálného dialogového systému Let's Go! a porovnán s~dalšími účastníky soutěže Dialog State Tracking Challenge.
+\item Důležitou částí algoritmů pro inferenci je určení pořadí, v~jakém má inference probíhat.
+    Práce bude obsahovat implementaci několika strategií pro inferenci. Díky nim bude možné zvolit strategii pro efektivní inferenci v~různých druzích Bayesovských sítí (stromy, dynamické sítě, obecné grafy).
 \item Nakonec se práce bude zabývat učením parametrů sítě a představí algoritmus Expectation Propagation, algoritmus pro nalezení aproximace pravděpodobnostního rozdělení.
-\item Při většině reálných použití dochází k aproximacím a úpravám modelu v závislosti na problému tak, aby bylo možné inferenci provádět v reálném čase.
+\item Při většině reálných použití dochází k~aproximacím a úpravám modelu v~závislosti na problému tak, aby bylo možné inferenci provádět v~reálném čase.
 Práce bude obsahovat implementaci frameworku, do kterého je možné jednoduše zasadit vlastní moduly pro aproximaci pravděpodobnostních rozdělení.
 Ty pak budou používány algoritmem Expectation Propagation.
-Jako příklad bude ukázán systém pro učení parametrů pravděpodobnostní distribuce v generickém modelu pro reprezentaci dialogového stavu.
+Jako příklad bude ukázán systém pro učení parametrů pravděpodobnostní distribuce v~generickém modelu pro reprezentaci dialogového stavu.
 \end{enumerate}

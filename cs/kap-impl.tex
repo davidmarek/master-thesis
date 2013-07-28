@@ -2,40 +2,40 @@
 \chapter{Implementace}
 \label{ch:kap4}
 
-V předchozích kapitolách byly popsány teoretické základy nutné pro implementaci inference v bayesovských sítích.
-V této kapitole bude popsána vytvořená knihovna pro dialogové systémy.
-Celá knihovna se skládá z několika vrstev, každá z nich staví na předchozí a poskytuje větší úroveň abstrakce.
-Nejnižší vrstva implementuje efektivní počítání s faktory.
+V~předchozích kapitolách byly popsány teoretické základy nutné pro implementaci inference v~Bayesovských sítích.
+V~této kapitole bude popsána vytvořená knihovna pro dialogové systémy.
+Celá knihovna se skládá z~několika vrstev, každá z~nich staví na předchozí a poskytuje větší úroveň abstrakce.
+Nejnižší vrstva implementuje efektivní počítání s~faktory.
 Nad ní stojí vrstva reprezentující jednotlivé vrcholy ve faktor grafu.
-Tato vrstva také obsahuje funkcionalitu pro počítání a posílání zpráv.
-Nejvyšší vrstva se zaměřuje na samotnou inferenci v grafickém modelu.
+Tato vrstva také obsahuje funkcionalitu pro počítání a~posílání zpráv.
+Nejvyšší vrstva se zaměřuje na samotnou inferenci v~grafickém modelu.
 
 \section{Diskrétní faktor}
 
 Faktor je základním stavebním kamenem.
-Operace s faktory musí být efektivní, pro výpočet jedné zprávy je potřeba několik násobení faktorů, následně je třeba je marginalizovat, atd.
-Faktory je třeba úsporně reprezentovat, každá zpráva, každé pravděpodobnostní rozdělení je samo o sobě faktor.
-Faktory jsou reprezentovány třídou \texttt{Factor} v modulu \texttt{alex/infer/factor.py}, která podporuje všechny základní matematické operace a také řadu specifických operací jako je marginalizace, normalizace, nastavení faktoru na pozorovanou hodnotu, vybrání nejpravděpodobnějšího přiřazení, atd.
+Operace s~faktory musí být efektivní, pro výpočet jedné zprávy je potřeba několik násobení faktorů, následně je třeba je marginalizovat atd.
+Faktory je třeba úsporně reprezentovat, každá zpráva, každé pravděpodobnostní rozdělení je reprezentováno faktorem.
+Faktory jsou reprezentovány třídou \texttt{Factor} v~modulu \texttt{alex/infer/factor.py}, která podporuje všechny základní matematické operace a také řadu specifických operací jako je marginalizace, normalizace, nastavení faktoru na pozorovanou hodnotu, vybrání nejpravděpodobnějšího přiřazení atd.
 
 \subsection{Reprezentace faktorů}
 \label{sec:repfak}
 
 Každý diskrétní faktor má seznam diskrétních proměnných, které tvoří jeho doménu.
-Každá z těchto proměnných může mít jinou kardinalitu, některé proměnné jsou binární, jiné mají mnohem více hodnot.
+Každá z~těchto proměnných může mít jinou kardinalitu, některé proměnné jsou binární, jiné mají mnohem více hodnot.
 Faktor je tedy ve své podstatě multidimenzionální tabulka.
 Pro implementaci je tato tabulka zploštěná do jednoduchého pole.
 
-Knihovna je napsaná v Pythonu a pro matematické operace používá knihovnu Numpy~\cite{oliphant-2006-guide}.
-Pole pak využívají implementaci z knihovny Numpy, díky které jsou matematické operace napsané v rychlejším jazyku (C, Fortran) než je Python a jsou navíc vektorizované.
+Knihovna je napsaná v~Pythonu a pro matematické operace používá knihovnu Numpy~\cite{oliphant-2006-guide}.
+Pole pak využívají implementaci z~knihovny Numpy, díky ní jsou matematické operace napsané v~rychlejším jazyku (C, Fortran) než je Python a jsou navíc vektorizované.
 
 Jak je tedy možné reprezentovat multidimenzionální tabulku jednodimenzionálním polem?
-Proměnné jsou seřazené a pro zjednodušení můžeme předpokládat, že hodnoty proměnných jsou čísla z $\{0, \dots, n-1\}$, kde $n$ je kardinalita proměnné.
-Každá hodnota v poli je pak hodnotou faktoru pro nějaké přiřazení hodnot proměnným, např. $(0, 1, 0)$.
-Jednotlivé přiřazení jsou v poli seřazeny lexikograficky.
+Proměnné jsou seřazené a pro zjednodušení můžeme předpokládat, že hodnoty proměnných jsou čísla z~$\{0, \dots, n-1\}$, kde $n$ je kardinalita proměnné.
+Každá hodnota v~poli je pak hodnotou faktoru pro nějaké přiřazení proměnných, např. $(0, 1, 0)$.
+Jednotlivá přiřazení jsou v~poli seřazena lexikograficky.
 Pro každou proměnnou si pamatujeme její kardinalitu a také tzv. krok.
-Krok určuje pro každou proměnnou o kolik hodnot v tabulce se musíme posunout, abychom se dostali na další hodnotu této proměnné se zachováním hodnot všech následujících proměnných.
+Krok určuje pro každou proměnnou o~kolik hodnot v~tabulce se musíme posunout, abychom se dostali na další hodnotu této proměnné se zachováním hodnot všech následujících proměnných.
 
-Příklad faktoru je v tabulce \ref{tab:stride}.
+Příklad faktoru je v~tabulce \ref{tab:stride}.
 Doménu faktoru tvoří dvě binární proměnné $X$ a $Y$, jejich kardinalita je tedy 2.
 Pro proměnnou $X$ je krok 2, pro proměnnou $Y$ je krok 1.
 
@@ -56,18 +56,19 @@ $X$ & $Y$ & Hodnota \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Příklad faktoru s dvěma proměnnými $X$ a $Y$.}
+\caption{Příklad faktoru s~dvěma proměnnými $X$ a $Y$.}
 \label{tab:stride}
 \end{table}
 
-\subsection{Operace s faktory}
+\subsection{Operace s~faktory}
 
-Implementace diskrétního faktoru obsahuje všechny základní matematické operace, ale také speciální operace, které jsou využity specificky pro pravděpodobnostní distribuce, např. marginalizace anebo normalizace.
-Operace jako násobení a marginalizace jsou používány při každém výpočtu zprávy a tedy je třeba je napsat tak, aby fungovaly co nejefektivněji.
+Implementace diskrétního faktoru obsahuje všechny základní matematické operace, ale operace určené speciálně pro pravděpodobnostní distribuce, např. marginalizace nebo normalizace.
+Každý výpočet zprávy se skládá z několika násobení, dělení, nakonec marginalizace.
+Je důležité, aby tyto základní operace byly napsány co nejefektivněji.
 
-Matematické operace s faktory musí fungovat ve třech různých situacích, příklady uvedeme na násobení.
+Matematické operace s~faktory musí fungovat ve třech různých situacích (příklady uvedeme na násobení):
 \begin{enumerate}
-    \item Násobení faktoru s faktorem, oba se stejnou doménou,
+    \item násobení faktoru s~faktorem, oba se stejnou doménou,
     \item násobení dvou faktorů, které sdílí jen některé proměnné,
     \item násobení faktoru konstantou.
 \end{enumerate}
@@ -76,15 +77,15 @@ Násobení faktoru konstantou je triviální, každá položka faktoru bude vyn�
 Tato operace může být jednoduše vektorizována.
 
 Při násobení dvou faktorů se stejnou doménou je třeba pronásobit prvky se stejným přiřazením proměnných.
-Což znamená pronásobit hodnoty na stejných místech v poli.
-Opět se tedy jedná o operaci, která je jednoduše vektorizovatelná.
+Což znamená pronásobit hodnoty na stejných místech v~poli.
+Opět se tedy jedná o~operaci, která je jednoduše vektorizovatelná.
 
-\subsubsection{Operace s různými doménami}
+\subsubsection{Operace s~různými doménami}
 
-Poslední možnost je, že se snažíme provést matematickou operaci s dvěma faktory, které ovšem nemají stejnou doménu.
-Pak musí výsledkem být nový faktor, jehož doména je sjednocením domén vstupních faktorů.
-Jednotlivé prvky nového faktoru jsou pak výsledkem aplikace operace na prvky ze vstupních faktorů, které sdílí ohodnocení společných proměnných. 
-Příklad s násobením dvou faktorů, které sdílí proměnnou je v tabulce~\ref{tab:facmul}.
+Poslední možnost je, že se snažíme provést matematickou operaci s~dvěma faktory, které nemají stejnou doménu.
+Pak musí být výsledkem  nový faktor, jehož doména je sjednocením domén vstupních faktorů.
+Jednotlivé prvky nového faktoru jsou pak výsledkem aplikace operace na prvky ze vstupních faktorů sdílících ohodnocení společných proměnných. 
+Příklad s~násobením dvou faktorů sdílících proměnnou $Y$ je v~tabulce~\ref{tab:facmul}.
 \begin{table}
 \begin{equation*}
 \begin{array}{|c|c|r|}
@@ -108,7 +109,7 @@ Příklad s násobením dvou faktorů, které sdílí proměnnou je v tabulce~\r
     \hline
     \multicolumn{3}{|c|}{f_2} \\
     \hline
-    Y & Z & Hodnota \\
+    Y & Z~& Hodnota \\
     \hline
     \hline
     0 & 0 & 0.2 \\
@@ -125,7 +126,7 @@ Příklad s násobením dvou faktorů, které sdílí proměnnou je v tabulce~\r
     \hline
     \multicolumn{4}{|c|}{f_r} \\
     \hline
-    X & Y & Z & Hodnota \\
+    X & Y & Z~& Hodnota \\
     \hline
     \hline
     0 & 0 & 0 & 0.04 \\
@@ -151,14 +152,14 @@ Příklad s násobením dvou faktorů, které sdílí proměnnou je v tabulce~\r
 \end{table}
 
 Výsledek násobení faktorů $f_1$ a $f_2$ je ve faktoru $f_r$.
-Faktory sdílí pouze proměnnou $Y$, takže je potřeba pronásobit všechny přiřazení z $f_1$ se všemi přiřazeními z $f_2$, které mají stejnou hodnotu $Y$.
-Příkladem je například přiřazení $(0, 1)$ s hodnotou $0.3$ vynásobené s přiřazením $(1, 1)$ s hodnotou $0.4$.
-Výsledek je uložen ve faktoru $f_r$ s přiřazením $(0, 1, 1)$ a správnou hodnotou $0.3 \cdot 0.4 = 0.12$.
+Faktory sdílí pouze proměnnou $Y$, takže je potřeba pronásobit všechny přiřazení z~$f_1$ se všemi přiřazeními z~$f_2$, které mají stejnou hodnotu $Y$.
+Příkladem je například přiřazení $(0, 1)$ s~hodnotou $0.3$ vynásobené s~přiřazením $(1, 1)$ s~hodnotou $0.4$.
+Výsledek je uložen ve faktoru $f_r$ s~přiřazením $(0, 1, 1)$ a správnou hodnotou $0.3 \cdot 0.4 = 0.12$.
 
-\subsection{Algoritmus pro operace s různými doménami}
+\subsection{Algoritmus pro operace s~různými doménami}
 
-Předvedli jsme možné případy operací s faktory a ukázali, že dva ze tří jsou triviální na implementaci.
-Nyní představíme efektivní implementaci třetí možnosti, tedy aplikace operace na dva faktory s různými doménami (algoritmus \ref{alg:apop}).
+Předvedli jsme možné případy operací s~faktory a ukázali, že dva ze tří jsou triviální na implementaci.
+Nyní představíme efektivní implementaci třetí možnosti, tedy aplikace operace na dva faktory s~různými doménami (algoritmus \ref{alg:apop}).
 
 Ze vstupních faktorů vytvoříme prázdný faktor pro výsledek.
 Jeho doména je sjednocením domén vstupních faktorů.
@@ -167,29 +168,29 @@ Krok jednotlivých proměnných je třeba přepočítat.
 Spočítáme jej jako součin kardinalit proměnných, které následují po té aktuální.
 Velikost pole pro všechny hodnoty je rovna součin všech kardinalit.
 
-Následně přistoupíme k vyplňování tabulky.
-Pro oba vstupní faktory si budeme udržovat index na pozici s ohodnocením proměnných, které odpovídá aktuálně vyplňovanému ohodnocení ve výsledném faktoru.
+Následně přistoupíme k~vyplňování tabulky.
+Pro oba vstupní faktory si budeme udržovat index na pozici s~ohodnocením proměnných, které odpovídá aktuálně vyplňovanému ohodnocení ve výsledném faktoru.
 Po provedení operace tyto indexy aktualizujeme.
 
-Pokud reprezentujeme ohodnocení proměnných jako číslo (kde každá cifra může mít jinou kardinalitu), pak se přesuneme k dalšímu ohodnocení v řadě tak, že zvýšíme nejméně signifikantní cifru (proměnnou) o jedna.
+Pokud reprezentujeme ohodnocení proměnných jako číslo (kde každá cifra může mít jinou kardinalitu), pak se přesuneme k~dalšímu ohodnocení v~řadě tak, že zvýšíme nejméně signifikantní cifru (proměnnou) o~jedna.
 Může se stát, že jsme dosáhli kardinality dané proměnné a pak se musíme vrátit na ohodnocení 0 a aplikovat přesun na vyšší cifru.
-Opakovanou aplikací přesunu můžeme upravit všechny proměnné, příkladem je přechod z přiřazení $(0, 1, 1)$ na $(1, 0, 0)$, všechny proměnné binární.
+Opakovanou aplikací přesunu můžeme upravit všechny proměnné, příkladem je přechod z~přiřazení $(0, 1, 1)$ na $(1, 0, 0)$, všechny proměnné binární.
 Při každé úpravě proměnné také aktualizujeme indexy do vstupních faktorů.
 
-Při přesunu na další hodnotu proměnné stačí k indexu do faktoru přičíst krok upravené proměnné v tomto faktoru.
-Pokud je třeba se vrátit u proměnné $v$ na ohodnocení 0, pak od indexu pro vstupní faktor odečteme $(c_v - 1) \cdot s_v$, kde $c_v$ je kardinalita proměnné $v$ a $s_v$ je krok proměnné $v$.
-Pro proměnnou, která není obsažena v doméně faktoru, je její krok roven 0.
-Celá metoda pro aplikaci matematické operace je v algoritmu~\ref{alg:apop}.
+Při přesunu na další hodnotu proměnné stačí k~indexu do faktoru přičíst krok upravené proměnné v~tomto faktoru.
+Pokud je třeba se vrátit u~proměnné $v$ na ohodnocení 0, pak od indexu pro vstupní faktor odečteme $(c_v - 1) \cdot s_v$, kde $c_v$ je kardinalita proměnné $v$ a $s_v$ je krok proměnné $v$.
+Pro proměnnou, která není obsažena v~doméně faktoru, je její krok roven 0.
+Celá metoda pro aplikaci matematické operace je v~algoritmu~\ref{alg:apop}.
 
 \begin{algorithm}
-\caption{Aplikace operace na faktory s různými doménami}
+\caption{Aplikace operace na faktory s~různými doménami}
 \label{alg:apop}
 \begin{algorithmic}
 \Function{Apply-Op}{$f_1$, $f_2$, $op$}
-\State $f_1, f_2$ -- vstupní faktory
-\State $op$ -- operace
+\State $f_1, f_2$~-- vstupní faktory
+\State $op$~-- operace
 \State
-\State $f_r \gets$ nový faktor pro výsledek operace na $f_1$ a $f_2$ s prázdným polem
+\State $f_r \gets$ nový faktor pro výsledek operace na $f_1$ a $f_2$ s~prázdným polem
 \State
 \State $\text{index}[f_1] \gets 0$
 \State $\text{index}[f_2] \gets 0$
@@ -216,26 +217,26 @@ Celá metoda pro aplikaci matematické operace je v algoritmu~\ref{alg:apop}.
 \end{algorithm}
 
 Tento algoritmus pracuje přímo nad polem a jeho výhodou je, že nepotřebuje ke svému výpočtu znát jednotlivé hodnoty proměnných.
-Na rozdíl třeba od algoritmu, který by generoval všechny možné kombinace přiřazení a pak pomocí nich přistupoval k odpovídajícím hodnotám ve faktorech, zde pracujeme pouze s indexy do polí a používáme jednoduché matematické operace.
+Na rozdíl třeba od algoritmu, který by generoval všechny možné kombinace přiřazení a pak pomocí nich přistupoval k~odpovídajícím hodnotám ve faktorech, zde pracujeme pouze s~indexy do polí a používáme jednoduché matematické operace.
 
 \subsection{Marginalizace proměnných}
 
-Další důležitou operací často používanou při počítání s faktory je marginalizace.
-Na vstupu je faktor a podmnožina proměnných z domény faktoru, které mají zůstat pro vysčítání zbytku.
-Algoritmus je podobný aplikaci matematické operace z předchozí sekce.
-V tomto případě procházíme původní faktor a každou hodnotu přičteme na správnou pozici v novém faktoru.
-Pro aktualizaci indexu v tomto případě musíme projít všechny proměnné, které mají zůstat a u každé zkontrolovat, zda-li se v následujícím kroku změní.
-Postup marginalizace je zapsán v algoritmus~\ref{alg:marg}.
+Další důležitou operací často používanou při počítání s~faktory je marginalizace.
+Na vstupu je faktor a podmnožina proměnných z~domény faktoru, které mají zůstat pro vysčítání zbytku.
+Algoritmus je podobný aplikaci matematické operace z~předchozí sekce.
+V~tomto případě procházíme původní faktor a každou hodnotu přičteme na správnou pozici v~novém faktoru.
+Pro aktualizaci indexu v~tomto případě musíme projít všechny proměnné, které mají zůstat a u~každé zkontrolovat, zda-li se v~následujícím kroku změní.
+Postup marginalizace je zapsán v~algoritmus~\ref{alg:marg}.
 
 \begin{algorithm}
 \caption{Marginalizace faktoru}
 \label{alg:marg}
 \begin{algorithmic}
 \Function{Marginalize}{$f$, $vars$}
-\State $f$ -- vstupní faktor
-\State $vars$ -- seznam proměnných, které mají zůstat
+\State $f$~-- vstupní faktor
+\State $vars$~-- seznam proměnných, které mají zůstat
 \State
-\State $f_r \gets$ nový faktor, obsahující pouze proměnné z $vars$
+\State $f_r \gets$ nový faktor, obsahující pouze proměnné z~$vars$
 \State $\text{přiřazení}[v] \gets 0 \text{ pro každou proměnnou } v \in vars$
 \State $index \gets 0$ \Comment{Index do nového faktoru}
 \State
@@ -261,149 +262,149 @@ Postup marginalizace je zapsán v algoritmus~\ref{alg:marg}.
 
 \section{Vrcholy faktor grafu}
 
-Předchozí sekce hovořila o práci s faktory, tato sekce se bude zabývat implementací jednotlivých vrcholů ve faktor grafu.
+Předchozí sekce hovořila o~práci s~faktory, tato sekce se bude zabývat implementací jednotlivých vrcholů ve faktor grafu.
 Vrcholy se dělí na vrcholy pro proměnné a vrcholy pro faktory.
-Zde může být názvosloví matoucí, protože implementace faktorů z předchozí sekce se používá pro oboje.
+Zde může být názvosloví matoucí, protože implementace faktorů z~předchozí sekce se používá pro oboje.
 Vrchol pro proměnnou reprezentuje marginální distribuci proměnné.
-Vrcholy pro faktory reprezentují pouze samotné faktory, z kterých se skládá sdružená distribuce.
-Vrcholy slouží k vytvoření reprezentace grafického modelu a obsahují metody pro výpočet a posílání zpráv.
-Implementace vrcholů je v modulu \texttt{alex/infer/node.py}.
+Vrcholy pro faktory reprezentují pouze samotné faktory, z~kterých se skládá sdružená distribuce.
+Vrcholy slouží k~vytvoření reprezentace grafického modelu a obsahují metody pro výpočet a posílání zpráv.
+Implementace vrcholů je v~modulu \texttt{alex/infer/node.py}.
 
 \subsection{Rozhraní vrcholů}
 
-Základní funkcionalita vrcholů je popsána v abstraktní třídě \texttt{Node}.
+Základní funkcionalita vrcholů je popsána v~abstraktní třídě \texttt{Node}.
 Vlastností všech vrcholů je jejich sdružování do sítě.
-K tomu slouží metoda \texttt{connect}, kterou musí obsahovat každá implementace vrcholu a ta informuje oba vrcholy, že spolu sousedí.
+K~tomu slouží metoda \texttt{connect}, kterou musí obsahovat každá implementace vrcholu a ta informuje oba vrcholy, že spolu sousedí.
 Většina vrcholů si pamatuje své sousedy pro počítání zpráv.
-Při připojování proměnných k faktorům je také možné označit proměnnou za rodiče daného faktoru.
+Při připojování proměnných k~faktorům je také možné označit proměnnou za rodiče daného faktoru.
 Tato informace je důležitá při normalizaci a učení parametrů.
 
 Dále třída obsahuje metody sloužící pro posílání zpráv.
 Nejdůležitější jsou metody \texttt{message\_to} a \texttt{message\_from}.
-Vrchol spočítá v metodě \texttt{message\_to} zprávu pro svého souseda.
+Vrchol spočítá v~metodě \texttt{message\_to} zprávu pro svého souseda.
 Má přístup ke všem ostatním vrcholům a tak pro něj není problém zprávu spočítat.
-Sousední vrchol zprávu přijme tak, že bude zavolána jeho metoda \texttt{message\_from} a v ní mu bude zpráva předána.
+Sousední vrchol zprávu přijme tak, že bude zavolána jeho metoda \texttt{message\_from} a v~ní mu bude zpráva předána.
 Díky tomu, že na posílání zpráv se podílí odesílatel i příjemce, můžeme kombinovat různé vrcholy, stačí pokud se dohodnou na stejném formátu zprávy.
-Dochází tak k oddělení odesílatele od příjemce.
+Dochází tak k~oddělení odesílatele od příjemce.
 
 Další metodou, kterou obsahuje každý vrchol, je metoda pro inicializaci zpráv \texttt{init\_messages}. 
 Pro stávající implementace vrcholů není třeba ji volat před posíláním zpráv, protože zprávy mezi sousedními vrcholy jsou inicializovány vždy při zavolání metody \texttt{connect} pro jejich propojení.
-Pokud ovšem budeme provádět více výpočtů nad jedním grafickým modelem, je třeba zprávy nastavit na původní hodnoty před dalším výpočtem, jinak by hodnota zpráv z minulého výpočtu ovlivnila ten následující.
+Pokud ovšem budeme provádět více výpočtů nad jedním grafickým modelem, je třeba zprávy nastavit na původní hodnoty před dalším výpočtem, jinak by hodnota zpráv z~minulého výpočtu ovlivnila ten následující.
 
-Z optimalizačních důvodů se při odesílání zpráv nepočítá součin všech příchozích vždy znovu, ale je předpočítán a pouze se aktualizuje před odesláním zpráv.
+Z~optimalizačních důvodů se při odesílání zpráv nepočítá součin všech příchozích vždy znovu, ale je předpočítán a pouze se aktualizuje před odesláním zpráv.
 Pro aktualizaci slouží metoda \texttt{update}.
-Vzhledem k tomu, že při inferenci je každý faktor vybrán jen jednou a pak jsou z něj odeslány zprávy do všech ostatních vrcholů, stačí metodu \texttt{update} volat pro každý faktor v každé iteraci jen jednou.
+Vzhledem k~tomu, že při inferenci je každý faktor vybrán jen jednou a pak jsou z~něj odeslány zprávy do všech ostatních vrcholů, stačí metodu \texttt{update} volat pro každý faktor v~každé iteraci jen jednou.
 Pro odeslání zpráv do všech vrcholů slouží jako zkratka metoda \texttt{send\_messages}.
 
 Třída \texttt{DiscreteVariableNode} implementuje funkcionalitu vrcholů pro diskrétní proměnné.
-Implementace vrcholů pro faktory s diskrétními proměnnými je ve třídě \texttt{DiscreteFactorNode}. 
+Implementace vrcholů pro faktory s~diskrétními proměnnými je ve třídě \texttt{DiscreteFactorNode}. 
 
 \subsection{Rozhraní vrcholů pro proměnné}
 
 Smyslem vrcholů pro proměnné je reprezentovat aposteriorní marginální pravděpodobnost proměnných.
 Mají navíc několik metod, které jsou potřeba pro výpočty.
-Nejprve je třeba mít možnost nastavit pozorované proměnné, k tomu slouží metoda \texttt{observed}.
+Nejprve je třeba mít možnost nastavit pozorované proměnné, k~tomu slouží metoda \texttt{observed}.
 Tato metoda může být zavolána se slovníkem, kde klíčem jsou pozorovaná přiřazení a hodnotou je pravděpodobnost pozorování.
 Zbylá přiřazení dostanou nulovou hodnotu.
-S tímto pozorováním se pak počítá při posílání zpráv.
+S~tímto pozorováním se pak počítá při posílání zpráv.
 
 Po ukončení výpočtu je třeba zjistit, která hodnota nebo více hodnot patří mezi nejpravděpodobnější.
 Některé dialogové strategie totiž potřebují jen jednu nejpravděpodobnější hodnotu, ale jiné mohou počítat se seznamem nejpravděpodobnějších možností. 
-K tomu slouží metoda \texttt{most\_probable}.
+K~tomu slouží metoda \texttt{most\_probable}.
 Vrátí seznam nejpravděpodobnějších přiřazení a jejich pravděpodobností.
 
 \section{Vrcholy pro Dirichletovské parametry}
 \label{sec:vrdir}
 
-V kapitole \ref{ch:ep} jsme ukázali jakým způsobem je možné pro diskrétní proměnné učit parametry.
-V modulu \texttt{alex/infer/node.py} jsou implementované vrcholy pro práci s dirichletovskými parametry.
-Jedná se o třídy \texttt{DirichletParameterNode} a \texttt{DirichletFactorNode}.
-V rozhraní se neliší od standardních implementací vrcholů.
+V~kapitole \ref{ch:ep} jsme ukázali jakým způsobem je možné pro diskrétní proměnné učit parametry.
+V~modulu \texttt{alex/infer/node.py} jsou implementované vrcholy pro práci s~dirichletovskými parametry.
+Jedná se o~třídy \texttt{DirichletParameterNode} a \texttt{DirichletFactorNode}.
+V~rozhraní se neliší od standardních implementací vrcholů.
 
-Vrchol \texttt{DirichletParameterNode} musí být vždy spojen pouze s vrcholem \texttt{DirichletFactorNode}, který už ale může být dále propojen s vrcholy pro diskrétní proměnné.
-Díky tomu, že tyto vrcholy o své existenci navzájem ví, tak je možné použít standardní rozhraní pro posílání zpráv.
-Při připojení vrcholu pro parametr k vrcholu pro faktor tento pozná, že se k němu připojil speciální vrchol a bude se tak k němu chovat.
+Vrchol \texttt{DirichletParameterNode} musí být vždy spojen pouze s~vrcholem \texttt{DirichletFactorNode}, který už ale může být dále propojen s~vrcholy pro diskrétní proměnné.
+Díky tomu, že tyto vrcholy o~své existenci navzájem ví, tak je možné použít standardní rozhraní pro posílání zpráv.
+Při připojení vrcholu pro parametr k~vrcholu pro faktor tento pozná, že se k~němu připojil speciální vrchol a bude se tak k~němu chovat.
 Zprávy od něj bude interpretovat jako parametry pro distribuci zbytku proměnných.
-Pro zprávu z faktoru do parametru je třeba provést aproximaci pravděpodobnostní distribuce proměnných a z ní odvodit nové parametry (popsáno v algoritmu~\ref{alg:ep} na straně~\pageref{alg:ep}).
+Pro zprávu z~faktoru do parametru je třeba provést aproximaci pravděpodobnostní distribuce proměnných a z~ní odvodit nové parametry (popsáno v~algoritmu~\ref{alg:ep} na straně~\pageref{alg:ep}).
 
 \section{Inferenční algoritmus}
 
-V této sekci si popíšeme poslední vrstvu implementovanou v knihovně a to vrstvu starající se o inferenci v grafických modelech.
-Předpokládáme, že již máme vytvořený graf z vrcholů, které byly představeny v předchozí sekci.
-V modulu \texttt{alex/infer/lbp.py} je implementována třída \texttt{LBP}, která implementuje iterativní algoritmus pro aktualizaci grafického modelu a také obsahuje několik implementací strategií pro různé typy grafů.
+V~této sekci si popíšeme poslední vrstvu implementovanou v~knihovně a to vrstvu starající se o~inferenci v~grafických modelech.
+Předpokládáme, že již máme vytvořený graf z~vrcholů, které byly představeny v~předchozí sekci.
+V~modulu \texttt{alex/infer/lbp.py} je implementována třída \texttt{LBP}, která implementuje iterativní algoritmus pro aktualizaci grafického modelu a také obsahuje několik implementací strategií pro různé typy grafů.
 
-Pro výpočet v grafickém modelu je nejprve třeba zaregistrovat všechny vrcholy z grafu.
-K tomu existuje několik metod, odlišující se podle typu grafu.
+Pro výpočet v~grafickém modelu je nejprve třeba zaregistrovat všechny vrcholy z~grafu.
+K~tomu existuje několik metod, odlišující se podle typu grafu.
 Pro dynamické bayesovské sítě je možné přidávat vrcholy po vrstvách.
-K tomu slouží metody \texttt{add\_layer} a \texttt{add\_layers}, první metoda přidá jednu vrstvu na konec sítě.
+K~tomu slouží metody \texttt{add\_layer} a \texttt{add\_layers}, první metoda přidá jednu vrstvu na konec sítě.
 Druhá metoda umožňuje přidat více vrstev naráz.
-Pro obecné grafy slouží metoda \texttt{add\_nodes}, která umožňuje přidat vrcholy bez informace o jejich organizaci uvnitř sítě.
+Pro obecné grafy slouží metoda \texttt{add\_nodes}, která umožňuje přidat vrcholy bez informace o~jejich organizaci uvnitř sítě.
 
-K mazání vrcholů ze sítě slouží metody \texttt{clear\_nodes} a \texttt{clear\_layers}.
+K~mazání vrcholů ze sítě slouží metody \texttt{clear\_nodes} a \texttt{clear\_layers}.
 
 Typ inference je možné zadat při vytváření třídy, patřičná strategie je pak použita při samotném výpočtu uvnitř metody \texttt{run}. 
-Tato metoda pak provádí samotnou inferenci, je možné zadat počet iterací, v případě inference v dynamickém modelu i zadat od které vrstvy se má inference provádět.
+Tato metoda pak provádí samotnou inferenci, je možné zadat počet iterací, v~případě inference v~dynamickém modelu i zadat od které vrstvy se má inference provádět.
 
-Pro více výpočtů nad jedním grafickým modelem je možné místo inicializace zpráv pro každý vrchol zvlášť použít metodu \texttt{init\_messages}, která tuto inicializaci provede u všech vrcholů.
+Pro více výpočtů nad jedním grafickým modelem je možné místo inicializace zpráv pro každý vrchol zvlášť použít metodu \texttt{init\_messages}, která tuto inicializaci provede u~všech vrcholů.
 
-\subsection{Strategie výběru vrcholu v LBP algoritmu}
+\subsection{Strategie výběru vrcholu v~LBP algoritmu}
 \label{sec:noch}
 
-Inference v grafu se může lišit podle typu faktor grafu, ale také podle nároků, které na výsledek máme.
+Inference v~grafu se může lišit podle typu faktor grafu, ale také podle nároků, které na výsledek máme.
 Nejjednodušší metodou pro výběr je nechat pořadí na uživateli algoritmu.
 Pro stromy máme speciální strategii, která zaručí konvergenci po jednom dopředném a jednom zpětném kroku propagace.
-V dialogových systémech je často používána dynamická bayesovská síť a nás zajímá pravděpodobnost proměnných v poslední vrstvě sítě.
-V takovém případě můžeme některé zprávy zanedbat, protože už příliš neovlivní proměnné, které nás zajímají.
+V~dialogových systémech je často používána dynamická bayesovská síť a nás zajímá pravděpodobnost proměnných v~poslední vrstvě sítě.
+V~takovém případě můžeme některé zprávy zanedbat, protože už příliš neovlivní proměnné, které nás zajímají.
 
 \subsubsection{Inference na stromě}
 
 Pro efektivní inferenci je třeba si pro každý vrchol pamatovat, kolik mu chybí zpráv, aby mohl jednu sám odeslat.
-Pro každý vrchol $v$ s $k$ sousedy je na začátku počet chybějících zpráv $k-1$.
+Pro každý vrchol $v$ s~$k$ sousedy je na začátku počet chybějících zpráv $k-1$.
 Strom na alespoň dvou vrcholech obsahuje alespoň dva listy.
 Budeme tedy postupně odebírat vrcholy, jejichž počet chybějících zpráv je nulový.
-Rozešleme z nich zprávu do souseda, z kterého ještě zpráva nepřišla a snížíme jeho počet chybějících zpráv.
+Rozešleme z~nich zprávu do souseda, z~kterého ještě zpráva nepřišla a snížíme jeho počet chybějících zpráv.
 Odebráním listu ze stromu vždy dostaneme opět strom.
 Postupně tak zmenšujeme strom, až dostaneme právě jeden vrchol, který získal všechny zprávy.
 
-Po vypočtení marginální pravděpodobnosti ve stromě o jednom vrcholu můžeme zase přídávat vrcholy v obráceném pořadí než v jakém jsme je odebírali.
+Po vypočtení marginální pravděpodobnosti ve stromě o~jednom vrcholu můžeme zase přídávat vrcholy v~obráceném pořadí než v~jakém jsme je odebírali.
 Do každého přidaného vrcholu pak můžeme poslat zprávu a spočítat jeho marginální pravděpodobnost.
 
-\subsubsection{Inference v dynamické bayesovské síti}
+\subsubsection{Inference v~dynamické bayesovské síti}
 
 Dynamická bayesovská síť je nejčastější reprezentace dialogového stavu.
-V jedné vrstvě sítě je popsána jedna obrátka dialogu.
-Vrcholy v jedné vrstvě většinou závisí pouze na vrcholech ve stejné nebo předchozí vrstvě.
-Po každé obrátce nás pro účely komponenty řízení dialogu zajímají hlavně pravděpodobnosti proměnných v poslední vrstvě, tedy po aktuální obrátce.
+V~jedné vrstvě sítě je popsána jedna obrátka dialogu.
+Vrcholy v~jedné vrstvě většinou závisí pouze na vrcholech ve stejné nebo předchozí vrstvě.
+Po každé obrátce nás pro účely komponenty řízení dialogu zajímají hlavně pravděpodobnosti proměnných v~poslední vrstvě, tedy po aktuální obrátce.
 
 Inferenci provádíme způsobem podobným indukci.
-Pro první vrstvu provedeme inferenci libovolným způsobem, může dokonce platit, že v rámci jedné vrstvy se jedná o strom.
-Po přidání $k$-té vrstvy předpokládáme, že byla provedena inference na předchozích $k-1$ vrstvách a tedy zprávy v této části grafu jsou správné.
-Zprávy ve směru k nové vrstvě jsou stále správné, neznáme ovšem hodnotu zpráv z předposlední vrstvy do nové vrstvy a hodnotu zpráv v nové vrstvě.
-Pošleme tedy zprávy z předposlední vrstvy a provedeme inferenci v nové vrstvě.
+Pro první vrstvu provedeme inferenci libovolným způsobem, může dokonce platit, že v~rámci jedné vrstvy se jedná o~strom.
+Po přidání $k$-té vrstvy předpokládáme, že byla provedena inference na předchozích $k-1$ vrstvách a tedy zprávy v~této části grafu jsou správné.
+Zprávy ve směru k~nové vrstvě jsou stále správné, neznáme ovšem hodnotu zpráv z~předposlední vrstvy do nové vrstvy a hodnotu zpráv v~nové vrstvě.
+Pošleme tedy zprávy z~předposlední vrstvy a provedeme inferenci v~nové vrstvě.
 
-Stále ještě zbývají zprávy z nové vrstvy zpět v síti.
-Čím dál do historie ovšem jdeme, tím menší vliv naše nová pozorování budou mít na vrcholy v dané vrstvě.
+Stále ještě zbývají zprávy z~nové vrstvy zpět v~síti.
+Čím dál do historie ovšem jdeme, tím menší vliv naše nová pozorování budou mít na vrcholy v~dané vrstvě.
 Proto se většinou omezíme jen na posledních několik vrstev (1 až 3).
 
 \section{Příklady}
 
-Po popisu jednotlivých vrstev v předchozí sekci nyní přejdeme k příkladům použití knihovny.
+Po popisu jednotlivých vrstev v~předchozí sekci nyní přejdeme k~příkladům použití knihovny.
 Nejprve ukážeme použití jednotlivých tříd a metod.
-Nakonec bude představen příklad systému použitého v Dialog State Tracking Challenge (DSTC) 2013~\cite{dstc2013}.
+Nakonec bude představen příklad systému použitého v~Dialog State Tracking Challenge (DSTC) 2013~\cite{dstc2013}.
 
 \subsection{Použití jednotlivých komponent}
 \label{sec:usage}
 
-Představíme příklady vytvoření a používání jednotlivých komponent, od implementace faktorů až po inferenci v grafickém modelu.
+Představíme příklady vytvoření a používání jednotlivých komponent, od implementace faktorů až po inferenci v~grafickém modelu.
 
 \subsubsection{Faktor}
 
-Třída \texttt{Faktor} je popsána v sekci \ref{sec:repfak}.
-Vytvoření faktoru je ukázáno v příkladu~\ref{lst:crfac}, zde máme jednoduchý generativní model pro výběr restaurace podle typu jídla.
+Třída \texttt{Faktor} je popsána v~sekci \ref{sec:repfak}.
+Vytvoření faktoru je ukázáno v~příkladu~\ref{lst:crfac}, zde máme jednoduchý generativní model pro výběr restaurace podle typu jídla.
 Vytvořený faktor obsahuje dvě proměnné, první je požadovaný typ jídla, druhá je pozorovaný požadovaný typ.
-Faktor může pocházet z generativního modelu, kde pravděpodobnost pozorování závisí na skutečné hodnotě.
+Faktor může pocházet z~generativního modelu, kde pravděpodobnost pozorování závisí na skutečné hodnotě.
 Zde vidíme, že je větší pravděpodobnost pozorování typu jídla, které uživatel opravdu chce.
-Pro indické jídlo je zde pravděpodobnost větší než pro čínské, v reálném dialogovém systému na tyto pravděpodobnosti může mít vliv například jazykový model, anebo podobnost slov.
+Pro indické jídlo je zde pravděpodobnost větší než pro čínské, v~reálném dialogovém systému na tyto pravděpodobnosti může mít vliv například jazykový model, anebo podobnost slov.
 
 \begin{example}
 \begin{Verbatim}[
@@ -449,7 +450,7 @@ Pro indické jídlo je zde pravděpodobnost větší než pro čínské, v reál
 %    })
 %\end{lstlisting}
 
-Vytvořený faktor můžeme zobrazit (příklad~\ref{lst:facprt}), stačí použít příkaz \texttt{print}, popřípadě je možné použít metodu \texttt{pretty\_print}, která vrátí řetězec s formátovaným výpisem faktoru.
+Vytvořený faktor můžeme zobrazit (příklad~\ref{lst:facprt}), stačí použít příkaz \texttt{print}, popřípadě je možné použít metodu \texttt{pretty\_print}, která vrátí řetězec s~formátovaným výpisem faktoru.
 Nabízí možnost nastavení šířky tabulky a počtu desetinných míst.
 
 \begin{example}
@@ -505,8 +506,8 @@ Nabízí možnost nastavení šířky tabulky a počtu desetinných míst.
 %\end{lstlisting}
 
 Dále obsahuje faktor implementaci matematických operací, je možné používat standardní operátory.
-V příkladu~\ref{lst:facmul} je ukázáno násobení dvou faktorů, již vytvořený faktor s faktorem, který reprezentuje přechodovou pravděpodobnost.
-Operace fungují i s konstantami (příklad~\ref{lst:facmulk}).
+V~příkladu~\ref{lst:facmul} je ukázáno násobení dvou faktorů, již vytvořený faktor s~faktorem, který reprezentuje přechodovou pravděpodobnost.
+Operace fungují i s~konstantami (příklad~\ref{lst:facmulk}).
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -611,7 +612,7 @@ Operace fungují i s konstantami (příklad~\ref{lst:facmulk}).
 %\end{lstlisting}
 
 Další důležitou metodou, kterou faktory nabízí, je marginalizace proměnných.
-Předvedeme si ji na faktoru pro pozorování (příklad~\ref{lst:facmar}), z kterého chceme získat pouze marginální pravděpodobnosti pozorování.
+Předvedeme si ji na faktoru pro pozorování (příklad~\ref{lst:facmar}), z~kterého chceme získat pouze marginální pravděpodobnosti pozorování.
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -645,7 +646,7 @@ Předvedeme si ji na faktoru pro pozorování (příklad~\ref{lst:facmar}), z kt
 %\end{lstlisting}
 
 Pokud je faktor použit pro reprezentaci pravděpodobnostního rozdělení, pak je možné, že při některých úkonech bude výsledkem nenormalizované pravděpodobnostní rozdělení.
-Faktor nabízí metodu pro normalizaci hodnot, která navíc bere v úvahu i podmíněné pravděpodobnosti (příklad~\ref{lst:facnor}).
+Faktor nabízí metodu pro normalizaci hodnot, která navíc bere v~úvahu i podmíněné pravděpodobnosti (příklad~\ref{lst:facnor}).
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -747,10 +748,10 @@ Nakonec faktor nabízí možnost zjistit, které ohodnocení jsou nejpravděpodo
 
 \subsubsection{Vrcholy}
 
-V této sekci ukážeme vytváření jednoduchého grafického modelu a následně poslání zpráv z jednoho vrcholu do druhého.
-V příkladu~\ref{lst:nodex} vytvoříme jednoduchý skrytý Markovský model pro výběr typu jídla.
-Model bude mít 2 obrátky, v každé bude jedna skrytá a jedna pozorovaná proměnná.
-Tento model bude generativní, bude obsahovat faktor pro generování pozorování na základě skutečné hodnoty a také faktor pro přechodovou pravděpodobnost z jedné obrátky do druhé.
+V~této sekci ukážeme vytváření jednoduchého grafického modelu a následně poslání zpráv z~jednoho vrcholu do druhého.
+V~příkladu~\ref{lst:nodex} vytvoříme jednoduchý skrytý Markovský model pro výběr typu jídla.
+Model bude mít 2 obrátky, v~každé bude jedna skrytá a jedna pozorovaná proměnná.
+Tento model bude generativní, bude obsahovat faktor pro generování pozorování na základě skutečné hodnoty a také faktor pro přechodovou pravděpodobnost z~jedné obrátky do druhé.
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}, fontsize=\relsize{-1}]
@@ -877,10 +878,10 @@ Tento model bude generativní, bude obsahovat faktor pro generování pozorován
 %\end{lstlisting}
 
 Po vytvoření grafického modelu je dalším krokem nastavení pozorovaných hodnot proměnných (příklad~\ref{lst:facobs}).
-Předpokládejme, že v první obrátce bylo pozorováno čínské jídlo s pravděpodobností $0.6$ a indické s pravděpodobností $0.4$.
-V druhé obrátce bylo pozorováno čínské jídlo s pravděpodobností $0.5$ a indické s pravděpodobností $0.5$.
-Tedy, v první obrátce si myslíme, že uživatel spíše preferuje čínské jídlo, ale z druhé obrátky už nevíme nic. 
-Podíváme se, co z těchto informací zjistí náš grafický model.
+Předpokládejme, že v~první obrátce bylo pozorováno čínské jídlo s~pravděpodobností $0.6$ a indické s~pravděpodobností $0.4$.
+V~druhé obrátce bylo pozorováno čínské jídlo s~pravděpodobností $0.5$ a indické s~pravděpodobností $0.5$.
+Tedy, v~první obrátce si myslíme, že uživatel spíše preferuje čínské jídlo, ale z~druhé obrátky už nevíme nic. 
+Podíváme se, co z~těchto informací zjistí náš grafický model.
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -918,7 +919,7 @@ Podíváme se, co z těchto informací zjistí náš grafický model.
 Strom zakořeníme ve vrcholu \texttt{trans\_factor} a začneme posílat zprávy od listů ke kořeni a pak zpět (příklad~\ref{lst:facmsg}).
 Naším cílem je zjistit aposteriorní marginální pravděpodobnosti skrytých proměnných.
 Před odesláním je vždy třeba aktualizovat vnitřní reprezentaci vrcholů.
-Nakonec musíme normalizovat vrcholy s proměnnými.
+Nakonec musíme normalizovat vrcholy s~proměnnými.
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1024,13 +1025,13 @@ Nakonec musíme normalizovat vrcholy s proměnnými.
 %--------------------------------------------------
 %\end{lstlisting}
 
-Ve výsledku (příklad ~\ref{lst:facres}) tedy vidíme, že v druhé obrátce z pozorování sice nezískáme žádnou informaci, ale díky vysoké pravděpodobnosti přechodu zůstala pravděpodobnost čínského jídla stále vysoká.
-Toto pozorování zároveň snížilo pravděpodobnost v první obrátce.
+Ve výsledku (příklad ~\ref{lst:facres}) tedy vidíme, že v~druhé obrátce z~pozorování sice nezískáme žádnou informaci, ale díky vysoké pravděpodobnosti přechodu zůstala pravděpodobnost čínského jídla stále vysoká.
+Toto pozorování zároveň snížilo pravděpodobnost v~první obrátce.
 
 \subsubsection{Inference}
 
-Nyní se zbavíme manuálního posílání zpráv z příkladu~\ref{lst:facmsg} a nahradíme jej použitím třídy pro Loopy Belief Propagation (příklad~\ref{lst:lbpex}). 
-Zvolíme strategii pro stromy a výsledek bude stejný jako v případě s manuálním posíláním zpráv.
+Nyní se zbavíme manuálního posílání zpráv z~příkladu~\ref{lst:facmsg} a nahradíme jej použitím třídy pro Loopy Belief Propagation (příklad~\ref{lst:lbpex}). 
+Zvolíme strategii pro stromy a výsledek bude stejný jako v~případě s~manuálním posíláním zpráv.
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1042,7 +1043,7 @@ Zvolíme strategii pro stromy a výsledek bude stejný jako v případě s manu�
                \PY{n}{trans\PYZus{}factor}\PY{p}{]}\PY{p}{)}
 \PY{n}{lbp}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
-\caption{Inference s pomocí LBP}
+\caption{Inference s~pomocí LBP}
 \label{lst:lbpex}
 \end{example}
 
@@ -1061,18 +1062,18 @@ Zvolíme strategii pro stromy a výsledek bude stejný jako v případě s manu�
 
 \subsection{Učení dirichletovských parametrů}
 
-Nyní grafický model z minulé sekce upravíme tak, aby parametry přechodové pravděpodobnosti pocházely z dirichletovského rozdělení.
-Vše zůstane stejné, pouze faktor pro přechodovou pravděpodobnost nahradíme \texttt{DirichletFactorNode} a k němu připojíme nový vrchol \texttt{DirichletParameterNode}, který bude reprezentovat parametry.
-Vytvoření grafického modelu je v příkladu~\ref{lst:crtep}.
+Nyní grafický model z~minulé sekce upravíme tak, aby parametry přechodové pravděpodobnosti pocházely z~dirichletovského rozdělení.
+Vše zůstane stejné, pouze faktor pro přechodovou pravděpodobnost nahradíme \texttt{DirichletFactorNode} a k~němu připojíme nový vrchol \texttt{DirichletParameterNode}, který bude reprezentovat parametry.
+Vytvoření grafického modelu je v~příkladu~\ref{lst:crtep}.
 
 Druhý parametr konstruktoru \texttt{DirichletParameterNode} nyní neurčuje pravděpodobnosti, ale parametry $\alpha$ dirichletovských rozdělení.
 Pro každou kombinaci hodnot rodičů existuje jedno dirichletovské rozdělení popisující apriorní rozdělení nad pravděpodobností proměnné, která je potomkem faktoru.
-V tomto případě je to skrytá proměnná v druhé obrátce.
+V~tomto případě je to skrytá proměnná v~druhé obrátce.
 Parametry můžou být buď nastaveny bez apriorní znalosti, pak jsou všechny rovny 1, anebo můžeme nějakou naši apriorní znalost přidat.
-V tomto případě budeme předpokládát, že se spíše cíl nemění.
+V~tomto případě budeme předpokládát, že se spíše cíl nemění.
 
 \begin{example}
-\caption{Vytvoření grafického modelu s dirichletovskými parametry}
+\caption{Vytvoření grafického modelu s~dirichletovskými parametry}
 \label{lst:crtep}
 \begin{Verbatim}[commandchars=\\\{\}, fontsize=\relsize{-1}]
 
@@ -1136,10 +1137,10 @@ V tomto případě budeme předpokládát, že se spíše cíl nemění.
 \end{example}
 
 Tentokrát budou pozorování nastavena tak, že je zřejmé, který typ jídla uživatel požaduje.
-Inferenci provedeme naprosto stejně jako v předchozím případě (příklad~\ref{lst:lbpep}).
+Inferenci provedeme naprosto stejně jako v~předchozím případě (příklad~\ref{lst:lbpep}).
 Zajímavý je výsledek inference, protože se nezměnily pouze hodnoty skrytých proměnných, ale také dirichletovský parametr.
-V příkladu~\ref{lst:epres} je vidět, že vypočítané hodnoty skrytých proměnných jsou blízké pozorovaným hodnotám v každé obrátce, to je způsobeno tím, že parametry pro přechodovou pravděpodobnost jsme nenastavili příliš informativně.
-Zároveň je vidět, že byly parametry modifikovány, pokud uživatel v první obrátce chce čínské jídlo, pak je větší pravděpodobnost, že v druhé obrátce jej bude chtít také.
+V~příkladu~\ref{lst:epres} je vidět, že vypočítané hodnoty skrytých proměnných jsou blízké pozorovaným hodnotám v~každé obrátce, to je způsobeno tím, že parametry pro přechodovou pravděpodobnost jsme nenastavili příliš informativně.
+Zároveň je vidět, že byly parametry modifikovány, pokud uživatel v~první obrátce chce čínské jídlo, pak je větší pravděpodobnost, že v~druhé obrátce jej bude chtít také.
 
 \begin{example}
 \caption{Nastavení pozorovaných proměnných a inference}
@@ -1197,11 +1198,11 @@ Zároveň je vidět, že byly parametry modifikovány, pokud uživatel v první 
 \end{Verbatim}
 \end{example}
 
-Nyní ještě ukážeme jak je možné použít stejný model vícekrát, s různými pozorováními.
-Představme si, že nyní máme další hovor o dvou obrátkách, avšak s jinými pozorovanými hodnotami.
+Nyní ještě ukážeme jak je možné použít stejný model vícekrát, s~různými pozorováními.
+Představme si, že nyní máme další hovor o~dvou obrátkách, avšak s~jinými pozorovanými hodnotami.
 Stačí nastavit nová pozorování, znovu inicializovat zprávy a spustit inferenci.
-Výhodou je, že není třeba znovu vytvářet síť, navíc počítáme už s upraveným dirichletovským parametrem pro přechodovou pravděpodobnost.
-Výsledek je v příkladu~\ref{lst:epint}.
+Výhodou je, že není třeba znovu vytvářet síť, navíc počítáme už s~upraveným dirichletovským parametrem pro přechodovou pravděpodobnost.
+Výsledek je v~příkladu~\ref{lst:epint}.
 
 \begin{example}
 \caption{Využití modelu pro nová pozorování}
@@ -1233,37 +1234,37 @@ Výsledek je v příkladu~\ref{lst:epint}.
 \section{Dialog State Tracking Challenge}
 \label{sec:dstc}
 
-Knihovna pro inferenci byla použita v Dialog State Tracking Challenge (DSTC) 2013~\cite{dstc2013}.
-Nejprve popíšeme problém, následně představíme použitý model a nakonec porovnáme výsledky modelu s ostatními systémy.
+Knihovna pro inferenci byla použita v~Dialog State Tracking Challenge (DSTC) 2013~\cite{dstc2013}.
+Nejprve popíšeme problém, následně představíme použitý model a nakonec porovnáme výsledky modelu s~ostatními systémy.
 
-Cílem DSTC bylo vytvořit prostředky pro porovnání různých přístupů k inferenci dialogového stavu a vyhodnotit jejich úspěšnost pomocí společné množiny metrik.
-Organizátoři poskytli několik anotovaných množin dat, které pocházejí z reálného použití tří různých dialogových systémů pro úlohu Let's Go!~\cite{raux2005let}.
+Cílem DSTC bylo vytvořit prostředky pro porovnání různých přístupů k~inferenci dialogového stavu a vyhodnotit jejich úspěšnost pomocí společné množiny metrik.
+Organizátoři poskytli několik anotovaných množin dat, které pocházejí z~reálného použití tří různých dialogových systémů pro úlohu Let's Go!~\cite{raux2005let}.
 Zároveň poskytli i baseline dialogový systém.
 Cílem účastníků soutěže bylo vytvořit systém pro odhad dialového stavu, který správně predikuje dialogový stav na základě vstupu od uživatele a minulé akce systému.
 
 \subsection{Let's Go!}
 
-Úlohou dialogového systému Let's Go! je poskytnout telefonní službu pro zjišťování autobusového spojení v Pittsburghu.
-Systém rozpoznává 9 různých slotů, některé z nich sestávající z podslotů.
+Úlohou dialogového systému Let's Go! je poskytnout telefonní službu pro zjišťování autobusového spojení v~Pittsburghu.
+Systém rozpoznává 9 různých slotů, některé z~nich sestávající z~podslotů.
 Tyto sloty jsou
 \begin{itemize}
-\item \emph{route} -- linka,
-\item \emph{time} -- čas odjezdu nebo příjezdu,
-\item \emph{date} -- datum odjezdu,
-\item \emph{from.description} -- popis místa odjezdu,
-\item \emph{to.description} -- popis místa příjezdu,
-\item \emph{from.monument} -- významný monument v místě odjezdu,
-\item \emph{to.monument} -- významný monument v místě příjezdu,
-\item \emph{from.neighborhood} -- část města (sousedství) z které chce uživatel jet,
-\item \emph{to.neighborhood} -- část města (sousedství) kam chce uživatel jet.
+\item \emph{route}~-- linka,
+\item \emph{time}~-- čas odjezdu nebo příjezdu,
+\item \emph{date}~-- datum odjezdu,
+\item \emph{from.description}~-- popis místa odjezdu,
+\item \emph{to.description}~-- popis místa příjezdu,
+\item \emph{from.monument}~-- významný monument v~místě odjezdu,
+\item \emph{to.monument}~-- významný monument v~místě příjezdu,
+\item \emph{from.neighborhood}~-- část města (sousedství) z~které chce uživatel jet,
+\item \emph{to.neighborhood}~-- část města (sousedství) kam chce uživatel jet.
 \end{itemize}
-Navíc se sloty \emph{time} a \emph{date} skládají z dalších 5, respektive 4 slotů (např. \emph{time.hour}, \emph{time.minute}).
+Navíc se sloty \emph{time} a \emph{date} skládají z~dalších 5, respektive 4 slotů (např. \emph{time.hour}, \emph{time.minute}).
 Systém Let's Go celkem rozpoznával více než 5000 míst a zhruba 150 různých linek.
 
-Jednotlivé dialogy se skládají z obrátek, ve kterých se střídá uživatel a systém.
-Příklad rozhovoru je v tabulce~\ref{tab:exampledialog}.
-Uživatel může informovat systém o hodnotě libovolného slotu.
-Systém může uživatele požádat o hodnotu libovolného slotu, popř. o potvrzení hodnoty slotu.
+Jednotlivé dialogy se skládají z~obrátek, ve kterých se střídá uživatel a systém.
+Příklad rozhovoru je v~tabulce~\ref{tab:exampledialog}.
+Uživatel může informovat systém o~hodnotě libovolného slotu.
+Systém může uživatele požádat o~hodnotu libovolného slotu, popř. o~potvrzení hodnoty slotu.
 Vstup a výstup je reprezentován dialogovými akty.
 Používány jsou pouze dialogové akty \emph{inform}, \emph{deny}, \emph{affirm} a \emph{negate}.
 Zbytek dialogových aktů je ignorován, protože nemění cíle uživatele.
@@ -1314,19 +1315,19 @@ Obrátka & Aktér & Přepis \\
 \end{table}
 
 Organizátoři poskytli 4 datové sady, které pocházely ze 3 různých dialogových systémů.
-Každá datová sada obsahovala hypotézy z živého běhu dialogového systému (live data).
+Každá datová sada obsahovala hypotézy z~živého běhu dialogového systému (live data).
 Dva dialogové systémy produkovaly seznam $n$ nejlepších hypotéz.
 Jeden systém produkoval pouze nejlepší hypotézu, záznamy hovorů proto byly zpracovány zpětně pro vygenerování seznamů $n$ nejlepších hypotéz (batch data).
 Vygenerované hypotézy ovšem obsahovaly pouze skóre, které muselo být přepočítáno pro získání pravděpodobností.
-Organizátoři nevydali žádné informace o povaze skóre.
+Organizátoři nevydali žádné informace o~povaze skóre.
 
-Data obsahovala zjevně chybné hypotézy, např. v jedné hypotéze se objevily dvě různé hodnoty pro jeden slot.
-Tyto hypotézy byly z dat odstraněny ještě před samotnou inferencí.
+Data obsahovala zjevně chybné hypotézy, např. v~jedné hypotéze se objevily dvě různé hodnoty pro jeden slot.
+Tyto hypotézy byly z~dat odstraněny ještě před samotnou inferencí.
 
 \subsection{Popis systému}
 
-Dialogový stav byl v použitém systému modelován jednoduchým generativním modelem, kde pro každý slot v jedné obrátce existují dva vrcholy, skutečná hodnota slotu $s_t$ a pozorovaná hodnota $o_t$.
-Stav důvěry skutečné hodnoty slotu $b(s_t)$ závisí pouze na hodnotě v minulé obrátce $s_{t-1}$ a na poslední systémové akci $a_{t-1}$.
+Dialogový stav byl v~použitém systému modelován jednoduchým generativním modelem, kde pro každý slot v~jedné obrátce existují dva vrcholy, skutečná hodnota slotu $s_t$ a pozorovaná hodnota $o_t$.
+Stav důvěry skutečné hodnoty slotu $b(s_t)$ závisí pouze na hodnotě v~minulé obrátce $s_{t-1}$ a na poslední systémové akci $a_{t-1}$.
 Pozorovaná hodnota $o_t$ závisí pouze na skutečné hodnotě $s_t$.
 
 Stav důvěry můžeme vyjádřit ze sdružené pravděpodobnosti generativního modelu:
@@ -1334,7 +1335,7 @@ Stav důvěry můžeme vyjádřit ze sdružené pravděpodobnosti generativního
 b(s_t) = \sum_{s_{t-1}, o_t} p(s_t \mid a_{t-1}, s_{t-1}) p(o_t \mid s_t) b(s_{t-1})
 \end{equation}
 
-Pro zrychlení výpočtu bylo využito stažených parametrů s manuálně nastavenými hodnotami~\cite{thomson2010bayesian}:
+Pro zrychlení výpočtu bylo využito stažených parametrů s~manuálně nastavenými hodnotami~\cite{thomson2010bayesian}:
 \begin{equation}
 p(s_t \mid a_{t-1}, s_{t-1}) = \begin{cases}
 \theta_t & \text{pokud } s_t = s_{t-1} \\
@@ -1352,27 +1353,27 @@ p(o_t \mid s_t) = \begin{cases}
 \end{equation}
 kde $\theta_o$ je pravděpodobnost, že pozorování bude odpovídat skutečné hodnotě slotu.
 
-Parametr $\theta_t$ určuje jak moc bude systém zapomínat, v případě hodnoty blízké 1 systém téměř nezapomíná a jakmile nějakou hodnotu pozoruje, bude jej těžké přesvědčit o čemkoliv jiném, v opačném případě naopak systém zapomíná a i z téměř jisté důvěry v hodnotu stavu může během pár obrátek dojít do stavu, kdy mají všechny možné hodnoty stejnou pravděpodobnost.
-Parametr $\theta_o$ vyjadřuje důvěru systému v SLU.
+Parametr $\theta_t$ určuje jak moc bude systém zapomínat, v~případě hodnoty blízké 1 systém téměř nezapomíná a jakmile nějakou hodnotu pozoruje, bude jej těžké přesvědčit o~čemkoliv jiném, v~opačném případě naopak systém zapomíná a i z~téměř jisté důvěry v~hodnotu stavu může během pár obrátek dojít do stavu, kdy mají všechny možné hodnoty stejnou pravděpodobnost.
+Parametr $\theta_o$ vyjadřuje důvěru systému v~SLU.
 Pokud je jeho hodnota vysoká, předpokládáme, že SLU téměř nedělá chyby.
-V opačném případě je systém tolerantní k chybám SLU.
+V~opačném případě je systém tolerantní k~chybám SLU.
 Na základě výsledků dialogového systému na trénovacích dat byly manuálně zvoleny vhodné hodnoty parametrů: $\theta_t = 0.8$ a $\theta_o = 0.8$
 
 Představený model pro pozorování platí pro \emph{inform} dialogové akty, dialogové sloty \emph{affirm} a \emph{negate} byly převedeny na \emph{inform}.
 
-Pro inferenci bylo použito LBP a protože možných hodnot slotů bylo v řádu stovek, všechny nepozorované hodnoty byly staženy do jedné speciální hodnoty a jejich pravděpodobnost byla počítána pouze dohromady.
+Pro inferenci bylo použito LBP a protože možných hodnot slotů bylo v~řádu stovek, všechny nepozorované hodnoty byly staženy do jedné speciální hodnoty a jejich pravděpodobnost byla počítána pouze dohromady.
 
 \subsection{Evaluace}
 
-Použitý model byl testován na 4 testovacích datových sadách s live daty a na dvou testovacích datových sadách s batch daty.
-Výsledky byly porovnány s baseline dialogovým systémem vytvořeným organizátory.
+Použitý model byl testován na 4 testovacích datových sadách s~live daty a na dvou testovacích datových sadách s~batch daty.
+Výsledky byly porovnány s~baseline dialogovým systémem vytvořeným organizátory.
 Použité metriky byly přesnost (accuracy) dialogového systému a Brier score.
 Přesnost je podíl obrátek, ve kterých byla nejlepší hypotéza systému pro odhad stavu správná, oproti celkovému počtu obrátek.
 Brier score měří přesnost prediktivní pravděpodobnostní distribuce systému pro odhad stavu~\cite{brier1950verification} (čím menší, tím lepší).
 
 Výsledky ukazují (viz tabulka~\ref{t:all:datasets}), že generativní model překonává baseline na všech datových sadách, kromě batch dat.
 Manuální inspekcí bylo zjištěno, že generativní model je velmi citlivý na vstupní pravděpodobnosti.
-Pravděpodobnosti hypotéz z batch dat, zřejmě kvůli způsobu přepočítání skóre na pravděpodobnosti, jsou velmi blízko sebe a tedy nedávají dostatek informací pro pravděpodobnostní model.
+Pravděpodobnosti hypotéz z~batch dat, zřejmě kvůli způsobu přepočítání skóre na pravděpodobnosti, jsou velmi blízko sebe a tedy nedávají dostatek informací pro pravděpodobnostní model.
 
 \begin{table}[htb]
 \begin{center}
@@ -1413,7 +1414,7 @@ test2 & přesnost    & 0.79 & 0.77 \\
 \label{t:all:datasets}
 \end{table}
 
-Generativní systém byl také porovnán s ostatními dialogovými systémy přihlášenými do DSTC.
+Generativní systém byl také porovnán s~ostatními dialogovými systémy přihlášenými do DSTC.
 Zde byl rovnocenným soupeřem většině ostatních týmů (viz tabulka~\ref{t:DSTC:ranking}).
 Ve výsledcích bude generativní systém veden jako 2. systém týmu číslo 3.
 
@@ -1441,22 +1442,22 @@ team9         & 0.89 & 0.20\\
 \label{t:DSTC:ranking}
 \end{table}
 
-Tabulky výsledků a příklad dialogu byly převzaty z článku popisujícího přihlášené systémy do DSTC a porovnávajícího generativní model s jednoduchým diskriminativním modelem~\cite{zilka2013}.
+Tabulky výsledků a příklad dialogu byly převzaty z~článku popisujícího přihlášené systémy do DSTC a porovnávajícího generativní model s~jednoduchým diskriminativním modelem~\cite{zilka2013}.
 
-Popis jednotlivých součástí systému a jeho používání je v příloze~\ref{ap:dstc}.
+Popis jednotlivých součástí systému a jeho používání je v~příloze~\ref{ap:dstc}.
 
 \section{Existující řešení}
 
-Většina existujících knihoven pro inferenci v Bayesovských sítích je vytvořena pro obecné grafické modely.
-Použití v dialogových systémech se ovšem liší od předpokládaného využití většiny knihoven.
-Při řešení problémů je jen málokdy potřeba získat výsledek v řádu milisekund, i na úkor kvality aproximace.
-Ovšem při hovoru s uživatelem není možné si dovolit dlouhé pauzy, působí rušivě.
-Častým problémem pak u těchto knihoven je nemožnost volby aproximace.
+Většina existujících knihoven pro inferenci v~Bayesovských sítích je vytvořena pro obecné grafické modely.
+Použití v~dialogových systémech se ovšem liší od předpokládaného využití většiny knihoven.
+Při řešení problémů je jen málokdy potřeba získat výsledek v~řádu milisekund, i na úkor kvality aproximace.
+Ovšem při hovoru s~uživatelem není možné si dovolit dlouhé pauzy, působí rušivě.
+Častým problémem pak u~těchto knihoven je nemožnost volby aproximace.
 
-Populární knihovna, která umožňuje použití Bayesovských modelů pro širokou škálu problémů, je Infer.Net, pocházející z Microsoft Research~\cite{InferNET12}.
+Populární knihovna, která umožňuje použití Bayesovských modelů pro širokou škálu problémů, je Infer.Net, pocházející z~Microsoft Research~\cite{InferNET12}.
 Tato knihovna nabízí velkou řadu inferenčních algoritmů.
-Jak název napovídá, je napsaná v prostředí .Net a tedy je nutné ji používat z jazyka, který běží v tomto prostředí (C\#, F\# atd.)
+Jak název napovídá, je napsaná v~prostředí .Net a tedy je nutné ji používat z~jazyka, který běží v~tomto prostředí (C\#, F\# atd.)
 
-Dále existuje řada knihoven, které lze použít pro inferenci v Bayesovských sítích, ovšem namísto variačních metod používají vzorkování.
+Dále existuje řada knihoven, které lze použít pro inferenci v~Bayesovských sítích, ovšem namísto variačních metod používají vzorkování.
 Příkladem je knihovna PyMC~\cite{patil2010pymc}. 
 Díky využití metod Monte Carlo je jednoduší počítání se složitějšími distribucemi, ovšem na druhou stranu platíme mnohdy pomalou konvergencí.

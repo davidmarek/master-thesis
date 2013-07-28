@@ -2,33 +2,33 @@
 \chapter{Bayesovské sítě a inference}
 \label{ch:kap2}
 
-V této kapitole představíme Bayesovské sítě, grafický model pro efektivní reprezentaci pravděpodobnostních rozdělení a nezávislostí mezi náhodnými proměnnými.
-Bayesovská síť zároveň vytváří koncept pro inferenci, tedy zodpovídání dotazů nad proměnnými v síti.
-Ukážeme si několik přístupů k inferenci, začneme naivním výpočtem vycházejícím přímo z definice.
+V~této kapitole představíme Bayesovské sítě, grafický model pro efektivní reprezentaci pravděpodobnostních rozdělení a nezávislostí mezi náhodnými proměnnými.
+Bayesovská síť zároveň vytváří koncept pro inferenci, tedy zodpovídání dotazů nad proměnnými v~síti.
+Ukážeme si několik přístupů k~inferenci, začneme naivním výpočtem vycházejícím přímo z~definice.
 Následně využijeme vlastností sítě a konceptů dynamického programování pro jeho zlepšení.
-Analýzou složitosti exaktní inference dojdeme k závěru, že pro větší a komplexnější modely bude třeba se uchýlit k aproximacím.
+Analýzou složitosti exaktní inference dojdeme k~závěru, že pro větší a komplexnější modely bude třeba se uchýlit k~aproximacím.
 
 Nejprve aproximujeme sdruženou pravděpodobnostní distribuci součinem marginálních distribucí a představíme Loopy Belief Propagation algoritmus.
 Stále můžeme použít pouze diskrétní pravděpodobnostní distribuce se známými parametry.
 Pro učení parametrů lze použít Expectation Maximization metodu, pro dialogové systémy je ovšem těžké získat dostatek učících dat.
-Dostaneme se k metodě Expectation Propagation, která je zobecněním LBP a je možné ji použít pro libovolné pravděpodobnostní rozdělení.
+Dostaneme se k~metodě Expectation Propagation, která je zobecněním LBP a je možné ji použít pro libovolné pravděpodobnostní rozdělení.
 Díky ní budeme schopní vytvořit generativní model pro aktualizaci dialogového stavu, který bude pracovat stejně jako LBP, ale bude schopen adaptace za běhu dialogového systému.
 
 \section{Bayesovské sítě}
 \label{sec:bn}
 
 Bayesovské sítě jsou pravděpodobnostní grafický model, který využívá podmíněných nezávislostí pro úspornou reprezentaci sdružené pravděpodobnosti.
-Bayesovská sít je orientovaný acyklický graf, jehož vrcholy jsou náhodné proměnné a hrany odpovídají přímé závislosti jednoho uzlu na druhý.
-Pro každou náhodnou proměnnou v síti platí, že její pravděpodobnost je jednoznačně určena jejími rodiči v grafu.
+Bayesovská sít je orientovaný acyklický graf, jehož vrcholy jsou náhodné proměnné a~hrany odpovídají přímé závislosti jednoho uzlu na druhý.
+Pro každou náhodnou proměnnou v~síti platí, že její pravděpodobnost je jednoznačně určena jejími rodiči v~grafu.
 Podmíněná pravděpodobnostní distribuce (CPD) proměnné $X$ popisuje pravděpodobnost proměnné $X$ dáno jejími rodiči, $P(X \mid parents(X))$.
 Pokud proměnná nemá žádné rodiče, pak její podmíněná pravděpodobnostní distribuce je ekvivalentní marginální pravděpodobnostní distribuci.
 
 Příklad Student~\cite{koller2009probabilistic}: firma zvažuje, zda-li přijme studenta.
 Firma chce přijímat chytré studenty, ale nesmí je testovat na inteligenci (I) přímo.
 Má však výsledek studentových SAT testů, které ovšem nemusí stačit pro správné zhodnocení inteligence.
-Požadují tedy i doporučení (D) od jednoho z učitelů.
-Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal z jeho předmětu.
-Předměty se ovšem liší v obtížnosti (O) a tak je studentova známka z předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
+Požadují tedy i doporučení (D) od jednoho z~učitelů.
+Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal z~jeho předmětu.
+Předměty se ovšem liší v~obtížnosti (O) a tak je studentova známka z~předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
 Grafický model reprezentující tento problém je na obrázku~\ref{fig:student}.
 \begin{figure}
 \begin{center}
@@ -46,10 +46,10 @@ Grafický model reprezentující tento problém je na obrázku~\ref{fig:student}
     \\
 };
 
-\edge{O}{Z}
-\edge{I}{Z}
-\edge{I}{S}
-\edge{Z}{D}
+\edge{O}{Z};
+\edge{I}{Z};
+\edge{I}{S};
+\edge{Z}{D};
 
 \end{tikzpicture}
 \end{center}
@@ -57,46 +57,46 @@ Grafický model reprezentující tento problém je na obrázku~\ref{fig:student}
 \caption{Bayesovská síť pro příklad se studentem.}
 \end{figure}
 
-V tomto modelu je několik nezávislostí. Obtížnost předmětu a inteligence studenta jsou zjevně nezávislé.
-Studentova známka z předmětu je závislá na obtížnosti předmětu a inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentovou inteligencí.
+V~tomto modelu je několik nezávislostí. Obtížnost předmětu a inteligence studenta jsou zjevně nezávislé.
+Studentova známka z~předmětu je závislá na obtížnosti předmětu a~inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentovou inteligencí.
 Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentovou známkou.
 
-Sdruženou nezávislost tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s pomocí řetízkového pravidla.
+Sdruženou nezávislost tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s~pomocí řetízkového pravidla.
 \begin{equation}
-P(O, I, Z, S, D) = P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
+P(O, I, Z, S, D) = P(D \mid Z) P(Z~\mid O, I) P(SAT \mid I) P(O) P(I)
 \end{equation}
 
 Předpokládejme, že obtížnost předmětu, inteligence studenta, doporučující dopis a výsledek SAT jsou binární proměnné.
-Známka z předmětu je ternární proměnná.
-Pokud bychom zapsali sdruženou pravděpodobnost ve formě tabulky, tak se dostaneme k 48 položkám.
-Díky rozdělení do podmíněných pravděpodobnostních distribucí, které nám Bayesovská síť poskytuje, se dostáváme k $2 + 2 + 12 + 4 + 6 = 26$ položkám.
-Tedy i v tomto jednoduchém modelu dochází ke značné úspoře.
+Známka z~předmětu je ternární proměnná.
+Pokud bychom zapsali sdruženou pravděpodobnost ve formě tabulky, tak se dostaneme k~48 položkám.
+Díky rozdělení do podmíněných pravděpodobnostních distribucí, které nám Bayesovská síť poskytuje, se dostáváme k~$2 + 2 + 12 + 4 + 6 = 26$ položkám.
+Tedy i v~tomto jednoduchém modelu dochází ke značné úspoře.
 
-\section{Inference v Bayesovských sítích}
+\section{Inference v~Bayesovských sítích}
 
 Bayesovské sítě reprezentují pravděpodobnostní model a umožňují nám nad ním provádět dotazy.
 Můžeme se například ptát na marginální pravděpodobnost jednotlivých proměnných. 
 Tu získáme marginalizací sdružené pravděpodobnosti.
-V příkladu se studentem můžeme chtít znát marginální pravděpodobnost známek. Pro její nalezení musíme ze sdružené pravděpodobnosti vyysčítat všechny ostatní proměnné.
+Můžeme například chtít znát marginální pravděpodobnost známek. Pro její nalezení musíme ze sdružené pravděpodobnosti vysčítat všechny ostatní proměnné.
 
 \begin{equation}
-P(Z) = \sum_{O, I, S, D} P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
+P(Z) = \sum_{O, I, S, D} P(D \mid Z) P(Z~\mid O, I) P(SAT \mid I) P(O) P(I)
 \end{equation}
 
 Další a asi nejčastější dotaz nastává, pokud některé náhodné proměnné pozorujeme. 
 Pak chceme znát pravděpodobnost jiných proměnných dáno naším pozorováním, $P(\vec{X} \mid \vec{E} = \vec{e})$, kde $\vec{X}$ jsou dotazované proměnné, $\vec{E}$ jsou pozorované proměnné a $\vec{e}$ jsou pozorované hodnoty.
-Z definice podmíněné pravděpodobnosti dostáváme
+Z~definice podmíněné pravděpodobnosti dostáváme
 
 \begin{equation}
-P(\vec{X} \mid \vec{E} = \vec{e}) = \frac{P(\vec{X}, \vec{E} = \vec{e})}{P(\vec{E} = \vec{e})}
+P(\vec{X} \mid \vec{E} = \vec{e}) = \frac{P(\vec{X}, \vec{E} = \vec{e})}{P(\vec{E} = \vec{e})}.
 \end{equation}
 
-Každou instanci jmenovatele $P(\vec{X}, \vec{E} = \vec{e})$ jde spočítat sumou sdružených pravděpodobností s ohodnoceními proměnných, které jsou kompatibilní s pozorováním a aktuální instancí. 
+Každou instanci jmenovatele $P(\vec{X}, \vec{E} = \vec{e})$ jde spočítat sumou sdružených pravděpodobností s~ohodnoceními proměnných, které jsou kompatibilní s~pozorováním a aktuální instancí. 
 Pokud počítáme instanci $P(\vec{X} = \vec{x}, \vec{E} = \vec{e})$, pak získáme výsledek marginalizací všech proměnných, kromě $\vec{X}$ a $\vec{E}$, které jsou fixovány.
 Pokud tedy množinu všech proměnných bez $\vec{X}$ a $\vec{E}$ označíme $\mathcal{W} = \mathcal{X} - \vec{X} - \vec{E}$, pak pravděpodobnost dané instance je
 
 \begin{equation}
-P(\vec{X} = \vec{x}, \vec{E} = \vec{e}) = \sum_{\vec{w}} P(\vec{x}, \vec{e}, \vec{w})
+P(\vec{X} = \vec{x}, \vec{E} = \vec{e}) = \sum_{\vec{w}} P(\vec{x}, \vec{e}, \vec{w}).
 \end{equation}
 
 Pro výpočet normalizační konstanty $P(\vec{E})$ musíme opět marginalizovat sdruženou pravděpodobnost anebo si můžeme povšimnout, že platí
@@ -107,52 +107,52 @@ a tedy můžeme použít už vypočítané hodnoty.
 
 \subsection{Exaktní inference}
 
-V předchozí části jsme viděli jak lze pomocí definice podmíněné pravděpodobnosti a marginalizace sdružené pravděpodobnosti najít odpověď na libovolný dotaz. 
+V~předchozí části jsme viděli jak lze pomocí definice podmíněné pravděpodobnosti a marginalizace sdružené pravděpodobnosti najít odpověď na libovolný dotaz. 
 Nyní si ukážeme algoritmus, který využívá struktury Bayesovské sítě pro inferenci a navíc díky metodám dynamického programování umožňuje samotný výpočet urychlit.
-Nakonec ovšem zjistíme, že pro velké sítě, které nás většinou zajímají nejvíce, nám přesná inference nebude stačit a musíme se uchýlit k aproximacím.
+Nakonec ovšem zjistíme, že pro velké sítě, které nás většinou zajímají nejvíce, nám přesná inference nebude stačit a musíme se uchýlit k~aproximacím.
 
-Začneme s inferencí v jednoduchém modelu $A \rightarrow B \rightarrow C \rightarrow D$.
+Začneme s~inferencí v~jednoduchém modelu $A \rightarrow B \rightarrow C \rightarrow D$.
 Sdružená pravděpodobnost $P(A, B, C, D)$ je součinem jednotlivých podmíněných pravděpodobnostních distribucí
 \begin{equation}
-P(A, B, C, D) = P(D \mid C)\; P(C \mid B) \;P(B \mid A) \;P(A)
+P(A, B, C, D) = P(D \mid C)\; P(C \mid B) \;P(B \mid A) \;P(A).
 \end{equation}
 
 Pokud nyní budeme chtít spočítat marginální distribuci $D$, tak musíme marginalizovat všechny ostatní proměnné
 \begin{equation}
-P(D) = \sum_{A, B, C} P(D \mid C) \; P(C \mid B) \; P(B \mid A) \;P(A)
+P(D) = \sum_{A, B, C} P(D \mid C) \; P(C \mid B) \; P(B \mid A) \;P(A).
 \end{equation}
 
 Můžeme si povšimnout, že spousta členů se bude počítat vícekrát.
 Využitím metod dynamického programování a přeuspořádáním sum si můžeme mezivýsledky uložit a použít vícekrát.
 \begin{equation}
-P(D) = \sum_C \, P(D \mid C) \,\sum_B \,P(C \mid B) \,\sum_A \,P(B \mid A) \,P(A)
+P(D) = \sum_C \, P(D \mid C) \,\sum_B \,P(C \mid B) \,\sum_A \,P(B \mid A) \,P(A).
 \end{equation}
 
 Při výpočtu pak nejprve spočítáme $\psi_1(A, B) =  P(B \mid A) \, P(A)$,  pak vysčítáme proměnnou $A$ a získáme $\tau_1(B) = \sum_A \,\psi_1(A, B)$.
 Pokračujeme obdobně
 \begin{align}
-    \psi_2(B, C) &= P(C \mid B) \,\tau_1(B) \\
-    \tau_2(C) &= \sum_B \psi_2(B, C)
+    \psi_2(B, C) &= P(C \mid B) \,\tau_1(B), \\
+    \tau_2(C) &= \sum_B \psi_2(B, C).
 \end{align}
 A nakonec spočítáme finální marginální pravděpodobnost
 \begin{align}
-    \psi_3(D, C) &= P(D \mid C) \, \tau_2(C) \\
-    P(D) &= \sum_C \psi_3(D, C)
+    \psi_3(D, C) &= P(D \mid C) \, \tau_2(C), \\
+    P(D) &= \sum_C \psi_3(D, C).
 \end{align}
 
 Nechť $\mathcal{X}$ je množina náhodných proměnných. 
 $Val(\mathcal{X})$ definujeme jako množinu možných ohodnocení proměnných $\mathcal{X}$.
-Potom definujeme faktor $\phi$ jako zobrazení z $Val(\mathcal{X})$ do $\mathbb{R}$. 
+Potom definujeme faktor $\phi$ jako zobrazení z~$Val(\mathcal{X})$ do $\mathbb{R}$. 
 Faktor je nezáporný, pokud všechny jeho obrazy jsou nezáporné. 
 Doménu faktoru $\phi$ a značíme jako $Dom(\phi)$.
 
-Faktor, jehož doménu tvoří diskrétní proměnné, si můžeme představit jako tabulku, která obsahuje jednu hodnotu pro každé možné ohodnocení proměnných z domény.
+Faktor, jehož doménu tvoří diskrétní proměnné, si můžeme představit jako tabulku, která obsahuje jednu hodnotu pro každé možné ohodnocení proměnných z~domény.
 
 Nechť $\vec{X}, \vec{Y}, \vec{Z}$ jsou tři disjunktní množiny náhodných proměnných.
 Nechť $\phi_1(\vec{X}, \vec{Y})$ a $\phi_2(\vec{Y}, \vec{Z})$ jsou faktory.
 Definujeme součin faktorů $\phi_1 \times \phi_2$ jako faktor $\psi: Val(\vec{X}, \vec{Y}, \vec{Z}) \rightarrow \mathbb{R}$ následovně:
 \begin{equation*}
-\psi(\vec{X}, \vec{Y}, \vec{Z}) = \phi_1(\vec{X}, \vec{Y}) \cdot \phi_2(\vec{Y}, \vec{Z})
+\psi(\vec{X}, \vec{Y}, \vec{Z}) = \phi_1(\vec{X}, \vec{Y}) \cdot \phi_2(\vec{Y}, \vec{Z}).
 \end{equation*}
 
 Násobíme prvky se stejným ohodnocením společných proměnných $\vec{Y}$.
@@ -160,20 +160,20 @@ Stejný princip použijeme pro všechny matematické operace.
 
 Nechť $\vec{X}$ je množina náhodných proměnných a $Y \not\in \vec{X}$ náhodná proměnná. 
 Nechť $\phi(\vec{X}, \,Y)$ je faktor.
-Definujeme marginalizaci $Y$ ve $\phi$, značenou $\sum_Y \phi$, jako faktor $\psi$ s doménou $\vec{X}$ takový, že
+Definujeme marginalizaci $Y$ ve $\phi$, značenou $\sum_Y \phi$, jako faktor $\psi$ s~doménou $\vec{X}$ takový, že
 \begin{equation*}
-    \psi(\vec{X}) = \sum_Y \phi(\vec{X}, Y)
+    \psi(\vec{X}) = \sum_Y \phi(\vec{X}, Y).
 \end{equation*}
 Této operaci také říkáme vysčítání $Y$ ve $\phi$.
 
-Všechny operace s faktory probíhají po prvcích, pro které je ohodnocení náhodných proměnných z průniku domén faktorů stejné.
+Všechny operace s~faktory probíhají po prvcích, pro které je ohodnocení náhodných proměnných z~průniku domén faktorů stejné.
 Proto platí komutativita $\phi_1 \cdot \phi_2 = \phi_2 \cdot \phi_1$ a $\sum_X \sum_Y \phi = \sum_Y \sum_X \phi$.
 Dále platí asociativita součinu $(\phi_1 \cdot \phi_2) \cdot \phi_3 = \phi_1 \cdot (\phi_2 \cdot \phi_3)$.
 Nakonec můžeme vyměnit sumu a součin, pokud $X \not\in Dom(\phi_1)$, potom $\sum_X (\phi_1 \cdot \phi_2) = \phi_1 \sum_X \phi_2$.
 
-Sdruženou pravděpodobnost z minulého příkladu tedy můžeme přepsat do formy faktorů
+Sdruženou pravděpodobnost z~minulého příkladu tedy můžeme přepsat do formy faktorů
 \begin{equation}
-    P(A, B, C, D) = \phi_A \cdot \phi_B \cdot \phi_C \cdot \phi_D
+    P(A, B, C, D) = \phi_A \cdot \phi_B \cdot \phi_C \cdot \phi_D.
 \end{equation}
 
 Opět se pokusíme spočítat marginální pravděpodobnost proměnné $D$.
@@ -189,26 +189,26 @@ P(D) &= \sum_C \sum_B \sum_A \phi_A \phi_B \phi_C
 				\sum_A 
 					\phi_A \cdot \phi_B
 			\right)
-	\right)
+	\right).
 \end{align}
 
 Přesuny sum můžeme provést díky doméně jednotlivých faktorů.
 Faktory $\phi_C$ a $\phi_D$ neobsahují proměnnou $A$ a tedy je můžeme vytknout před sumu přes $A$.
 Stejně tak faktor $\phi_D$ neobsahuje proměnnou $B$ a opět jej můžeme vytknout před sumu přes $B$.
-Tyto úpravy můžeme provádět v libovolném pořadí, pokud vždy platí, že vysčítáme proměnnou $X$ až poté, co spolu vynásobíme všechny faktory, které ji obsahují.
+Tyto úpravy můžeme provádět v~libovolném pořadí, pokud vždy platí, že vysčítáme proměnnou $X$ až poté, co spolu vynásobíme všechny faktory, které ji obsahují.
 
-V obecnosti vždy počítáme výraz ve tvaru
+V~obecnosti vždy počítáme výraz ve tvaru
 \[
 \sum_X \prod_{\phi \in \Phi} \phi.
 \]
 
-Z tohoto také vychází název pro tuto metodu: sum-product.
+Z~tohoto také vychází název pro tuto metodu: sum-product.
 Jednoduchý algoritmus pro exaktní inferenci využívající tuto metodu se nazývá eliminace proměnných.
-Základní myšlenka je, že máme dán seznam náhodných proměnných v pořadí, v jakém se mají eliminovat.
-Pro eliminaci proměnné $X$ je třeba nejprve vynásobit všechny faktory obsahující $X$ a následně $X$ z tohoto součinu vysčítat.
+Základní myšlenka je, že máme dán seznam náhodných proměnných v~pořadí, v~jakém se mají eliminovat.
+Pro eliminaci proměnné $X$ je třeba nejprve vynásobit všechny faktory obsahující $X$ a následně $X$ z~tohoto součinu vysčítat.
 Tak získáme faktor, který už tuto proměnnou neobsahuje.
 Tedy jsme ji eliminovali.
-Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
+Eliminace proměnných je popsána v~algoritmu~\ref{alg:ve}.
 
 \begin{algorithm}[H]
 \caption{Eliminace proměnných}
@@ -217,10 +217,10 @@ Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
 \Function{Sum-Product-VE}{$\Phi$, $\vec{X}$, $\prec$}
 \State{$\Phi$ množina všech faktorů.} 
 \State{$\vec{X}$ množina náhodných proměnných, které mají být eliminovány.}
-\State{$\prec$ pořadí proměnných, v jakém mají být eliminovány.}
+\State{$\prec$ pořadí proměnných, v~jakém mají být eliminovány.}
 \State
 
-\State Nechť $X_1, \dots, X_k$ je seřazení proměnných z $\vec{X}$, t.ž. $X_i \prec X_j \Leftrightarrow i < j$.
+\State Nechť $X_1, \dots, X_k$ je seřazení proměnných z~$\vec{X}$, t.ž. $X_i \prec X_j \Leftrightarrow i < j$.
 \For{$i = 1 \dots k$}
 	\State $\Phi \gets$ Sum-Product-Eliminate-Var($\Phi$, $X_i$)
 \EndFor
@@ -246,46 +246,46 @@ Nechť $\vec{X}$ je množina náhodných proměnných, nechť $\Phi$ je množina
 Nechť $\vec{Y} \subset \vec{X}$ je množina dotazovaných náhodných proměnných a nechť $\vec{Z} = \vec{X} - \vec{Y}$.
 Pak pro každé seřazení $\prec$ nad $\vec{Z}$, Sum-Product-VE($\Phi$, $\vec{Z}$, $\prec$) vrátí faktor $\phi^*(\vec{Y})$ takový, že
 \[
-\phi^*(\vec{Y}) = \sum_Z \prod_{\phi \in \Phi} \phi
+\phi^*(\vec{Y}) = \sum_Z \prod_{\phi \in \Phi} \phi.
 \]
 
 Nyní provedeme analýzu algoritmu eliminace proměnných.
 Předpokládejme, že na vstupu je $n$ proměnných.
 Bayesovská síť obsahuje pro každou proměnnou jeden faktor.
 Pro jednoduchost budeme předpokládat, že algoritmus bude eliminovat všechny proměnné.
-Běh algoritmu se skládá z jednotlivých eliminačních kroků, v každém je eliminována jedna proměnná.
+Běh algoritmu se skládá z~jednotlivých eliminačních kroků, v~každém je eliminována jedna proměnná.
 
-V eliminačním kroku je vybrána proměnná $X_i$. 
+V~eliminačním kroku je vybrána proměnná $X_i$. 
 Všechny faktory, které ji obsahují jsou vynásobeny a vytvoří jeden velký faktor $\psi_i$.
-Proměnná $X_i$ je pak vysčítána z tohoto faktoru.
+Proměnná $X_i$ je pak vysčítána z~tohoto faktoru.
 Počet operací pro jeden eliminační krok tedy závisí na velikosti faktoru $\psi_i$, označme ji $N_i$.
-Maximum z velikostí faktorů označme $N_{max} = max_i N_i$.
+Maximum z~velikostí faktorů označme $N_{max} = max_i N_i$.
 
 Nyní se zaměříme na počet násobení.
-Celkem vznikne $n+m$ faktorů, z toho $m$ při vysčítání proměnné.
-Každý z těchto faktorů je zahrnut do součinu pouze jednou, když je eliminována nějaká proměnná, kterou obsahuje.
+Celkem vznikne $n+m$ faktorů, z~toho $m$ při vysčítání proměnné.
+Každý z~těchto faktorů je zahrnut do součinu pouze jednou, když je eliminována nějaká proměnná, kterou obsahuje.
 Cena násobení faktorů pro vznik $\psi_i$ je nejvýše $N_i$.
 Celkový počet násobení tedy bude nejvýše $(n+m)N_{max}$ což je $\mathcal{O}(nN_{max})$.
 
-Pokud $k$ je maximum z velikostí domén proměnných, pak velikost faktoru obsahujícího $n$ proměnných může být až $k^n$.
+Pokud $k$ je maximum z~velikostí domén proměnných, pak velikost faktoru obsahujícího $n$ proměnných může být až $k^n$.
 Složitost eliminace proměnných je tedy dominována velikostí faktorů vznikajících při výpočtu a je exponenciální.
 Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP-těžký~\cite{arnborg1987complexity}.
 
 \subsection{Posílání zpráv ve faktor grafu}
 
 Algoritmy exaktní inference naráží při reálném použití na příliš velkou složitost násobení faktorů.
-Hlavním problémem je velikost sdružené pravděpodobnosti, která roste exponenciálně s počtem náhodných proměnných.
+Hlavním problémem je velikost sdružené pravděpodobnosti, která roste exponenciálně s~počtem náhodných proměnných.
 Většinou nás ovšem zajímá marginální pravděpodobnost jedné nebo jen mála proměnných.
-Je tedy zbytečné počítat celou sdruženou pravděpodobnost, abychom z ní pak vysčítali většinu proměnných.
+Je tedy zbytečné počítat celou sdruženou pravděpodobnost, abychom z~ní pak vysčítali většinu proměnných.
 Řešení se nabízí ve formě aproximace faktorizací sdružené pravděpodobnosti.
 
 \begin{equation*}
-    P(X_1, \dots, X_n) = \prod_i P(X_i)
+    P(X_1, \dots, X_n) = \prod_i P(X_i).
 \end{equation*}
 
-Pro výpočet s faktorizovanou distribucí si zavedeme novou datovou strukturu, tzv. faktor graf.
+Pro výpočet s~faktorizovanou distribucí si zavedeme novou datovou strukturu, tzv. faktor graf.
 Faktor graf je bipartitní graf, kde jednu partitu tvoří faktory a druhou partitu tvoří náhodné proměnné.
-Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, v jehož doméně leží.
+Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, v~jehož doméně leží.
 
 \begin{figure}[H]
 \begin{center}
@@ -319,19 +319,19 @@ Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, v jehož doméně 
 \caption{Příklad faktor grafu se čtyřmi náhodnými proměnnými $X_1, X_2, X_3, X_4$ a třemi faktory $f_a, f_b, f_c$.}
 \end{figure}
 
-Nejprve začneme s inferencí na stromech.
+Nejprve začneme s~inferencí na stromech.
 Pokud zafixujeme jednu náhodnou proměnnou $X$ ve faktor grafu, pak sdruženou pravděpodobnost můžeme spočítat jako
 \begin{equation}
-    P(\vec{X}) = \prod_{s \in ne(X)} F_s(X, \vec{X}_s),
+    P(\vec{X}) = \prod_{s~\in ne(X)} F_s(X, \vec{X}_s),
 \label{eq:fs}
 \end{equation}
-kde $ne(X)$ jsou faktory obsahující proměnnou $X$ (tedy sousedi ve faktor grafu), $F_s$ je součin všech faktorů v podstromu určeném faktorem $f_s$ a $\vec{X}_s$ je množina všech proměnných v daném podstromu.
+kde $ne(X)$ jsou faktory obsahující proměnnou $X$ (tedy sousedi ve faktor grafu), $F_s$ je součin všech faktorů v~podstromu určeném faktorem $f_s$ a $\vec{X}_s$ je množina všech proměnných v~daném podstromu.
 
 Pro výpočet marginální pravděpodobnosti $X$ substitujeme~(\ref{eq:fs}) do výpočtu marginální pravděpodobnosti ze sdružené a po výměně sumy a produktu dostaneme
 \begin{align}
-P(X) &= \prod_{s \in ne(X_i)} \sum_{\vec{X}_s} F_s(X, \vec{X}_s)
+P(X) &= \prod_{s~\in ne(X_i)} \sum_{\vec{X}_s} F_s(X, \vec{X}_s)
 \\
-&= \prod_{s \in ne(X)} \mu_{f_s \rightarrow X}(X)
+&= \prod_{s~\in ne(X)} \mu_{f_s \rightarrow X}(X).
 \label{eq:margx}
 \end{align}
 
@@ -340,18 +340,18 @@ Zavedli jsme funkce
     \mu_{f_s \rightarrow X} \equiv \sum_{\vec{X}_s} F_s(X, \vec{X}_s),
 \label{eq:defmsgfx}
 \end{equation}
-budeme je nazývat zprávami z faktoru $f_s$ do proměnné $X$.
+budeme je nazývat zprávami z~faktoru $f_s$ do proměnné $X$.
 
 Každé $F_s(X, \vec{X}_s)$ je popsáno podgrafem faktor grafu a tedy může být znova faktorizováno.
 Namísto proměnné $X$ nyní vezmeme faktor $f_s$.
-Náhodné proměnné sousedící s faktorem $f_s$ bez $X$ si označíme $X_1, \dots, X_M$.
-Součin faktorů v podstromech určených těmito proměnnými označíme $G_i(X_i, \vec{X}_{si})$.
+Náhodné proměnné sousedící s~faktorem $f_s$ bez $X$ si označíme $X_1, \dots, X_M$.
+Součin faktorů v~podstromech určených těmito proměnnými označíme $G_i(X_i, \vec{X}_{si})$.
 Faktor $F_s(X, \vec{X}_s)$ tedy můžeme přepsat jako
 \begin{equation}
-F_s(X, \vec{X}_s) = f_s(X, X_1, \dots, X_M) G_1(X_1, \vec{X}_{s1}), \dots, G_M(X_M, \vec{X}_{sM})
+F_s(X, \vec{X}_s) = f_s(X, X_1, \dots, X_M) G_1(X_1, \vec{X}_{s1}), \dots, G_M(X_M, \vec{X}_{sM}).
 \end{equation}
 
-Pokud substitujeme přepsaný faktor $F_s(X, \vec{X}_s)$ do definice zprávy z faktoru, dostaneme
+Pokud substitujeme přepsaný faktor $F_s(X, \vec{X}_s)$ do definice zprávy z~faktoru, dostaneme
 \begin{align}
 \mu_{f_s \rightarrow X}(X) &=
     \sum_{X_1} \dots \sum_{X_M}
@@ -363,7 +363,7 @@ Pokud substitujeme přepsaný faktor $F_s(X, \vec{X}_s)$ do definice zprávy z f
 &= \sum_{X_1} \dots \sum_{X_M}
     f_s(X, X_1, \dots, X_M)
     \prod_{m \in ne(f_s) \backslash X}
-        \mu_{X_m \rightarrow f_s}(X_m)
+        \mu_{X_m \rightarrow f_s}(X_m).
 \label{eq:mfsx}
 \end{align}
 
@@ -372,16 +372,16 @@ Zavedli jsme další funkce
     \mu_{X_m \rightarrow f_s}(X_m) \equiv \sum_{\vec{X}_{sm}} G_m(X_m, \vec{X}_{sm}),
 \label{eq:defmsgxf}
 \end{equation}
-budeme je nazývat zprávami z proměnné $X_m$ do faktoru $f_s$.
+budeme je nazývat zprávami z~proměnné $X_m$ do faktoru $f_s$.
 
-Z rovnice~\ref{eq:margx} vidíme, že marginální pravděpodobnost proměnné vypočítáme jako součin zpráv ze všech okolních faktorů.
-Každou z těchto zpráv můžeme spočítat jako součin faktoru a zpráv přicházejících ze sousedních proměnných, kromě proměnné, které chceme zprávu posílat. Zbývá nám tedy zjistit v jakém tvaru jsou zprávy z proměnných do faktoru.
+Z~rovnice~\ref{eq:margx} vidíme, že marginální pravděpodobnost proměnné vypočítáme jako součin zpráv ze všech okolních faktorů.
+Každou z~těchto zpráv můžeme spočítat jako součin faktoru a zpráv přicházejících ze sousedních proměnných, kromě proměnné, které chceme zprávu posílat. Zbývá nám tedy zjistit v~jakém tvaru jsou zprávy z~proměnných do faktoru.
 
-Stejně jako u $F_s(X, \vec{X}_s)$ nám tady $G_m(X_m, \vec{X}_{sm})$ definuje podgraf faktor grafu. 
-V kořeni tohoto podgrafu leží proměnná $X_m$ a tím se dostáváme na už známý případ.
-Budeme ignorovat faktor $f_s$, protože neleží v podgrafu určeném $G_m(X_m, \vec{X}_{sm})$, a pak 
+Stejně jako u~$F_s(X, \vec{X}_s)$ nám tady $G_m(X_m, \vec{X}_{sm})$ definuje podgraf faktor grafu. 
+V~kořeni tohoto podgrafu leží proměnná $X_m$ a tím se dostáváme na už známý případ.
+Budeme ignorovat faktor $f_s$, protože neleží v~podgrafu určeném $G_m(X_m, \vec{X}_{sm})$, a~pak 
 \begin{equation}
-    G_m(X_m, \vec{X}_{sm}) = \prod_{l \in ne(X_m) \backslash f_s} F_l(X_m, \vec{X}_{ml})
+    G_m(X_m, \vec{X}_{sm}) = \prod_{l \in ne(X_m) \backslash f_s} F_l(X_m, \vec{X}_{ml}).
 \end{equation}
 Přepsáno ve formě zpráv
 \begin{align}
@@ -391,27 +391,27 @@ Přepsáno ve formě zpráv
         F_l(X_m, \vec{X}_{ml})
 \\
 &= \prod_{l \in ne(X_m) \backslash f_s}
-    \mu_{f_l \rightarrow X_m}(X_m)
+    \mu_{f_l \rightarrow X_m}(X_m).
 \end{align}
-Zpráva z náhodné proměnné je tedy součinem zpráv ze všech ostatních faktorů.
+Zpráva z~náhodné proměnné je tedy součinem zpráv ze všech ostatních faktorů.
 
-Zprávy tedy dokážeme počítat rekurzivně, chybí nám ovšem pravidla pro zprávy z listů.
-V případě faktoru je odchozí zpráva ekvivalentní faktoru.
+Zprávy tedy dokážeme počítat rekurzivně, chybí nám ovšem pravidla pro zprávy z~listů.
+V~případě faktoru je odchozí zpráva ekvivalentní faktoru:
 \begin{equation}
-    \mu_{f \rightarrow X}(X) = f(X)
+    \mu_{f \rightarrow X}(X) = f(X).
 \end{equation}
-V případě náhodné proměnné je odchozí zpráva uniformní
+V~případě náhodné proměnné je odchozí zpráva uniformní:
 \begin{equation}
-    \mu_{X \rightarrow f}(X) = 1
+    \mu_{X \rightarrow f}(X) = 1.
 \end{equation}
 Pro pozorovanou proměnnou je zpráva vždy rovna pozorované hodnotě bez ohledu na sousední faktory.
 
 \subsection{Belief Propagation}
 
-Algoritmus exaktní inference na stromech s pomocí posílání zpráv se nazývá Belief Propagation~\cite{pearl1988probabilistic}.
-Zpráva z vrcholu faktor grafu může být poslána do jiného vrcholu, až když byly obdrženy zprávy ze všech ostatních vrcholů.
+Algoritmus exaktní inference na stromech s~pomocí posílání zpráv se nazývá Belief Propagation~\cite{pearl1988probabilistic}.
+Zpráva z~vrcholu faktor grafu může být poslána do jiného vrcholu, až když byly obdrženy zprávy ze všech ostatních vrcholů.
 Jakmile vrchol obdržel zprávy ze všech vrcholů, lze spočítat jeho marginální pravděpodobnost.
-Strom můžeme zakořenit v libovolné náhodné proměnné a posílat zprávy z listů do kořene.
+Strom můžeme zakořenit v~libovolné náhodné proměnné a posílat zprávy z~listů do kořene.
 Kořen pak obdrží všechny zprávy ze všech sousedních faktorů a tedy je možné spočítat jeho marginální pravděpodobnost.
 Tomuto se říká dopředný krok propagace.
 
@@ -447,13 +447,13 @@ Tomuto se říká dopředný krok propagace.
 
 \end{tikzpicture}
 \end{center}
-\caption{Směr posílání zpráv pro strom zakořeněný ve vrcholu $X_3$ v dopředném kroce.}
+\caption{Směr posílání zpráv pro strom zakořeněný ve vrcholu $X_3$ v~dopředném kroce.}
 \end{figure}
 
-Belief Propagation algoritmus tedy umožňuje na stromech spočítat marginální pravděpodobnost jedné proměnné s lineárním počtem poslaných zpráv.
+Belief Propagation algoritmus tedy umožňuje na stromech spočítat marginální pravděpodobnost jedné proměnné s~lineárním počtem poslaných zpráv.
 Při rozšíření na spočítání marginální pravděpodobnosti všech proměnných není třeba algoritmus pouštět $n$-krát.
 Stačí si uvědomit, že všem vrcholům chybí pouze zpráva od faktoru na cestě ke kořenu.
-A my můžeme z kořene poslat zprávy zpět k listům hned, jak obdržíme všechny příchozí zprávy.
+A my můžeme z~kořene poslat zprávy zpět k~listům hned, jak obdržíme všechny příchozí zprávy.
 Této části se říká zpětný krok propagace.
 
 \begin{figure}[H]
@@ -491,37 +491,37 @@ Této části se říká zpětný krok propagace.
 \caption{Směr posílání zpráv pro strom zakořeněný ve vrcholu $X_3$ ve zpětném kroce.}
 \end{figure}
 
-Po propagaci všech zpráv až k listům už každá proměnná získala zprávy od všech sousedních faktorů a tedy je možné spočítat marginální pravděpodobnost všech proměnných.
+Po propagaci všech zpráv až k~listům už každá proměnná získala zprávy od všech sousedních faktorů a tedy je možné spočítat marginální pravděpodobnost všech proměnných.
 
 \subsection{Loopy Belief Propagation}
 \label{sec:lbp}
 
 Algoritmus Belief Propagation funguje pro inferenci na stromech.
-Hlavním důvodem, proč nelze použít Belief Propagation na obecných grafech je, že můžeme narazit na cyklus v grafu.
-Źádný z vrcholů v tomto cyklu nebude nikdy mít dostatek příchozích zpráv, aby mohl nějakou zprávu odeslat.
+Hlavním důvodem, proč nelze použít Belief Propagation na obecných grafech je, že můžeme narazit na cyklus v~grafu.
+Źádný z~vrcholů v~tomto cyklu nebude nikdy mít dostatek příchozích zpráv, aby mohl nějakou zprávu odeslat.
 
 Algoritmus Loopy Belief Propagation řeší tento problém relaxací podmínky na příchozí zprávy.
 Pro odeslání zprávy do uzlu není třeba znát zprávy ze všech ostatních sousedních vrcholů.
 Chybějící zprávy jsou nastaveny na jedničku.
 Loopy Belief Propagation je iterativní algoritmus.
-V grafu nemusí existovat vrchol, který by mohl poslat zprávu k nějakému ze svých sousedů.
-Je tedy třeba vybrat vrchol podle jiné strategie a z něj poslat zprávy do všech sousedních vrcholů.
-V další iteraci je pak vybrán zase jiný vrchol.
+V~grafu nemusí existovat vrchol, který by mohl poslat zprávu k~nějakému ze svých sousedů.
+Je tedy třeba vybrat vrchol podle jiné strategie a z~něj poslat zprávy do všech sousedních vrcholů.
+V~další iteraci je pak vybrán zase jiný vrchol.
 Iterace končí ve chvíli, kdy se už nemění hodnoty zpráv.
 
-Vzhledem k tomu, že posílané zprávy už neodpovídají skutečným faktorům, je důležitá otázka, zda Loopy Belief Propagation vůbec nalezne správné marginální pravděpodobnosti.
+Vzhledem k~tomu, že posílané zprávy už neodpovídají skutečným faktorům, je důležitá otázka, zda Loopy Belief Propagation vůbec nalezne správné marginální pravděpodobnosti.
 Existují podmínky, za kterých algoritmus bude konvergovat~\cite{tatikonda2002loopy}.
-V obecném případě může algoritmus konvergovat ke špatným pravděpodobnostem anebo nemusí konvergovat vůbec a pak dochází k oscilacím.
-Pokud algoritmus nekonverguje ke správným pravděpodobnostem, tak není ani možné se k nim přiblížit nebo je odvodit z oscilací~\cite{murphy1999loopy}.
-V praxi ovšem k problémům většinou nedochází a inference konverguje v rozumném čase.
+V~obecném případě může algoritmus konvergovat ke špatným pravděpodobnostem anebo nemusí konvergovat vůbec a pak dochází k~oscilacím.
+Pokud algoritmus nekonverguje ke správným pravděpodobnostem, tak není ani možné se k~nim přiblížit nebo je odvodit z~oscilací~\cite{murphy1999loopy}.
+V~praxi ovšem k~problémům většinou nedochází a inference konverguje v~rozumném čase.
 
 \begin{algorithm}
 \caption{Loopy Belief Propagation}
 \label{alg:lbp}
 \begin{algorithmic}
 \Function{LBP}{$F$, $S$}
-\State{$F$ -- faktor graf}
-\State{$S$ -- strategie}
+\State{$F$~-- faktor graf}
+\State{$S$~-- strategie}
 \State
 
 \State{$\textsc{Init-Factor-Graph}(F)$}
@@ -545,7 +545,7 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 \State
 
 \Function{Init-Factor-Graph}{$F$}
-\State{$F$ -- faktor graf}
+\State{$F$~-- faktor graf}
 \State
 
 \For{každou proměnnou $X \in F$}
@@ -559,8 +559,8 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 \State
 
 \Function{Message-To-Var}{$f$, $v$}
-\State{$f$ -- zdrojový faktor}
-\State{$v$ -- cílová proměnná}
+\State{$f$~-- zdrojový faktor}
+\State{$v$~-- cílová proměnná}
 \State
 
 \State{$\vec{X} \gets \text{Dom}(f)$}
@@ -570,8 +570,8 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 \State
 
 \Function{Message-To-Factor}{$v$, $f$}
-\State{$v$ -- zdrojová proměnná}
-\State{$f$ -- cílový faktor}
+\State{$v$~-- zdrojová proměnná}
+\State{$f$~-- cílový faktor}
 \State
 
 \State{$\mu_{v \rightarrow f}(v) \gets \prod_{g \in ne(v) \backslash f} \mu_{g \rightarrow v}(v)$ }
@@ -581,68 +581,68 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 
 \subsubsection{Popis LBP}
 
-Popis Loopy Belief Propagation je v algoritmu~\ref{alg:lbp}.
+Popis Loopy Belief Propagation je v~algoritmu~\ref{alg:lbp}.
 Při inferenci ve faktor grafu je nejprve třeba inicializovat všechny zprávy.
 Posílání zpráv budeme iterovat, dokud zprávy nekonvergují.
 Druhou možností je nastavit pevný počet iterací.
-Pak vybíráme vrcholy a z každého pošleme zprávu do všech okolních.
+Pak vybíráme vrcholy a z~každého pošleme zprávu do všech okolních.
 Způsobem výběru vrcholů se budeme zabývat později.
-I náhodný výběr vrcholů povede k výsledku.
+I náhodný výběr vrcholů povede k~výsledku.
 Dodání externí informace či chytřejší heuristiky ovšem může výpočet výrazně urychlit.
 
-Poslání zprávy se liší podle toho, zda-li posíláme z proměnné do faktoru anebo naopak.
-V obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů kromě toho, do kterého zprávu posíláme.
-Při posílání zprávy z faktoru $f$ do proměnné $X$ musíme navíc vynásobit příchozí zprávy hodnotou $f$, následně vysčítat všechny proměnné až na $X$.
+Poslání zprávy se liší podle toho, zda-li posíláme z~proměnné do faktoru anebo naopak.
+V~obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů kromě toho, do kterého zprávu posíláme.
+Při posílání zprávy z~faktoru $f$ do proměnné $X$ musíme navíc vynásobit příchozí zprávy hodnotou $f$, následně vysčítat všechny proměnné až na $X$.
 
 Ve faktor grafu se tedy zprávy šíří pouze přes pravděpodobnostní rozdělení jedné proměnné.
-Právě to může vést k oscilacím nebo konvergenci ke špatným hodnotám. 
+Právě to může vést k~oscilacím nebo konvergenci ke špatným hodnotám. 
 Příkladem je Skrytý Markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
-Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k rovnoměrnému rozdělení. A tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
+Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k~rovnoměrnému rozdělení. A~tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
 
-Při počítání zpráv často musíme pronásobit spoustu zpráv z okolních vrcholů.
+Při počítání zpráv často musíme pronásobit spoustu zpráv z~okolních vrcholů.
 Přitom se zprávy zas tak často nemění.
 Častou optimalizací je pro každý vrchol si pamatovat součin všech jeho zpráv
 \begin{equation}
     b(v) = \begin{cases}
-        \prod_{u \in ne(v)} \mu_{u \rightarrow v}(v) & \mbox{$v$ je proměnná} \\
-        f_v(\vec{X}) \prod_{u \in ne(v)} \mu_{u \rightarrow v}(u) & \mbox{$v$ je faktor} \\
+        \prod_{u~\in ne(v)} \mu_{u~\rightarrow v}(v) & \mbox{$v$ je proměnná} \\
+        f_v(\vec{X}) \prod_{u~\in ne(v)} \mu_{u~\rightarrow v}(u) & \mbox{$v$ je faktor} \\
     \end{cases}
 \end{equation}
-Při odesílání zprávy z vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělíme zprávou $\mu_{u \rightarrow v}$.
-Pokud je $v$ faktor, pak ještě vysčítáme všechny proměnné kromě $u$ a zpráva je připravena k odeslání.
+Při odesílání zprávy z~vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělíme zprávou $\mu_{u \rightarrow v}$.
+Pokud je $v$ faktor, pak ještě vysčítáme všechny proměnné kromě $u$ a zpráva je připravena k~odeslání.
 Hodnotu $b(v)$ můžeme aktualizovat po výběru vrcholu $v$ pro posílání zpráv nebo po každém přijetí zprávy.
 
 Pro pozorované proměnné je třeba metodu \textsc{Message-To-Factor} upravit tak, aby pouze posílala pozorovanou hodnotu.
 
-Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude popsána v kapitole~\ref{ch:kap4}.
+Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude popsána v~kapitole~\ref{ch:kap4}.
 
-\section{Propagace s aproximovanými zprávami}
+\section{Propagace s~aproximovanými zprávami}
 
-V předchozí sekci byla faktorizována sdružená pravděpodobnost a tak došlo ke zjednodušení inference.
+V~předchozí sekci byla faktorizována sdružená pravděpodobnost a tak došlo ke zjednodušení inference.
 Mezi jednotlivými vrcholy byly stále posílány exaktní zprávy.
-V této sekci se zaměříme na inferenci v modelech, kde není možné spočítat zprávy exaktně a je třeba je aproximovat.
-Tento problém nastává u některých modelů se spojitými náhodnými proměnnými.
+V~této sekci se zaměříme na inferenci v~modelech, kde není možné spočítat zprávy exaktně a je třeba je aproximovat.
+Tento problém nastává u~některých modelů se spojitými náhodnými proměnnými.
 
 Předpokládáme, že máme pravděpodobnostní grafický model, reprezentující sdruženou pravděpodobnost dat a pozorování pomocí součinu faktorů.
 \begin{equation}
 P(\vec{X}, \vec{E}) = \prod_i f_i(\vec{X})
 \end{equation}
-Nás zajímá aposteriorní distribuce $P(\vec{X} \mid \vec{E})$ pro zjištění stavu, stejně tak jako pravděpodobnost pozorování $P(\vec{E})$ pro normalizaci.
-Aposteriorní distribuci vyjádříme ze sdružené.
+Nás zajímá aposteriorní distribuce $P(\vec{X} \mid \vec{E})$ pro zjištění stavu stejně jako pravděpodobnost pozorování $P(\vec{E})$ pro normalizaci.
+Aposteriorní distribuci vyjádříme ze sdružené:
 \begin{equation}
 P(\vec{X} \mid \vec{E}) = \frac{1}{P(\vec{E})} \prod_i f_i(\vec{X})
 \end{equation}
 a pravděpodobnost pozorování je dána
 \begin{equation}
-P(\vec{E}) = \int \prod_i f_i(\vec{X}) \mathrm{d}\vec{X}
+P(\vec{E}) = \int \prod_i f_i(\vec{X}) \mathrm{d}\vec{X}.
 \end{equation}
 
-Pro aproximativní inferenci ukážeme algoritmus Expectation propagation (EP)~\cite{minka2001expectation}.
+Pro inferenci s aproximovanými distribucemi ukážeme algoritmus Expectation propagation (EP)~\cite{minka2001expectation}.
 Vytvoříme aproximaci aposteriorní distribuce, která je také dána součinem faktorů
 \begin{equation}
 q(\vec{X}) = \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X}),
 \end{equation}
-kde každý faktor $\tilde{f}_i$ je aproximace odpovídající skutečnému faktoru $f_i$ a faktor $\frac{1}{Z}$ je normalizační konstanta.
+kde každý faktor $\tilde{f}_i$ je aproximace odpovídající skutečnému faktoru $f_i$ a $\frac{1}{Z}$ je normalizační konstanta.
 Aproximované faktory musíme zkonstruovat tak, abychom byli schopni provádět inferenci.
 
 Pro měření vzdálenosti aproximovaného rozdělení od skutečného používáme Kullback-Leiblerovu divergenci (KL)~\cite{kullback1997information}.
@@ -660,25 +660,25 @@ Divergence splňuje tři vlastnosti:
 \subsection{Rodina exponenciálních rozdělení}
 \label{sec:expfam}
 
-Rodina exponenciálních rozdělení~\cite{bernardo2009bayesian} přes $\vec{X}$, dáno parametry $\vec\eta$ je definována jako množina distribucí ve tvaru
+Rodina exponenciálních rozdělení~\cite{bernardo2009bayesian} přes $\vec{X}$ dáno parametry $\vec\eta$ je definována jako množina distribucí ve tvaru
 \begin{equation}
 P(\vec{X} \mid \vec\eta) = h(\vec{X}) g(\vec\eta) \exp \big(\vec\eta^T u(\vec{X})\big),
 \label{eq:gj}
 \end{equation}
-kde $\vec{X}$ jsou náhodné proměnné, které mohou být diskrétní nebo spojité, $\vec\eta$ jsou nazývány přirozené parametry rozdělení, $u(\vec{X})$ je funkce $\vec{X}$.
-Funkce $g(\vec\eta)$ může být interpretována jako koeficient, který zajišťuje, že je distribuce normalizována a tedy splňuje
+kde $\vec{X}$ jsou náhodné proměnné (diskrétní nebo spojité), $\vec\eta$ jsou nazývány přirozené parametry rozdělení, $u(\vec{X})$ je funkce $\vec{X}$.
+Funkce $g(\vec\eta)$ může být interpretována jako koeficient zajišťující, že distribuce bude normalizována a tedy splňuje
 \begin{equation}
 g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X})\big) \mathrm{d}\vec{X} = 1
 \label{eq:g1}
 \end{equation}
 
-Výhody distribucí z exponenciální rodiny si ukážeme na KL divergenci.
-Nechť počítáme divergenci $KL(p \| q)$, kde $p(\vec{X})$ je zafixovaná distribuce a $q(\vec{X})$ je distribuce z exponenciální rodiny.
+Výhody distribucí z~exponenciální rodiny si ukážeme na KL divergenci.
+Nechť počítáme divergenci $KL(p \| q)$, kde $p(\vec{X})$ je zafixovaná distribuce a $q(\vec{X})$ je distribuce z~exponenciální rodiny.
 Pokud zapíšeme KL divergenci jako funkci $\vec\eta$, tak dostaneme
 \begin{equation}
-KL(p \| q) = - \log g(\vec\eta) - \vec\eta^T \mathbb{E}_{p(\vec{X})}[u(\vec{X})] + \mathrm{const}.
+KL(p \| q) = - \log g(\vec\eta) - \vec\eta^T \, \mathbb{E}_{p(\vec{X})}[u(\vec{X})] + \mathrm{const}.
 \end{equation}
-KL divergenci můžeme minimalizovat tak, že nastavíme první derivaci podle $\vec\eta$ rovnou nule, z čehož dostaneme
+KL divergenci můžeme minimalizovat nastavením první derivace podle $\vec\eta$ rovné nule a po upravení dostaneme
 \begin{equation}
 -\nabla \log g(\vec\eta) = \mathbb{E}_{p(\vec{X})}[u(\vec{X})].
 \label{eq:kl}
@@ -689,50 +689,53 @@ Vezmeme derivaci obou stran (\ref{eq:g1}) podle $\vec\eta$.
 Získáme
 \begin{align}
 & \nabla g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X}) \big) \mathrm{d}\vec{X} \\
-& + g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X})\big) u(\vec{X}) \mathrm{d}\vec{X} = 0 \nonumber
+& + g(\vec\eta) \int h(\vec{X}) \exp \big(\vec\eta^T u(\vec{X})\big) u(\vec{X}) \mathrm{d}\vec{X} = 0. \nonumber
 \end{align}
-Přeuspořádáním a znova použitím (\ref{eq:gj}) a (\ref{eq:g1}) získáme
+Přeuspořádáním a opětovným použitím (\ref{eq:gj}) a (\ref{eq:g1}) získáme
 \begin{equation}
 -\frac{1}{g(\vec\eta)}\nabla g(\vec\eta)
-= g(\vec\eta) \int h(\vec{X}) \exp\big(\vec\eta^T u(\vec{X})\big) u(\vec{X}) \mathrm{d}\vec{X} = \mathbb{E}[u(\vec{X})].
+= g(\vec\eta) \int h(\vec{X}) \, \exp\big(\vec\eta^T \, u(\vec{X})\big) \, u(\vec{X})\; \mathrm{d}\vec{X} = \mathbb{E}[u(\vec{X})].
 \end{equation}
 Ve výsledku získáváme 
 \begin{equation}
-- \nabla \log g(\vec\eta) = \mathbb{E}[u(\vec{X})]
+- \nabla \log g(\vec\eta) = \mathbb{E}[u(\vec{X})].
 \label {eq:ge}
 \end{equation}
 
-Nový poznatek o funkci $g(\vec\eta)$ z (\ref{eq:ge}) můžeme substituovat do (\ref{eq:kl}) a získáme
+Nový poznatek o~funkci $g(\vec\eta)$ z~(\ref{eq:ge}) můžeme substituovat do (\ref{eq:kl}) a získáme
 \begin{equation}
 \mathbb{E}_{q(\vec{X})}[u(\vec{X})] = \mathbb{E}_{p(\vec{X})}[u(\vec{X})],
 \label{eq:ee}
 \end{equation}
-z čehož vidíme, že pro minimalizaci KL divergence nám stačí najít parametry rozdělení $q(\vec{X})$ tak, aby mělo stejné očekávané statistiky jako $p(\vec{X})$.
+z~čehož vidíme, že pro minimalizaci KL divergence nám stačí najít parametry rozdělení $q(\vec{X})$ tak, aby mělo stejné očekávané statistiky jako $p(\vec{X})$. 
+Této metodě říkáme srovnání momentů.
 
 \subsection{Expectation Propagation}
 \label{sec:ep}
 
-Expectation propagation je algoritmus založený na aproximaci aposteriorní distribuce součinem aproximovaných faktorů
+Expectation Propagation je algoritmus založený na aproximaci aposteriorní distribuce součinem aproximovaných faktorů
 \begin{equation}
 q(\vec{X}) = \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X}).
 \end{equation}
-Z praktických důvodů uvedených v předchozí sekci jsou aproximované faktory z exponenciální rodiny.
-Díky tomu bude jejich součin také z exponenciální rodiny.
+Z~praktických důvodů uvedených v~předchozí sekci jsou aproximované faktory z~exponenciální rodiny.
+Díky tomu bude jejich součin také z~exponenciální rodiny.
 
-Aproximující distribuci bychom chtěli nalézt pomocí minimalizace KL divergence mezi skutečnou a aproximovanou distribucí.
+Aproximující distribuci bychom chtěli nalézt pomocí minimalizace KL divergence mezi skutečnou a aproximovanou distribucí,
 \begin{equation}
-KL(p \| q) = KL\bigg(\frac{1}{p(\vec{E})} \prod_i f_i(\vec{X}) \bigg\| \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X} \bigg)
+KL(p \| q) = KL\bigg(\frac{1}{p(\vec{E})} \prod_i f_i(\vec{X}) \bigg\| \frac{1}{Z} \prod_i \tilde{f}_i(\vec{X} \bigg).
 \end{equation}
-Pro počítání KL divergence ovšem potřebujeme umět počítat se skutečnou pravděpodobností a když už s ní umíme efektivně počítat, proč ztrácet čas s aproximací.
+Pro počítání KL divergence ovšem potřebujeme umět počítat se skutečnou pravděpodobností.
+Aproximaci ovšem počítáme, protože předpokládáme, že neumíme se skutečnout pravděpodobností počítat efektivně.
 
-Další možností je aproximovat jednotlivé faktory, díky tomu bychom v jednom kroku nalezli aproximace pro všechny faktory a měli bychom hotovo.
-Naším cílem je ale nalézt nejlepší aproximaci celé aposteriorní pravděpodobnosti a to není v tomto případě zaručeno.
+Další možností je aproximovat jednotlivé faktory.
+Díky tomu bychom v~jednom kroku nalezli aproximace pro všechny faktory a měli bychom hotovo.
+Naším cílem je ale nalézt nejlepší aproximaci celé aposteriorní pravděpodobnosti a to není v~tomto případě zaručeno.
 
-Expectation propagation sice aproximuje jednotlivé faktory, ale vždy v kontextu všech ostatních~\cite{bishop2006pattern}.
+Expectation Propagation sice aproximuje jednotlivé faktory, ale vždy v~kontextu všech ostatních~\cite{bishop2006pattern}.
 Nejprve jsou všechny inicializovány a pak jsou procházeny jeden po druhém a každý je aktualizován.
-Tento přístup je podobný metodám, které byly ukázány v předešlých sekcí.
+Tento přístup je podobný metodám, které byly ukázány v~předešlých sekcích.
 Předpokládejme, že chceme aktualizovat faktor $\tilde{f}_j (\vec{X})$.
-Nejprve odstraníme faktor z produktu a získáme $\prod_{i \ne j} \tilde{f}_i(\vec{X})$.
+Nejprve odstraníme faktor z~produktu a získáme $\prod_{i \ne j} \tilde{f}_i(\vec{X})$.
 Následně nalezneme novou hodnotu pro faktor $\tilde{f}_j$ tak, aby pravděpodobnostní rozložení
 \begin{equation}
 q^{new}(\vec{X}) \propto \tilde{f}_j(\vec{X}) \prod_{i \ne j} \tilde{f}_i(\vec{X})
@@ -743,20 +746,20 @@ bylo co nejblíže
 f_j(\vec{X})\prod_{i \ne j} \tilde{f}_i(\vec{X}).
 \end{equation}
 Všechny faktory $i \ne j$ necháváme zafixované. 
-Díky tomu zajistíme, že nová aproximace faktoru je nejpřesnější v oblastech, které mají největší aposteriorní pravděpodobnost definovanou zbývajícími faktory.
+Díky tomu zajistíme, že nová aproximace faktoru je nejpřesnější v~oblastech, s největší aposteriorní pravděpodobností definovanou zbývajícími faktory.
 
-Odstranění faktoru $\tilde{f}_j(\vec{X})$ z aktuální aproximace aposteriorní distribuce provedeme vytvořením nenormalizované distribuce
+Odstranění faktoru $\tilde{f}_j(\vec{X})$ z~aktuální aproximace aposteriorní distribuce provedeme vytvořením nenormalizované distribuce
 \begin{equation}
-q^{\backslash j}(\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}
+q^{\backslash j}(\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}.
 \end{equation}
-Mohli bychom počítat $q^{\backslash j}(\vec{X})$ jako součin všech faktorů kromě $j$, ale v praxi je dělení rychlejší.
+Mohli bychom počítat $q^{\backslash j}(\vec{X})$ jako součin všech faktorů kromě $j$, ale v~praxi je dělení rychlejší.
 Tuto nenormalizovanou distribuci budeme nazývat neúplná distribuce.
 Její kombinací se skutečným faktorem $f_j(\vec{X})$ dostaneme distribuci
 \begin{equation}
     \frac{1}{Z_j} f_j(\vec{X}) q^{\backslash j}(\vec{X}),
 \label{eq:aprox}
 \end{equation}
-kde $Z_j$ je normalizační konstanta, dána
+kde $Z_j$ je normalizační konstanta:
 \begin{equation}
     Z_j = \int f_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X}.
 \label{eq:zj}
@@ -766,48 +769,48 @@ Nyní můžeme nalézt novou hodnotu pro faktor $\tilde{f}_j$ minimalizací KL d
 \begin{equation}
     KL\bigg(\frac{f_j(\vec{X}) q^{\backslash j}(\vec{X})}{Z_j} \bigg\| q^{new}(\vec{X})\bigg).
 \end{equation}
-To uděláme jednoduše použitím poznatku z (\ref{eq:ee}), který říká, že nám stačí najít parametry $q^{new}$ tak, aby postačující statistiky odpovídali momentům aproximovaného rozdělení (\ref{eq:aprox}).
+To uděláme jednoduše použitím poznatku z~(\ref{eq:ee}), jenž říká, že nám stačí najít parametry $q^{new}$ tak, aby postačující statistiky odpovídaly momentům aproximovaného rozdělení (\ref{eq:aprox}).
 
-Z nalezené aproximace $q^{new}$ pak získáme novou hodnotu faktoru $\tilde{f}_j$ z (\ref{eq:qnew}) vydělením zbývajících faktorů
+Z~nalezené aproximace $q^{new}$ pak získáme novou hodnotu faktoru $\tilde{f}_j$ z~(\ref{eq:qnew}) vydělením zbývajících faktorů
 \begin{equation}
-    \tilde{f}_j(\vec{X}) = K \frac{q^{new}(\vec{X})}{q^{\backslash j}(\vec{X})}
+    \tilde{f}_j(\vec{X}) = K~\frac{q^{new}(\vec{X})}{q^{\backslash j}(\vec{X})}.
 \label{eq:newfj}
 \end{equation}
 
-Koeficient $K$ získáme tak, že obě strany (\ref{eq:newfj}) vynásobíme $q^{\backslash j}(\vec{X})$ a zintegrováním, čímž získáme
+Koeficient $K$ získáme tak, že obě strany (\ref{eq:newfj}) vynásobíme $q^{\backslash j}(\vec{X})$ a zintegrujeme, čímž získáme
 \begin{equation}
-    K = \int \tilde{f}_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X},
+    K~= \int \tilde{f}_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X},
 \end{equation}
-použili jsme navíc toho, že $q^{new}(\vec{X})$ je normalizovaná distribuce.
-Pro nalezení hodnoty $K$ opět použijeme srovnání momentů, v tomto případě nultých momentů:
+zde jsme navíc použili poznatek, že $q^{new}(\vec{X})$ je normalizovaná distribuce.
+Pro nalezení hodnoty $K$ použijeme srovnání nultých momentů:
 \begin{equation}
-    \int \tilde{f}_j (\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X} = \int f_j(\vec{X}) q^{\backslash j}(\vec{X}) \mathrm{d}\vec{X}
+    \int \tilde{f}_j (\vec{X}) \, q^{\backslash j}(\vec{X}) \; \mathrm{d}\vec{X} = \int f_j(\vec{X}) \,q^{\backslash j}(\vec{X}) \; \mathrm{d}\vec{X}
 \end{equation}
-Vidíme, že pravá strana je rovna $Z_j$ a tedy platí rovnost $K = Z_j$.
+Vidíme, že pravá strana je rovna $Z_j$ a tedy chceme rovnost $K = Z_j$.
 Díky tomu můžeme $K$ nalézt přímo výpočtem integrálu~(\ref{eq:zj}).
-Bez tohoto poznatku bychom se dostali do problému, protože pro výpočet $K$ by bylo potřeba $\tilde{f}_j$, které ale bez $K$ neznáme.
+Bez tohoto poznatku bychom se dostali do problému, protože pro výpočet $K$ by bylo potřeba $\tilde{f}_j$, ale to bez $K$ neznáme.
 
-Expectation Propagation je popsán v algoritmu~\ref{alg:ep}.
+Expectation Propagation je popsán v~algoritmu~\ref{alg:ep}.
 Dokud aproximované rozdělení nekonverguje, vybíráme jednotlivé faktory a aktualizujeme je podle popsaného postupu.
 
 \begin{algorithm}
-\caption{Expectation propagation}
+\caption{Expectation Propagation}
 \label{alg:ep}
 \begin{algorithmic}
 \State Inicializujeme všechny aproximativní faktory $\tilde{f}_i(\vec{X})$ na neinformativní.
 \State Inicializujeme aposteriorní aproximace nastavením: $$q(\vec{X}) \propto \prod_i \tilde{f}_i(\vec{X})$$
 \Repeat
     \State Vyber faktor $\tilde{f}_j(\vec{X})$, který bude aktualizován.
-    \State Odeber $\tilde{f}_j(\vec{X})$ z aposteriorní distribuce vydělením: $$q^{\backslash j} (\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}$$
-    \State Vypočítej novou aposteriorní distribuci nastavením momentů $q^{new}$ na 
-    \State hodnotu momentů $q^{\backslash j}(\vec{X})f_j(\vec{X})$, včetně vyhodnocení normalizační 
-    \State konstanty $$Z_j = \int q^{\backslash j}(\vec{X}) f_j(\vec{X}) \mathrm{d}\vec{X}$$
-    \State Nastav novou hodnotu faktoru: $$\tilde{f}_j(\vec{X}) = Z_j \frac{q^{new}(\vec{X})}{q^{\backslash j}(\vec{X})}$$
+    \State Odeber $\tilde{f}_j(\vec{X})$ z~aposteriorní distribuce jeho vydělením: $$q^{\backslash j} (\vec{X}) = \frac{q(\vec{X})}{\tilde{f}_j(\vec{X})}$$
+    \State Vypočítej novou aposteriorní distribuci nastavením momentů $q^{new}$ 
+    \State na hodnotu momentů $q^{\backslash j}(\vec{X}) \, f_j(\vec{X})$.
+    \State Vypočítej normalizační konstantu $Z_j$: $$Z_j = \int q^{\backslash j}(\vec{X}) \, f_j(\vec{X}) \; \mathrm{d}\vec{X}.$$
+    \State Nastav novou hodnotu faktoru: $$\tilde{f}_j(\vec{X}) = Z_j \frac{q^{new}(\vec{X})}{q^{\backslash j}(\vec{X})}.$$
 \Until{konvergence}
-\State Spočítej aproximaci pozorování: $$p(\vec{E}) \simeq \int \prod_i \tilde{f}_i(\vec{X}) \mathrm{d}\vec{X}$$
+\State Spočítej aproximaci pozorování: $$p(\vec{E}) \simeq \int \, \prod_i \, \tilde{f}_i(\vec{X}) \; \mathrm{d}\vec{X}.$$
 \end{algorithmic}
 \end{algorithm}
 
-V praxi je třeba provést několik iterací, a v každé aktualizovat všechny faktory.
-Stejně jako u LBP zde nemáme žádnou garanci, že bude algoritmus konvergovat.
-Pro aproximace $q(\vec{X})$ v exponenciální rodině, pokud iterace konverguje, pak nalezené řešení je stacionární bod specifické potenciální energie~\cite{minka2001expectation}.
+V~praxi je třeba provést několik iterací a~v~každé aktualizovat všechny faktory.
+Stejně jako u~LBP zde nemáme žádnou garanci, že bude algoritmus konvergovat.
+Pro aproximace $q(\vec{X})$ v~exponenciální rodině, pokud iterace konverguje, je nalezené řešení stacionární bod specifické potenciální energie~\cite{minka2001expectation}.

@@ -8,21 +8,20 @@
 
 \subsection{Modul \texttt{factor}}
 \label{alex.infer:modul-factor}\label{alex.infer:module-alex.infer.factor}\index{alex.infer.factor (module)}
-Modul {\hyperref[alex.infer:module-alex.infer.factor]{\code{factor}}} obsahuje implementaci faktorů pro počítání s
-diskrétními pravděpodobnostními rozděleními.
+Modul {\hyperref[alex.infer:module-alex.infer.factor]{\code{factor}}} obsahuje implementaci faktorů pro počítání s~diskrétními pravděpodobnostními rozděleními.
 \index{FactorError}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.FactorError}\pysigline{\strong{exception }\code{alex.infer.factor.}\bfcode{FactorError}}
-Výjimka značící chybu při manipulaci s faktorem.
+Výjimka značící chybu při manipulaci s~faktorem.
 
 \end{fulllineitems}
 
-\index{Factor() (třída v alex.infer.factor)}
+\index{Factor() (třída v~alex.infer.factor)}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.Factor}\pysigline{\strong{class }\code{alex.infer.factor.}\bfcode{Factor}}
-Třída reprezentující diskrétní faktor s definovanými operacemi.
+Třída reprezentující diskrétní faktor s~definovanými operacemi.
 
 Je možné použít všechny standardní matematické operátory (+, -, *, /,
 **). Operátor je možné aplikovat na dva faktory, anebo na faktor a
@@ -46,16 +45,16 @@ Vytvoření nového faktoru.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{variables} -- seznam proměnných ve faktoru.
+\textbf{variables}~-- seznam proměnných ve faktoru.
 
 \item {} 
-\textbf{variable\_values} -- slovník obsahující pro každou proměnnou seznam možných hodnot.
+\textbf{variable\_values}~-- slovník obsahující pro každou proměnnou seznam možných hodnot.
 
 \item {} 
-\textbf{prob\_table} -- slovník možných přiřazení proměnných a jejich ohodnocení.
+\textbf{prob\_table}~-- slovník možných přiřazení proměnných a jejich ohodnocení.
 
 \item {} 
-\textbf{logarithmetic} -- přepínač určující, zda-li použít aritmetiku nad zlogaritmovanými hodnotami.
+\textbf{logarithmetic}~-- přepínač určující, zda-li použít aritmetiku nad zlogaritmovanými hodnotami.
 
 \end{itemize}
 
@@ -83,7 +82,7 @@ Získání ohodnocení pro dané přiřazení.
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{assignment} -- přiřazení proměnných.
+\textbf{assignment}~-- přiřazení proměnných.
 
 \item[{Vrací}] \leavevmode
 hodnotu dotazovaného přiřazení.
@@ -114,10 +113,10 @@ Nastavení hodnoty pro přiřazení proměnných.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{assignment} -- přiřazení proměnných.
+\textbf{assignment}~-- přiřazení proměnných.
 
 \item {} 
-\textbf{value} -- nová hodnota.
+\textbf{value}~-- nová hodnota.
 
 \end{itemize}
 
@@ -153,15 +152,15 @@ Vypsání faktoru ve formě tabulky.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{width} -- šířka tabulky.
+\textbf{width}~-- šířka tabulky.
 
 \item {} 
-\textbf{precision} -- počet desetinných míst.
+\textbf{precision}~-- počet desetinných míst.
 
 \end{itemize}
 
 \item[{Vrací}] \leavevmode
-řetězec s naformátovanou tabulkou.
+řetězec s~naformátovanou tabulkou.
 
 \end{description}\end{quote}
 
@@ -223,7 +222,7 @@ Nastavení pozorovaných hodnot.
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{assignment\_dict} -- slovník s pozorovanými přiřazeními a jejich ohodnocením.
+\textbf{assignment\_dict}~-- slovník s~pozorovanými přiřazeními a jejich ohodnocením.
 
 \end{description}\end{quote}
 
@@ -236,7 +235,7 @@ Nastavení pozorovaných hodnot.
 Normalizace hodnot ve faktoru, aby jejich součet byl roven 1.
 
 Pokud je specifikován parametr \code{parents}, pak musí být součet všech
-proměnných, které mají stejné přiřazení pro proměnné z \code{parents}, roven
+proměnných, které mají stejné přiřazení pro proměnné z~\code{parents}, roven
 1.
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -261,7 +260,7 @@ proměnných, které mají stejné přiřazení pro proměnné z \code{parents},
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{parents} -- seznam rodičovských proměnných.
+\textbf{parents}~-- seznam rodičovských proměnných.
 
 \end{description}\end{quote}
 
@@ -271,7 +270,7 @@ proměnných, které mají stejné přiřazení pro proměnné z \code{parents},
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.Factor.marginalize}\pysiglinewithargsret{\bfcode{marginalize}}{\emph{keep}}{}
-Vysčítání proměnných tak, aby zůstaly pouze proměnné z \code{keep}.
+Vysčítání proměnných tak, aby zůstaly pouze proměnné z~\code{keep}.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
@@ -293,7 +292,7 @@ Vysčítání proměnných tak, aby zůstaly pouze proměnné z \code{keep}.
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{keep} -- seznam proměnných, které mají zůstat.
+\textbf{keep}~-- seznam proměnných, které mají zůstat.
 
 \end{description}\end{quote}
 
@@ -317,7 +316,7 @@ Nalezení nejpravděpodobnějších přiřazení proměnných.
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{n} -- počet požadovaných nejpravděpodobnějších přiřazení.
+\textbf{n}~-- počet požadovaných nejpravděpodobnějších přiřazení.
 
 \item[{Vrací}] \leavevmode
 seznam nejpravděpodobnějších přiřazení a jejich hodnot.
@@ -332,7 +331,7 @@ seznam nejpravděpodobnějších přiřazení a jejich hodnot.
 \phantomsection\label{alex.infer:alex.infer.factor.Factor.rename_variables}\pysiglinewithargsret{\bfcode{rename\_variables}}{\emph{mapping}}{}
 Přejmenování proměnných.
 
-Může se stát, že je potřeba přejmenovat proměnné, aby odpovídaly proměnným v jiném faktoru.
+Může se stát, že je potřeba přejmenovat proměnné, aby odpovídaly proměnným v~jiném faktoru.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
@@ -356,7 +355,7 @@ Může se stát, že je potřeba přejmenovat proměnné, aby odpovídaly promě
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{mapping} -- slovník se zobrazením ze stávajících názvů proměnných do nových názvů.
+\textbf{mapping}~-- slovník se zobrazením ze stávajících názvů proměnných do nových názvů.
 
 \end{description}\end{quote}
 
@@ -430,8 +429,8 @@ Umocnění:
 \subsection{Modul \texttt{node}}
 \label{alex.infer:modul-node}
 Modul obsahuje implementace vrcholů tvořících grafický model.
-Pro výpočty jsou používány třídy z modulu {\hyperref[alex.infer:module-alex.infer.factor]{\code{factor}}}.
-\index{alex.infer.node.Node() (třída v alex.infer.factor)}
+Pro výpočty jsou používány třídy z~modulu {\hyperref[alex.infer:module-alex.infer.factor]{\code{factor}}}.
+\index{alex.infer.node.Node() (třída v~alex.infer.factor)}
 
 \hskip\linewidth
 \begin{fulllineitems}
@@ -447,15 +446,15 @@ Vytvoření nového vrcholu.
 
 Při vytvoření vrcholu je třeba zadat jeho jméno, pod kterým bude možné
 jej nalézt při inferenci a je možné předat aliasy pro proměnné. Aliasy pro
-proměnné slouží k přejmenování proměnných ve zprávách, které přicházejí
+proměnné slouží k~přejmenování proměnných ve zprávách, které přicházejí
 do vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{name} -- jméno vrcholu.
+\textbf{name}~-- jméno vrcholu.
 
 \item {} 
-\textbf{aliases} -- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.
+\textbf{aliases}~-- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v~parametru.
 
 \end{itemize}
 
@@ -473,10 +472,10 @@ Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost 
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{options} -- implementačně závislé parametry.
+\textbf{options}~-- implementačně závislé parametry.
 
 \end{itemize}
 
@@ -495,10 +494,10 @@ Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{options} -- implementačně závislé parametry.
+\textbf{options}~-- implementačně závislé parametry.
 
 \end{itemize}
 
@@ -524,10 +523,10 @@ Zpráva je uložena a použita při dalších výpočtech.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{message} -- zpráva ze sousedního vrcholu.
+\textbf{message}~-- zpráva ze sousedního vrcholu.
 
 \end{itemize}
 
@@ -542,7 +541,7 @@ Zpráva je uložena a použita při dalších výpočtech.
 Poslání zprávy do sousedního vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+\textbf{node}~-- sousední vrchol, kterému má být zpráva zaslána.
 
 \end{description}\end{quote}
 
@@ -561,7 +560,7 @@ pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
 jedné.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{parents} -- seznam proměnných, které jsou rodiči vrcholu.
+\textbf{parents}~-- seznam proměnných, které jsou rodiči vrcholu.
 
 \end{description}\end{quote}
 
@@ -580,7 +579,7 @@ reprezentaci jejich součinu před počítáním odchozích zpráv.
 
 \end{fulllineitems}
 \hskip\linewidth
-\index{alex.infer.node.FactorNode() (třída v alex.infer.factor)}
+\index{alex.infer.node.FactorNode() (třída v~alex.infer.factor)}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.FactorNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{FactorNode}}
@@ -591,7 +590,7 @@ Abstraktní třída reprezentující vrcholy pro faktory.
 
 \hskip\linewidth
 
-\index{alex.infer.node.VariableNode() (třída v alex.infer.factor)}
+\index{alex.infer.node.VariableNode() (třída v~alex.infer.factor)}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.VariableNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{VariableNode}}
@@ -604,7 +603,7 @@ Abstraktní třída reprezentující vrcholy pro proměnné.
 
 
 \subsubsection{Vrcholy pro diskrétní vrcholy}
-\label{alex.infer:vrcholy-pro-diskretni-vrcholy}\index{alex.infer.node.DiscreteVariableNode() (třída v alex.infer.factor)}
+\label{alex.infer:vrcholy-pro-diskretni-vrcholy}\index{alex.infer.node.DiscreteVariableNode() (třída v~alex.infer.factor)}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DiscreteVariableNode}}
@@ -627,18 +626,18 @@ Vytvoření nového vrcholu pro diskrétní proměnné.
 
 Pro vytvoření je třeba jméno proměnné a hodnoty, kterých může nabývat.
 
-Také je možné zadat, jestli používat při výpočtech trik s aritmetikou nad zlogaritmovanými čísly.
-Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.
+Také je možné zadat, jestli používat při výpočtech trik s~aritmetikou nad zlogaritmovanými čísly.
+Je třeba, aby všechny vrcholy v~grafickém modelu byly nastaveny stejně.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{name} -- název proměnné.
+\textbf{name}~-- název proměnné.
 
 \item {} 
-\textbf{values} -- seznam možných hodnot.
+\textbf{values}~-- seznam možných hodnot.
 
 \item {} 
-\textbf{logarithmetic} -- zda-li používat trik s logaritmy.
+\textbf{logarithmetic}~-- zda-li používat trik s~logaritmy.
 
 \end{itemize}
 
@@ -653,7 +652,7 @@ Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.
 Přidání souseda.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -669,7 +668,7 @@ Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
 Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -693,10 +692,10 @@ Zpráva je uložena a použita při dalších výpočtech.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{message} -- zpráva ze sousedního vrcholu.
+\textbf{message}~-- zpráva ze sousedního vrcholu.
 
 \end{itemize}
 
@@ -711,7 +710,7 @@ Zpráva je uložena a použita při dalších výpočtech.
 Poslání zprávy do sousedního vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+\textbf{node}~-- sousední vrchol, kterému má být zpráva zaslána.
 
 \end{description}\end{quote}
 
@@ -750,7 +749,7 @@ Proměnná je nastavená na pozorované rozdělení. Pravděpodobnost nepozorova
 je nulová.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{assignment\_dict} -- slovník se zobrazením z hodnot do jejich pravděpodobností.
+\textbf{assignment\_dict}~-- slovník se zobrazením z~hodnot do jejich pravděpodobností.
 
 \end{description}\end{quote}
 
@@ -763,7 +762,7 @@ je nulová.
 Získání nejpravděpodobnějších hodnot.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{n} -- počet nejpravděpodobnějších hodnot, které mají být vráceny.
+\textbf{n}~-- počet nejpravděpodobnějších hodnot, které mají být vráceny.
 
 \item[{Vrací}] \leavevmode
 seznam dvojic ve tvaru (hodnota, její pravděpodobnost) seřazený podle pravděpodobnosti.
@@ -776,7 +775,7 @@ seznam dvojic ve tvaru (hodnota, její pravděpodobnost) seřazený podle pravd�
 \end{fulllineitems}
 
 \hskip\linewidth
-\index{alex.infer.node.DiscreteFactorNode() (třída v alex.infer.factor)}
+\index{alex.infer.node.DiscreteFactorNode() (třída v~alex.infer.factor)}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DiscreteFactorNode}}
@@ -791,15 +790,15 @@ Vytvoření nového vrcholu pro diskrétní faktor.
 
 Pro vytvoření je třeba jméno faktoru a samotný faktor.
 
-Také je možné zadat, jestli používat při výpočtech trik s aritmetikou nad zlogaritmovanými čísly.
-Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.
+Také je možné zadat, jestli používat při výpočtech trik s~aritmetikou nad zlogaritmovanými čísly.
+Je třeba, aby všechny vrcholy v~grafickém modelu byly nastaveny stejně.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{name} -- název proměnné.
+\textbf{name}~-- název proměnné.
 
 \item {} 
-\textbf{factor} ({\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}) -- faktor reprezentující diskrétní pravděpodobnostní rozdělení.
+\textbf{factor} ({\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}})~-- faktor reprezentující diskrétní pravděpodobnostní rozdělení.
 
 \end{itemize}
 
@@ -814,7 +813,7 @@ Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.
 Přidání souseda.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -830,7 +829,7 @@ Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
 Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor]{\code{add\_neighbor()}}} obou vrcholů a předá jí parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -854,10 +853,10 @@ Zpráva je uložena a použita při dalších výpočtech.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{message} -- zpráva ze sousedního vrcholu.
+\textbf{message}~-- zpráva ze sousedního vrcholu.
 
 \end{itemize}
 
@@ -872,7 +871,7 @@ Zpráva je uložena a použita při dalších výpočtech.
 Poslání zprávy do sousedního vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+\textbf{node}~-- sousední vrchol, kterému má být zpráva zaslána.
 
 \end{description}\end{quote}
 
@@ -891,7 +890,7 @@ pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
 jedné.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{parents} -- seznam proměnných, které jsou rodiči vrcholu.
+\textbf{parents}~-- seznam proměnných, které jsou rodiči vrcholu.
 
 \end{description}\end{quote}
 
@@ -914,7 +913,7 @@ reprezentaci jejich součinu před počítáním odchozích zpráv.
 
 
 \subsubsection{Vrcholy pro Dirichletovské parametry}
-\label{alex.infer:vrcholy-pro-dirichletovske-parametry}\index{alex.infer.node.DirichletParameterNode() (třída v alex.infer.factor)}
+\label{alex.infer:vrcholy-pro-dirichletovske-parametry}\index{alex.infer.node.DirichletParameterNode() (třída v~alex.infer.factor)}
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DirichletParameterNode}}
@@ -936,18 +935,18 @@ Parametry dirichletovského rozdělení. Typu {\hyperref[alex.infer:alex.infer.f
 Vytvoření nového vrcholu pro parametry Dirichletovského rozdělení.
 
 Pro vytvoření je třeba jméno proměnné a parametry.
-Aliasy pro proměnné slouží k přejmenování proměnných ve zprávách, které
+Aliasy pro proměnné slouží k~přejmenování proměnných ve zprávách, které
 přicházejí do vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{name} -- název proměnné.
+\textbf{name}~-- název proměnné.
 
 \item {} 
-\textbf{alpha} ({\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}) -- parametry Dirichletovského rozdělení.
+\textbf{alpha} ({\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}})~-- parametry Dirichletovského rozdělení.
 
 \item {} 
-\textbf{aliases} -- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.
+\textbf{aliases}~-- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v~parametru.
 
 \end{itemize}
 
@@ -962,7 +961,7 @@ přicházejí do vrcholu.
 Přidání souseda.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}}) -- sousední vrchol.
+\textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}})~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -978,7 +977,7 @@ Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
 Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}}) -- sousední vrchol.
+\textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}})~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -1002,10 +1001,10 @@ Zpráva je uložena a použita při dalších výpočtech.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{message} -- zpráva ze sousedního vrcholu.
+\textbf{message}~-- zpráva ze sousedního vrcholu.
 
 \end{itemize}
 
@@ -1020,7 +1019,7 @@ Zpráva je uložena a použita při dalších výpočtech.
 Poslání zprávy do sousedního vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+\textbf{node}~-- sousední vrchol, kterému má být zpráva zaslána.
 
 \end{description}\end{quote}
 
@@ -1029,13 +1028,13 @@ Poslání zprávy do sousedního vrcholu.
 
 \end{fulllineitems}
 
-\index{alex.infer.node.DirichletFactorNode() (třída v alex.infer.factor)}
+\index{alex.infer.node.DirichletFactorNode() (třída v~alex.infer.factor)}
 \hskip\linewidth
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DirichletFactorNode}}
 Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.FactorNode]{\code{alex.infer.node.FactorNode}}}
 
-    Diskrétní faktor, parametry jeho rozdělení ovšem nejsou pevně dány, ale pochází z vrcholu typu
+    Diskrétní faktor, parametry jeho rozdělení ovšem nejsou pevně dány, ale pochází z~vrcholu typu
 {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode]{\code{DirichletParameterNode}}}.
 \index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
 
@@ -1045,15 +1044,15 @@ Vytvoření nového vrcholu pro faktor.
 
 Pro vytvoření je třeba jméno faktoru.
 
-Aliasy pro proměnné slouží k přejmenování proměnných ve zprávách, které
+Aliasy pro proměnné slouží k~přejmenování proměnných ve zprávách, které
 přicházejí do vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{name} -- název faktoru.
+\textbf{name}~-- název faktoru.
 
 \item {} 
-\textbf{aliases} -- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.
+\textbf{aliases}~-- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.
 
 \end{itemize}
 
@@ -1068,7 +1067,7 @@ přicházejí do vrcholu.
 Přidání souseda.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -1084,7 +1083,7 @@ Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
 Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor]{\code{add\_neighbor()}}} obou vrcholů a předá jí parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \end{description}\end{quote}
 
@@ -1108,10 +1107,10 @@ Zpráva je uložena a použita při dalších výpočtech.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{node} -- sousední vrchol.
+\textbf{node}~-- sousední vrchol.
 
 \item {} 
-\textbf{message} -- zpráva ze sousedního vrcholu.
+\textbf{message}~-- zpráva ze sousedního vrcholu.
 
 \end{itemize}
 
@@ -1126,7 +1125,7 @@ Zpráva je uložena a použita při dalších výpočtech.
 Poslání zprávy do sousedního vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+\textbf{node}~-- sousední vrchol, kterému má být zpráva zaslána.
 
 \end{description}\end{quote}
 
@@ -1157,12 +1156,12 @@ Výjimka pro chyby při inferenci.
 
 \end{fulllineitems}
 
-\index{alex.infer.lbp.LBP() (třída v alex.infer.factor)}
+\index{alex.infer.lbp.LBP() (třída v~alex.infer.factor)}
 \hskip\linewidth
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP}\pysigline{\strong{class }\code{alex.infer.lbp.}\bfcode{LBP}}
-Inference v grafickém modelu pomocí Loopy Belief Propagation.
+Inference v~grafickém modelu pomocí Loopy Belief Propagation.
 \index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
 
 \begin{fulllineitems}
@@ -1172,18 +1171,18 @@ Vytvoření nové instance LBP algoritmu.
 Je možné nastavit strategii výběru vrcholů:
 \begin{itemize}
 \item {} 
-\emph{sequential} -- vrcholy jsou vybírány v takovém pořadí, v jakém byly vloženy,
+\emph{sequential}~-- vrcholy jsou vybírány v~takovém pořadí, v~jakém byly vloženy,
 
 \item {} 
-\emph{tree} -- grafický model je ve formě stromu,
+\emph{tree}~-- grafický model je ve formě stromu,
 
 \item {} 
-\emph{layers} -- inference na Dynamické Bayesovské síti.
+\emph{layers}~-- inference na Dynamické Bayesovské síti.
 
 \end{itemize}
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{strategy} -- strategie, která má být použita pro výběr vrcholů.
+\textbf{strategy}~-- strategie, která má být použita pro výběr vrcholů.
 
 \end{description}\end{quote}
 
@@ -1193,10 +1192,10 @@ Je možné nastavit strategii výběru vrcholů:
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.add_nodes}\pysiglinewithargsret{\bfcode{add\_nodes}}{\emph{nodes}}{}
-Přidání vrcholů k inferenci.
+Přidání vrcholů k~inferenci.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{nodes} -- seznam vrcholů.
+\textbf{nodes}~-- seznam vrcholů.
 
 \end{description}\end{quote}
 
@@ -1209,7 +1208,7 @@ Přidání vrcholů k inferenci.
 Přidání vrstvy na konec grafického modelu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{layer} -- seznam vrcholů tvořících jednu vrstvu.
+\textbf{layer}~-- seznam vrcholů tvořících jednu vrstvu.
 
 \end{description}\end{quote}
 
@@ -1222,7 +1221,7 @@ Přidání vrstvy na konec grafického modelu.
 Přidání vrstev na konec grafického modelu.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{layers} -- seznam seznamů s vrcholy.
+\textbf{layers}~-- seznam seznamů s~vrcholy.
 
 \end{description}\end{quote}
 
@@ -1256,20 +1255,20 @@ Inicializace zpráv pro všechny vrcholy.
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.run}\pysiglinewithargsret{\bfcode{run}}{\emph{n\_iterations=1, from\_layer{]}}}{}
-Spustit inferenci v grafickém modelu.
+Spustit inferenci v~grafickém modelu.
 
 Je možné nastavit počet iterací, po kterém se má inference zastavit.
-U stromu není třeba zadávat počet iterací, bude provedena pouze jedna.
+U~stromu není třeba zadávat počet iterací, bude provedena pouze jedna.
 
-U vrstev je možné zadat od které vrstvy inferenci provádět.
+U~vrstev je možné zadat od které vrstvy inferenci provádět.
 Popřípadě budou zprávy propagovány od začátku.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{n\_iterations} -- počet iterací.
+\textbf{n\_iterations}~-- počet iterací.
 
 \item {} 
-\textbf{from\_layer} -- vrstva, od které se mají zprávy propagovat.
+\textbf{from\_layer}~-- vrstva, od které se mají zprávy propagovat.
 
 \end{itemize}
 
