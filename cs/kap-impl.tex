@@ -1447,16 +1447,16 @@ Popis jednotlivých součástí systému a jeho používání je v příloze~\re
 
 \section{Existující řešení}
 
-Autor si není vědom, že by existovala knihovna, která by vznikla pro potřeby dialogových systémů.
 Většina existujících knihoven pro inferenci v Bayesovských sítích je vytvořena pro obecné grafické modely.
-Častým problémem pak je nemožnost volby aproximace.
-Při modelování většiny problémů pomocí Bayesovských sítí je jen málokdy potřeba získat výsledek v řádu milisekund, i na úkor kvality aproximace.
+Použití v dialogových systémech se ovšem liší od předpokládaného využití většiny knihoven.
+Při řešení problémů je jen málokdy potřeba získat výsledek v řádu milisekund, i na úkor kvality aproximace.
 Ovšem při hovoru s uživatelem není možné si dovolit dlouhé pauzy, působí rušivě.
+Častým problémem pak u těchto knihoven je nemožnost volby aproximace.
 
-Jedna knihovna, která umožňuje použití Bayesovských modelů pro širokou škálu problémů, je Infer.Net, pocházející z Microsoft Research~\cite{InferNET12}.
-Tato knihovna nabízí velkou řádku inferenčních algoritmů.
+Populární knihovna, která umožňuje použití Bayesovských modelů pro širokou škálu problémů, je Infer.Net, pocházející z Microsoft Research~\cite{InferNET12}.
+Tato knihovna nabízí velkou řadu inferenčních algoritmů.
 Jak název napovídá, je napsaná v prostředí .Net a tedy je nutné ji používat z jazyka, který běží v tomto prostředí (C\#, F\# atd.)
 
-Dále existuje řada knihoven, které lze použít pro inferenci v Bayesovských sítích, ovšem namísto variačních metod používají samplování.
-Příkladem je například knihovna PyMC~\cite{patil2010pymc}. 
+Dále existuje řada knihoven, které lze použít pro inferenci v Bayesovských sítích, ovšem namísto variačních metod používají vzorkování.
+Příkladem je knihovna PyMC~\cite{patil2010pymc}. 
 Díky využití metod Monte Carlo je jednoduší počítání se složitějšími distribucemi, ovšem na druhou stranu platíme mnohdy pomalou konvergencí.

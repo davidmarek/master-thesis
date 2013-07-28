@@ -5,7 +5,7 @@ all: prace.pdf
 # prace.pdf: prace.dvi
 #	dvipdfm -o $@ -p a4 -r 600 $<
 
-prace.pdf: prace.tex $(wildcard *.tex) citace.bib
+prace.pdf: prace.tex $(wildcard *.tex) citace.bib mysphinx.sty
 	cslatex $<
 	bibtex prace
 	cslatex $<

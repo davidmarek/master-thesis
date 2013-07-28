@@ -6,6 +6,8 @@ Představená metoda LBP v minulé kapitole funguje pro modely, kde máme nastav
 V této kapitole si představíme grafický model pro diskrétní proměnné, u kterého jsou i parametry faktorů proměnné a je možné pro ně použít Bayesovský přístup.
 Díky tomu bude možné nalézt aposteriorní distribuci pro tyto parametry a tedy je naučit podle dat.
 
+Inferenci v tomto upraveném modelu už není možné dělat pomocí LBP a budeme muset použít algoritmus Expectation Propagation.
+
 \section{Grafický model}
 
 Model se skládá z faktorů a proměnných.
@@ -81,7 +83,7 @@ m_{\vec\theta_i \rightarrow f_\beta} = q^{\backslash \beta}(\vec\theta_i)$$
 
 Pokud chceme aktualizovat hodnotu naší aproximace marginální pravděpodobnosti,
 je třeba minimalizovat její vzdálenost od skutečné marginální
-pravděpodobnosti:
+pravděpodobnosti, ve tvaru
 \begin{align}
 p^*(\tilde{x}_j) &=
 \sum_{\vec{x} \backslash x_j}
@@ -122,9 +124,9 @@ distribuce rovná marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
 Marginální pravděpodobnost proměnné $x_i$ tedy je
 \begin{equation}
 p^*(x_i) =
-\sum_{\vec{x} \backslash x_j} 
-	\prod_i 
-		q^{\backslash \beta}(x_i)
+\sum_{\vec{x} \backslash x_j} \;
+	\prod_i \;
+		q^{\backslash \beta}(x_i)\;
     		\mathbb{E}_{q^{\backslash \beta}} 
 			(\theta_{\rho(\vec{x^\prime}), x_0}) 
 \end{equation}
@@ -137,9 +139,9 @@ marginální pravděpodobnosti.
 
 \begin{equation}
 m_{f_\beta \rightarrow x_j}(x_j) =
-    \sum_{\vec{x} \backslash x_j}
-        \prod_{i \ne j}
-            q^{\backslash \beta}(x_i)
+    \sum_{\vec{x} \backslash x_j} \;
+        \prod_{i \ne j}\;
+            q^{\backslash \beta}(x_i)\;
             \mathbb{E}_{q^{\backslash \beta}}
                 (\theta_{\rho(\vec{x^\prime}), x_0})
 \label{eq:msgfromftox}
@@ -292,11 +294,13 @@ Dir(\vec{\theta}_i;
     \vec{\alpha}_i - \vec\alpha_{f_\beta \rightarrow \vec\theta_i} + \vec{1})
 \end{align}
 
-Naším cílem je nalézt parametry $\vec{\alpha}^*$ aproximované marginální
-pravděpodobnosti \eqref{eq:ep:aprx_1}, které minimalizují vzdálenost od
-skutečné marginální pravděpodobnosti \eqref{eq:ep:theta_4}. Pro měření
-vzdálenosti mezi dvěma pravděpodobnostními rozloženími se používá
-Kullback-Leiblerova divergence:
+Naším cílem je nalézt parametry $\vec{\alpha}^*$ aproximované marginální pravděpodobnosti \eqref{eq:ep:aprx_1}, které minimalizují vzdálenost od skutečné marginální pravděpodobnosti \eqref{eq:ep:theta_4}. 
+
+Jednotlivé faktory musíme vždy aproximovat s ohledem na všechny ostatní.
+U našeho grafického modelu využijeme nezávislostí a tak nám stačí pouze pracovat se zprávami ze sousedních vrcholů.
+Všechna informace se v modelu šíří přes zprávy mezi vrcholy a proto je třeba několika iterací pro přesun informace z jedné části modelu do druhé.
+
+Pro měření vzdálenosti mezi dvěma pravděpodobnostními rozloženími se používá Kullback-Leiblerova divergence:
 \begin{equation}
 KL(p \| q) =
 \int_{-\infty}^{\infty}
@@ -310,44 +314,44 @@ $p^*(\vec{\theta}_i)$, zjistíme, že můžeme některé její členy upravit.
 Využijeme také vlastnosti gamma funkce $\Gamma(x) = (x-1) \Gamma(x-1)$.
 
 \begin{align}
-w_j \theta_j Dir(\vec{\theta}; \vec{\alpha}) &\propto
-    w_j \theta_j \frac{\Gamma (\sum_i \alpha_{i})}{\prod_i \Gamma(\alpha_i)}
-    \prod_i \theta_{i}^{\alpha_{i} - 1}
+w_j \, \theta_j \, Dir(\vec{\theta}; \vec{\alpha}) &\propto \,
+    w_j \, \theta_j \, \frac{\Gamma (\, \sum_i \, \alpha_{i} \,)}{\prod_i \, \Gamma(\,\alpha_i\,)}\;
+    \prod_i \, \theta_{i}^{\alpha_{i} - 1}
 \label{eq:4}
 \\
-&\propto w_j \frac{\Gamma (\sum_i \alpha_{i})} {\prod_i
-    \Gamma(\alpha_{i})} \theta_j^{\alpha_j} \prod_{i \ne j}
+&\propto w_j \, \frac{\Gamma (\,\sum_i \, \alpha_{i}\,)} {\prod_i \,
+    \Gamma(\,\alpha_{i}\,)} \; \theta_j^{\alpha_j} \prod_{i \ne j} \,
     \theta_{i}^{\alpha_{i} - 1} \\
-&\propto w_j
-    \frac{\Gamma (\sum_i \alpha_{i})}
-         {\prod_i \Gamma(\alpha_{i})}
-    \frac{\Gamma(\alpha_{j} + 1) \prod_{i \ne j} \Gamma(\alpha_i)}
-         {\Gamma (1 + \sum_i \alpha_i)}
-    Dir(\vec\theta; \vec{\alpha} + \vec{\delta}_j) \\
-&\propto w_j
-    \frac{\Gamma (\sum_i \alpha_{i})}
-         {\prod_i \Gamma(\alpha_{i})}
-    \frac{\alpha_j \Gamma(\alpha_j) \prod_{i \ne j} \Gamma(\alpha_i)}
-         {(\sum_i \alpha_i) \Gamma (\sum_i \alpha_i)}
-    Dir(\vec\theta; \vec{\alpha} + \vec{\delta}_j) \\
-&\propto w_j
+&\propto w_j \,
+    \frac{\Gamma (\,\sum_i \alpha_{i}\,)}
+         {\prod_i \, \Gamma(\, \alpha_{i} \,)} \;
+    \frac{\Gamma(\, \alpha_{j} + 1 \,) \; \prod_{i \ne j} \, \Gamma(\,\alpha_i\,)}
+         {\Gamma (\,1 + \sum_i \alpha_i\,)} \;
+    Dir(\vec\theta; \, \vec{\alpha} + \vec{\delta}_j) \\
+&\propto w_j \,
+    \frac{\Gamma (\,\sum_i \alpha_{i}\,)}
+         {\prod_i \, \Gamma(\, \alpha_{i}\,)} \;
+    \frac{\alpha_j \, \Gamma(\,\alpha_j\,) \, \prod_{i \ne j} \, \Gamma(\,\alpha_i\,)}
+         {(\,\sum_i \, \alpha_i\,) \, \Gamma (\,\sum_i \,\alpha_i\,)}\;
+    Dir(\vec\theta; \,\vec{\alpha} + \vec{\delta}_j) \\
+&\propto w_j \,
     \frac{\alpha_j}
-         {\sum_i \alpha_i}
-    Dir(\vec\theta; \vec{\alpha} + \vec{\delta}_j) \\
+         {\sum_i \, \alpha_i} \;
+    Dir(\vec\theta; \,\vec{\alpha} + \vec{\delta}_j) \\
 \end{align}
 
 Díky této úpravě lze $p^*$ vyjádřit jako směs Dirichletovských rozdělení.
 \begin{equation}
 p^*(\vec{\theta}) =
-    w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
-    \sum_j w^*_j
-        Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+    w_0^* \; Dir(\vec{\theta};\, \vec{\alpha}) +
+    \sum_j \, w^*_j \;
+        Dir(\vec{\theta};\, \vec{\alpha} + \vec{\delta}_j)
 \label{eq:marginaltheta}
 \end{equation}
 kde
 \begin{align}
     w^*_0 \propto w_0, \quad \quad
-    w^*_j \propto w_j \frac{\alpha_j}{\sum_i \alpha_i}, \quad \quad
+    w^*_j \propto w_j \, \frac{\alpha_j}{\sum_i \alpha_i}, \quad \quad
     \sum_{i=0}^k w_i^* = 1
 \end{align}
 
@@ -358,20 +362,20 @@ aproximaci a budeme počítat pouze s nimi a zbylé momenty zanedbáme.
 Je tedy třeba nalézt střední hodnotu a rozptyl proměnných z $p^*(\vec\theta)$.
 
 \begin{align}
-\mathbb{E}_{p^*}[\vec\theta] &= \int \vec\theta p^*(\vec\theta) ~ \mathrm{d}\vec\theta
+\mathbb{E}_{p^*}[\vec\theta] &= \int \vec\theta \, p^*(\vec\theta) ~ \mathrm{d}\vec\theta
 \\
-&= \int \vec\theta (
-	w_0^* Dir(\vec{\theta}; \vec{\alpha}) +
-	\sum_j w^*_j
-        	Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+&= \int \vec\theta \, (
+	w_0^* \, Dir(\vec{\theta};\, \vec{\alpha}) +
+	\sum_j \, w^*_j \,
+        	Dir(\vec{\theta};\, \vec{\alpha} + \vec{\delta}_j)
     ) ~ \mathrm{d}\vec\theta
 \\
-&= w_0^* \int \vec\theta Dir(\vec{\theta}; \vec{\alpha}) ~ d\vec\theta +
-	\sum_j w_j^* \int \vec\theta Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+&= w_0^* \int \vec\theta \, Dir(\vec{\theta};\, \vec{\alpha}) ~ d\vec\theta +
+	\sum_j w_j^* \int \vec\theta \, Dir(\vec{\theta};\, \vec{\alpha} + \vec{\delta}_j)
     ~ \mathrm{d}\vec\theta
 \\
-&= w_0^* \mathbb{E}_{Dir(\vec\alpha)}[\vec\theta] +
-	\sum_j w_j^* \mathbb{E}_{Dir(\vec\alpha + \vec{\delta}_j)}[\vec\theta]
+&= w_0^* \, \mathbb{E}_{Dir(\vec\alpha)}[\vec\theta] +
+	\sum_j \, w_j^* \, \mathbb{E}_{Dir(\vec\alpha + \vec{\delta}_j)}[\vec\theta]
 \end{align}
 Střední hodnotu proměnných $\vec\theta$ podle rozdělení $p^*$ lze tedy spočítat
 jako vážený součet středních hodnot $\vec\theta$ podle jednotlivých
@@ -387,14 +391,14 @@ Chybí nám tedy ještě výpočet střední hodnoty druhé mocniny proměnné
 $\vec\theta$ podle $p^*$. Můžeme ji vyjádřit z definice střední hodnoty.
 
 \begin{align}
-\mathbb{E}_{p^*}[\vec\theta^2] &= \int \vec\theta^2 p^*(\vec\theta) ~ d\vec\theta
+\mathbb{E}_{p^*}[\vec\theta^2] &= \int \vec\theta^2 \, p^*(\vec\theta) ~ d\vec\theta
 \\
-&= w_0^* \int \vec\theta^2 Dir(\vec{\theta}; \vec{\alpha}) ~ d\vec\theta +
-	\sum_j w_j^* \int \vec\theta^2 Dir(\vec{\theta}; \vec{\alpha} + \vec{\delta}_j)
+&= w_0^* \int \vec\theta^2 \, Dir(\vec{\theta};\, \vec{\alpha}) ~ d\vec\theta +
+	\sum_j w_j^* \int \vec\theta^2 \, Dir(\vec{\theta};\, \vec{\alpha} + \vec{\delta}_j)
 	 ~ d\vec\theta
 \\
-&= w_0^* \mathbb{E}_{Dir(\vec\alpha)}[\vec\theta^2] +
-	\sum_j w_j^* \mathbb{E}_{Dir(\vec\alpha + \vec{\delta}_j)}[\vec\theta^2]
+&= w_0^* \, \mathbb{E}_{Dir(\vec\alpha)}[\vec\theta^2] +
+	\sum_j w_j^* \, \mathbb{E}_{Dir(\vec\alpha + \vec{\delta}_j)}[\vec\theta^2]
 \end{align}
 
 Opět získáváme vážený součet středních hodnot podle Dirichletovských rozdělení.
@@ -402,12 +406,12 @@ Střední hodnotu druhé mocniny proměnné podle Dirichletovského rozdělení
 lze opět jednoduše odvodit z definice.
 \begin{align}
 \mathbb{E}_{Dir(\vec\alpha)}[x_i^2] &=
-	\int x_i^2 Dir(\vec x; \vec\alpha) d\vec x
+	\int x_i^2 \, Dir(\vec x; \, \vec\alpha) \; \mathrm{d}\vec x
 \\
 &=
-	\int x_i^2 \frac{\Gamma(\alpha_0)}
-			   {\prod_{j=1}^N \Gamma(\alpha_j)}
-		\prod_{j=1}^N x_j^{\alpha_j - 1} d\vec x
+	\int x_i^2 \, \frac{\Gamma(\,\alpha_0\,)}
+			   {\prod_{j=1}^N \, \Gamma(\,\alpha_j\,)} \;
+		\prod_{j=1}^N x_j^{\alpha_j - 1} \; \mathrm{d}\vec x
 \end{align}
 
 Nyní jsme v podobné situaci jako v~(\ref{eq:4}). Budeme postupovat stejně,
@@ -415,34 +419,34 @@ vyjádříme novou Dirichletovskou distribuci.
 
 \begin{align}
 \mathbb{E}_{Dir(\vec\alpha)}[x_i^2] &=
-\int \frac{\Gamma(\alpha_0 + 2) \alpha_i (\alpha_i + 1)}
-		{\alpha_0 (\alpha_0 + 1) \Gamma(\alpha_i + 2) \prod_{j \ne i} \Gamma(\alpha_j)}
-    x_i^{\alpha_i + 1} \prod_{j \ne i} x_j^{\alpha_j - 1}
+\int \frac{\Gamma(\,\alpha_0 + 2\,) \; \alpha_i \; (\,\alpha_i + 1\,)}
+		{\alpha_0 \; (\,\alpha_0 + 1\,) \; \Gamma(\,\alpha_i + 2\,) \; \prod_{j \ne i} \; \Gamma(\,\alpha_j\,)} \;
+    x_i^{\alpha_i + 1} \, \prod_{j \ne i} \, x_j^{\alpha_j - 1} \;
 \mathrm{d}\vec x
 \\
-&= \frac{\alpha_i (\alpha_i + 1)}
-		{\alpha_0 (\alpha_0 + 1)}
-	\int \frac{\Gamma(\beta_0)}
-		{\prod_i \Gamma(\beta_i)}
-        \prod_i x_i^{\beta_i - 1} 
+&= \frac{\alpha_i \; (\,\alpha_i + 1\,)}
+		{\alpha_0 \; (\,\alpha_0 + 1\,)} \,
+	\int \frac{\Gamma(\,\beta_0\,)}
+		{\prod_i \,\Gamma(\,\beta_i\,)} \;
+        \prod_i \, x_i^{\beta_i - 1} \;
     \mathrm{d}\vec x
 \\
-&= \frac{\alpha_i (\alpha_i + 1)}
-		{\alpha_0 (\alpha_0 + 1)}
-	\int Dir(\vec x; \vec\beta)
+&= \frac{\alpha_i \; (\,\alpha_i + 1\,)}
+		{\alpha_0 \; (\,\alpha_0 + 1\,)}
+	\int Dir(\vec x;\, \vec\beta)\;
     \mathrm{d}\vec x
 \\
-&= \frac{\alpha_i (\alpha_i + 1)}
-		{\alpha_0 (\alpha_0 + 1)}
+&= \frac{\alpha_i \; (\,\alpha_i + 1\,)}
+		{\alpha_0 \; (\,\alpha_0 + 1\,)}
 \end{align}
 
-Vyjádřili jsme $\Gamma(\alpha_0)$ a $\Gamma(\alpha_i)$ s pomocí $\Gamma(\alpha_0 + 2)$ a $\Gamma(\alpha_i + 2)$
+Vyjádřili jsme $\Gamma(\,\alpha_0\,)$ a $\Gamma(\,\alpha_i\,)$ s pomocí $\Gamma(\,\alpha_0 + 2\,)$ a $\Gamma(\,\alpha_i + 2\,)$
 \begin{align}
-\Gamma(\alpha_0) = \frac{\Gamma(\alpha_0 + 2)}
-				{\alpha_0(\alpha_0 + 1)}
+\Gamma(\alpha_0) = \frac{\Gamma(\,\alpha_0 + 2\,)}
+				{\alpha_0\;(\,\alpha_0 + 1\,)}
 \quad \quad
-\Gamma(\alpha_i) = \frac{\Gamma(\alpha_i + 2)}
-				{\alpha_i(\alpha_i + 1)}
+\Gamma(\alpha_i) = \frac{\Gamma(\,\alpha_i + 2\,)}
+				{\alpha_i \; (\,\alpha_i + 1\,)}
 \end{align}
 
 Následně jsme vytvořili nové parametry $\vec\beta$:
@@ -487,7 +491,7 @@ Parametry aproximovaného rozdělení nalezneme následovně
 &=
 \alpha_0
 \\
-\alpha_i &= \mathbb{E}[X_i] \alpha_0 \label{eq:6}
+\alpha_i &= \mathbb{E}[X_i] \;\alpha_0 \label{eq:6}
 \end{align}
 
 Z rovnice~(\ref{eq:5}) vypočítáme sumu všech parametrů $\alpha_0$. 
@@ -531,8 +535,8 @@ V algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation uprave
         \hskip\algorithmicindent
         $m_{f_{\tilde{\beta}} \rightarrow x_j} =
             \sum_{\vec{x}: x_j = \tilde{x}_j}
-                \mathbb{E}_{q^\backslash}(\theta_{\rho(\vec{x^\prime}), x_0})
-                \prod_{i \ne j}
+                \mathbb{E}_{q^\backslash}(\,\theta_{\rho(\vec{x^\prime}), x_0}\,)\,
+                \prod_{i \ne j}\,
                     q^\backslash(x_i)$
     \EndFor
 
@@ -562,7 +566,7 @@ V algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation uprave
         \State
             \hskip\algorithmicindent
             $q^\backslash(x_i) =
-                \prod_{\beta \ne \tilde\beta} m_{f_\beta \rightarrow x_i}(x_i)$
+                \prod_{\beta \ne \tilde\beta} \, m_{f_\beta \rightarrow x_i}(x_i)$
     \EndFor
 \Until{konvergence}
 \end{algorithmic}

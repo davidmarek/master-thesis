@@ -4,23 +4,23 @@
 
 V této kapitole představíme Bayesovské sítě, grafický model pro efektivní reprezentaci pravděpodobnostních rozdělení a nezávislostí mezi náhodnými proměnnými.
 Bayesovská síť zároveň vytváří koncept pro inferenci, tedy zodpovídání dotazů nad proměnnými v síti.
-Ukážeme si několik přístupů k inferenci, nejprve naivní výpočet vycházející přímo z definice.
+Ukážeme si několik přístupů k inferenci, začneme naivním výpočtem vycházejícím přímo z definice.
 Následně využijeme vlastností sítě a konceptů dynamického programování pro jeho zlepšení.
 Analýzou složitosti exaktní inference dojdeme k závěru, že pro větší a komplexnější modely bude třeba se uchýlit k aproximacím.
 
 Nejprve aproximujeme sdruženou pravděpodobnostní distribuci součinem marginálních distribucí a představíme Loopy Belief Propagation algoritmus.
 Stále můžeme použít pouze diskrétní pravděpodobnostní distribuce se známými parametry.
 Pro učení parametrů lze použít Expectation Maximization metodu, pro dialogové systémy je ovšem těžké získat dostatek učících dat.
-Dostaneme se k metodě Expectation Propagation, která je zobecněním LBP a je možné ji použít pro libovolné rozdělení.
+Dostaneme se k metodě Expectation Propagation, která je zobecněním LBP a je možné ji použít pro libovolné pravděpodobnostní rozdělení.
 Díky ní budeme schopní vytvořit generativní model pro aktualizaci dialogového stavu, který bude pracovat stejně jako LBP, ale bude schopen adaptace za běhu dialogového systému.
 
 \section{Bayesovské sítě}
 \label{sec:bn}
 
 Bayesovské sítě jsou pravděpodobnostní grafický model, který využívá podmíněných nezávislostí pro úspornou reprezentaci sdružené pravděpodobnosti.
-Bayesovská sít je orientovaný acyklický graf, jeho vrcholy jsou náhodné proměnné a hrany odpovídají přímé závislosti jednoho uzlu na druhý.
+Bayesovská sít je orientovaný acyklický graf, jehož vrcholy jsou náhodné proměnné a hrany odpovídají přímé závislosti jednoho uzlu na druhý.
 Pro každou náhodnou proměnnou v síti platí, že její pravděpodobnost je jednoznačně určena jejími rodiči v grafu.
-Podmíněná pravděpodobnostní distribuce (CPD) proměnné $X$ popisuje pravděpodobnost proměnné $X$ dáno jejími rodiče, $P(X \mid parents(X))$.
+Podmíněná pravděpodobnostní distribuce (CPD) proměnné $X$ popisuje pravděpodobnost proměnné $X$ dáno jejími rodiči, $P(X \mid parents(X))$.
 Pokud proměnná nemá žádné rodiče, pak její podmíněná pravděpodobnostní distribuce je ekvivalentní marginální pravděpodobnostní distribuci.
 
 Příklad Student~\cite{koller2009probabilistic}: firma zvažuje, zda-li přijme studenta.
@@ -29,7 +29,7 @@ Má však výsledek studentových SAT testů, které ovšem nemusí stačit pro 
 Požadují tedy i doporučení (D) od jednoho z učitelů.
 Učitel studentovi napíše doporučující dopis na základě známky (Z), kterou student získal z jeho předmětu.
 Předměty se ovšem liší v obtížnosti (O) a tak je studentova známka z předmětu závislá nejen na jeho inteligenci, ale také na obtížnosti předmětu.
-Grafický model reprezentující tento problém je vyobrazen na obrázku~\ref{fig:student}.
+Grafický model reprezentující tento problém je na obrázku~\ref{fig:student}.
 \begin{figure}
 \begin{center}
 \begin{tikzpicture}
@@ -59,7 +59,7 @@ Grafický model reprezentující tento problém je vyobrazen na obrázku~\ref{fi
 
 V tomto modelu je několik nezávislostí. Obtížnost předmětu a inteligence studenta jsou zjevně nezávislé.
 Studentova známka z předmětu je závislá na obtížnosti předmětu a inteligenci studenta, ale je podmíněně nezávislá na jeho výsledku ze SAT, dáno studentovou inteligencí.
-Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentovou známka.
+Konečně doporučení, které student obdrží, je podmíněně nezávislé na všech ostatních proměnných, dáno studentovou známkou.
 
 Sdruženou nezávislost tohoto modelu lze zapsat ve formě podmíněných pravděpodobnostních distribucí s pomocí řetízkového pravidla.
 \begin{equation}
@@ -67,23 +67,24 @@ P(O, I, Z, S, D) = P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
 \end{equation}
 
 Předpokládejme, že obtížnost předmětu, inteligence studenta, doporučující dopis a výsledek SAT jsou binární proměnné.
-Známka z předmětu pak je ternární proměnná.
+Známka z předmětu je ternární proměnná.
 Pokud bychom zapsali sdruženou pravděpodobnost ve formě tabulky, tak se dostaneme k 48 položkám.
-Díky rozdělení do podmíněných pravděpodobnostních rozložení, které nám bayesovská síť poskytuje, se dostáváme k $2 + 2 + 12 + 4 + 6 = 26$ položkám.
-Tedy i v tomto jednoduchém modelu dochází k značné úspoře.
+Díky rozdělení do podmíněných pravděpodobnostních distribucí, které nám Bayesovská síť poskytuje, se dostáváme k $2 + 2 + 12 + 4 + 6 = 26$ položkám.
+Tedy i v tomto jednoduchém modelu dochází ke značné úspoře.
 
 \section{Inference v Bayesovských sítích}
 
 Bayesovské sítě reprezentují pravděpodobnostní model a umožňují nám nad ním provádět dotazy.
 Můžeme se například ptát na marginální pravděpodobnost jednotlivých proměnných. 
-Tu získáme marginalizací sdružené pravděpodobnosti, pokud vezmeme příklad se studentem a budeme chtít znát marginální pravděpodobnost známek, musíme vysčítat všechny ostatní proměnné.
+Tu získáme marginalizací sdružené pravděpodobnosti.
+V příkladu se studentem můžeme chtít znát marginální pravděpodobnost známek. Pro její nalezení musíme ze sdružené pravděpodobnosti vyysčítat všechny ostatní proměnné.
 
 \begin{equation}
 P(Z) = \sum_{O, I, S, D} P(D \mid Z) P(Z \mid O, I) P(SAT \mid I) P(O) P(I)
 \end{equation}
 
 Další a asi nejčastější dotaz nastává, pokud některé náhodné proměnné pozorujeme. 
-Pak chceme znát pravděpodobnost jiných proměnných dáno naším pozorováním $P(\vec{X} \mid \vec{E} = \vec{e})$, kde $\vec{X}$ jsou dotazované proměnné, $\vec{E}$ jsou pozorované proměnné a $\vec{e}$ jsou pozorované hodnoty.
+Pak chceme znát pravděpodobnost jiných proměnných dáno naším pozorováním, $P(\vec{X} \mid \vec{E} = \vec{e})$, kde $\vec{X}$ jsou dotazované proměnné, $\vec{E}$ jsou pozorované proměnné a $\vec{e}$ jsou pozorované hodnoty.
 Z definice podmíněné pravděpodobnosti dostáváme
 
 \begin{equation}
@@ -98,7 +99,7 @@ Pokud tedy množinu všech proměnných bez $\vec{X}$ a $\vec{E}$ označíme $\m
 P(\vec{X} = \vec{x}, \vec{E} = \vec{e}) = \sum_{\vec{w}} P(\vec{x}, \vec{e}, \vec{w})
 \end{equation}
 
-Pro výpočet normalizační konstanty $P(\vec{E})$ musíme opět marginalizovat sdruženou pravděpodobnost, anebo si můžeme povšimnout, že platí
+Pro výpočet normalizační konstanty $P(\vec{E})$ musíme opět marginalizovat sdruženou pravděpodobnost anebo si můžeme povšimnout, že platí
 \begin{equation}
 P(\vec{E} = \vec{e}) = \sum_{\vec{x}} P(\vec{x}, \vec{e})
 \end{equation}
@@ -106,36 +107,36 @@ a tedy můžeme použít už vypočítané hodnoty.
 
 \subsection{Exaktní inference}
 
-V předchozí části jsme viděli, že pomocí definice podmíněné pravděpodobnosti a marginalizace sdružené pravděpodobnosti lze najít odpověď na libovolný dotaz. 
+V předchozí části jsme viděli jak lze pomocí definice podmíněné pravděpodobnosti a marginalizace sdružené pravděpodobnosti najít odpověď na libovolný dotaz. 
 Nyní si ukážeme algoritmus, který využívá struktury Bayesovské sítě pro inferenci a navíc díky metodám dynamického programování umožňuje samotný výpočet urychlit.
 Nakonec ovšem zjistíme, že pro velké sítě, které nás většinou zajímají nejvíce, nám přesná inference nebude stačit a musíme se uchýlit k aproximacím.
 
 Začneme s inferencí v jednoduchém modelu $A \rightarrow B \rightarrow C \rightarrow D$.
 Sdružená pravděpodobnost $P(A, B, C, D)$ je součinem jednotlivých podmíněných pravděpodobnostních distribucí
 \begin{equation}
-P(A, B, C, D) = P(D \mid C) P(C \mid B) P(B \mid A) P(A)
+P(A, B, C, D) = P(D \mid C)\; P(C \mid B) \;P(B \mid A) \;P(A)
 \end{equation}
 
 Pokud nyní budeme chtít spočítat marginální distribuci $D$, tak musíme marginalizovat všechny ostatní proměnné
 \begin{equation}
-P(D) = \sum_{A, B, C} P(D \mid C) P(C \mid B) P(B \mid A) P(A)
+P(D) = \sum_{A, B, C} P(D \mid C) \; P(C \mid B) \; P(B \mid A) \;P(A)
 \end{equation}
 
 Můžeme si povšimnout, že spousta členů se bude počítat vícekrát.
 Využitím metod dynamického programování a přeuspořádáním sum si můžeme mezivýsledky uložit a použít vícekrát.
 \begin{equation}
-P(D) = \sum_C P(D \mid C) \sum_B P(C \mid B) \sum_A P(B \mid A) P(A)
+P(D) = \sum_C \, P(D \mid C) \,\sum_B \,P(C \mid B) \,\sum_A \,P(B \mid A) \,P(A)
 \end{equation}
 
-Při výpočtu pak nejprve spočítáme $\psi_1(A, B) =  P(B \mid A) P(A)$,  pak vysčítáme proměnnou $A$ a získáme $\tau_1(B) = \sum_A \psi_1(A, B)$.
+Při výpočtu pak nejprve spočítáme $\psi_1(A, B) =  P(B \mid A) \, P(A)$,  pak vysčítáme proměnnou $A$ a získáme $\tau_1(B) = \sum_A \,\psi_1(A, B)$.
 Pokračujeme obdobně
 \begin{align}
-    \psi_2(B, C) &= P(C \mid B) \tau_1(B) \\
+    \psi_2(B, C) &= P(C \mid B) \,\tau_1(B) \\
     \tau_2(C) &= \sum_B \psi_2(B, C)
 \end{align}
 A nakonec spočítáme finální marginální pravděpodobnost
 \begin{align}
-    \psi_3(D, C) &= P(D \mid C) \tau_2(C) \\
+    \psi_3(D, C) &= P(D \mid C) \, \tau_2(C) \\
     P(D) &= \sum_C \psi_3(D, C)
 \end{align}
 
@@ -154,12 +155,12 @@ Definujeme součin faktorů $\phi_1 \times \phi_2$ jako faktor $\psi: Val(\vec{X
 \psi(\vec{X}, \vec{Y}, \vec{Z}) = \phi_1(\vec{X}, \vec{Y}) \cdot \phi_2(\vec{Y}, \vec{Z})
 \end{equation*}
 
-Násobíme prvky, které mají stejné ohodnocení společných proměnných $\vec{Y}$.
+Násobíme prvky se stejným ohodnocením společných proměnných $\vec{Y}$.
 Stejný princip použijeme pro všechny matematické operace.
 
 Nechť $\vec{X}$ je množina náhodných proměnných a $Y \not\in \vec{X}$ náhodná proměnná. 
-Nechť $\phi(\vec{X}, Y)$ je faktor.
-Definujeme marginalizaci $Y$ v $\phi$, značenou $\sum_Y \phi$, jako faktor $\psi$ s doménou $\vec{X}$ takový, že
+Nechť $\phi(\vec{X}, \,Y)$ je faktor.
+Definujeme marginalizaci $Y$ ve $\phi$, značenou $\sum_Y \phi$, jako faktor $\psi$ s doménou $\vec{X}$ takový, že
 \begin{equation*}
     \psi(\vec{X}) = \sum_Y \phi(\vec{X}, Y)
 \end{equation*}
@@ -170,7 +171,7 @@ Proto platí komutativita $\phi_1 \cdot \phi_2 = \phi_2 \cdot \phi_1$ a $\sum_X 
 Dále platí asociativita součinu $(\phi_1 \cdot \phi_2) \cdot \phi_3 = \phi_1 \cdot (\phi_2 \cdot \phi_3)$.
 Nakonec můžeme vyměnit sumu a součin, pokud $X \not\in Dom(\phi_1)$, potom $\sum_X (\phi_1 \cdot \phi_2) = \phi_1 \sum_X \phi_2$.
 
-Sdruženou pravděpodobnost z minulého příkladu tedy můžeme přepsat do formy faktorů.
+Sdruženou pravděpodobnost z minulého příkladu tedy můžeme přepsat do formy faktorů
 \begin{equation}
     P(A, B, C, D) = \phi_A \cdot \phi_B \cdot \phi_C \cdot \phi_D
 \end{equation}
@@ -196,7 +197,7 @@ Faktory $\phi_C$ a $\phi_D$ neobsahují proměnnou $A$ a tedy je můžeme vytkno
 Stejně tak faktor $\phi_D$ neobsahuje proměnnou $B$ a opět jej můžeme vytknout před sumu přes $B$.
 Tyto úpravy můžeme provádět v libovolném pořadí, pokud vždy platí, že vysčítáme proměnnou $X$ až poté, co spolu vynásobíme všechny faktory, které ji obsahují.
 
-V obecnosti vždy počítáme výraz, který je ve tvaru
+V obecnosti vždy počítáme výraz ve tvaru
 \[
 \sum_X \prod_{\phi \in \Phi} \phi.
 \]
@@ -204,8 +205,9 @@ V obecnosti vždy počítáme výraz, který je ve tvaru
 Z tohoto také vychází název pro tuto metodu: sum-product.
 Jednoduchý algoritmus pro exaktní inferenci využívající tuto metodu se nazývá eliminace proměnných.
 Základní myšlenka je, že máme dán seznam náhodných proměnných v pořadí, v jakém se mají eliminovat.
-Pro eliminaci proměnné je třeba nejprve vynásobit všechny faktory, které ji obsahují a následně ji vysčítat.
-Tak získáme faktor, který už tuto proměnnou neobsahuje, tedy jsme ji eliminovali.
+Pro eliminaci proměnné $X$ je třeba nejprve vynásobit všechny faktory obsahující $X$ a následně $X$ z tohoto součinu vysčítat.
+Tak získáme faktor, který už tuto proměnnou neobsahuje.
+Tedy jsme ji eliminovali.
 Eliminace proměnných je popsána v algoritmu~\ref{alg:ve}.
 
 \begin{algorithm}[H]
@@ -251,22 +253,23 @@ Nyní provedeme analýzu algoritmu eliminace proměnných.
 Předpokládejme, že na vstupu je $n$ proměnných.
 Bayesovská síť obsahuje pro každou proměnnou jeden faktor.
 Pro jednoduchost budeme předpokládat, že algoritmus bude eliminovat všechny proměnné.
-Běh algoritmu se skládá z jednotlivých eliminačních kroků, při kterých je vždy eliminována jedna proměnná.
+Běh algoritmu se skládá z jednotlivých eliminačních kroků, v každém je eliminována jedna proměnná.
 
-Při jednom eliminačním kroku je vybrána proměnná $X_i$, všechny faktory, které ji obsahují jsou vynásobeny a vytvoří jeden velký faktor $\psi_i$.
+V eliminačním kroku je vybrána proměnná $X_i$. 
+Všechny faktory, které ji obsahují jsou vynásobeny a vytvoří jeden velký faktor $\psi_i$.
 Proměnná $X_i$ je pak vysčítána z tohoto faktoru.
 Počet operací pro jeden eliminační krok tedy závisí na velikosti faktoru $\psi_i$, označme ji $N_i$.
 Maximum z velikostí faktorů označme $N_{max} = max_i N_i$.
 
 Nyní se zaměříme na počet násobení.
-Celkem vznikne $n+m$ faktorů, kde $m$ je počet faktorů, které vznikly vysčítáním proměnné.
-Každý z těchto faktorů je zahrnut do součinu pouze jednou, pokud je eliminována nějaká proměnná, kterou obsahuje.
+Celkem vznikne $n+m$ faktorů, z toho $m$ při vysčítání proměnné.
+Každý z těchto faktorů je zahrnut do součinu pouze jednou, když je eliminována nějaká proměnná, kterou obsahuje.
 Cena násobení faktorů pro vznik $\psi_i$ je nejvýše $N_i$.
 Celkový počet násobení tedy bude nejvýše $(n+m)N_{max}$ což je $\mathcal{O}(nN_{max})$.
 
 Pokud $k$ je maximum z velikostí domén proměnných, pak velikost faktoru obsahujícího $n$ proměnných může být až $k^n$.
-Složitost eliminace proměnných je tedy dominována velikostí faktorů, které vznikají při výpočtu a je exponenciální.
-Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP těžký~\cite{arnborg1987complexity}.
+Složitost eliminace proměnných je tedy dominována velikostí faktorů vznikajících při výpočtu a je exponenciální.
+Navíc bylo dokázáno, že výběr nejlepšího pořadí proměnných pro eliminaci je NP-těžký~\cite{arnborg1987complexity}.
 
 \subsection{Posílání zpráv ve faktor grafu}
 
@@ -282,7 +285,7 @@ Je tedy zbytečné počítat celou sdruženou pravděpodobnost, abychom z ní pa
 
 Pro výpočet s faktorizovanou distribucí si zavedeme novou datovou strukturu, tzv. faktor graf.
 Faktor graf je bipartitní graf, kde jednu partitu tvoří faktory a druhou partitu tvoří náhodné proměnné.
-Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, který ji obsahuje.
+Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, v jehož doméně leží.
 
 \begin{figure}[H]
 \begin{center}
@@ -313,7 +316,7 @@ Hrany ve faktor grafu vedou vždy mezi proměnnou a faktorem, který ji obsahuje
 
 \end{tikzpicture}
 \end{center}
-\caption{Příklad faktor grafu se třemi náhodnými proměnnými $X_1, X_2, X_3$ a třemi faktory $f_a, f_b, f_c$.}
+\caption{Příklad faktor grafu se čtyřmi náhodnými proměnnými $X_1, X_2, X_3, X_4$ a třemi faktory $f_a, f_b, f_c$.}
 \end{figure}
 
 Nejprve začneme s inferencí na stromech.
@@ -324,7 +327,7 @@ Pokud zafixujeme jednu náhodnou proměnnou $X$ ve faktor grafu, pak sdruženou 
 \end{equation}
 kde $ne(X)$ jsou faktory obsahující proměnnou $X$ (tedy sousedi ve faktor grafu), $F_s$ je součin všech faktorů v podstromu určeném faktorem $f_s$ a $\vec{X}_s$ je množina všech proměnných v daném podstromu.
 
-Pro výpočet marginální pravděpodobnosti $X$ substituujeme~(\ref{eq:fs}) do výpočtu marginální pravděpodobnosti ze sdružené a po výměně sumy a produktu dostaneme
+Pro výpočet marginální pravděpodobnosti $X$ substitujeme~(\ref{eq:fs}) do výpočtu marginální pravděpodobnosti ze sdružené a po výměně sumy a produktu dostaneme
 \begin{align}
 P(X) &= \prod_{s \in ne(X_i)} \sum_{\vec{X}_s} F_s(X, \vec{X}_s)
 \\
@@ -337,7 +340,7 @@ Zavedli jsme funkce
     \mu_{f_s \rightarrow X} \equiv \sum_{\vec{X}_s} F_s(X, \vec{X}_s),
 \label{eq:defmsgfx}
 \end{equation}
-které můžeme nazývat zprávami z faktoru $f_s$ do proměnné $X$.
+budeme je nazývat zprávami z faktoru $f_s$ do proměnné $X$.
 
 Každé $F_s(X, \vec{X}_s)$ je popsáno podgrafem faktor grafu a tedy může být znova faktorizováno.
 Namísto proměnné $X$ nyní vezmeme faktor $f_s$.
@@ -369,10 +372,10 @@ Zavedli jsme další funkce
     \mu_{X_m \rightarrow f_s}(X_m) \equiv \sum_{\vec{X}_{sm}} G_m(X_m, \vec{X}_{sm}),
 \label{eq:defmsgxf}
 \end{equation}
-které budeme nazývat zprávami z proměnné $X_m$ do faktoru $f_s$.
+budeme je nazývat zprávami z proměnné $X_m$ do faktoru $f_s$.
 
 Z rovnice~\ref{eq:margx} vidíme, že marginální pravděpodobnost proměnné vypočítáme jako součin zpráv ze všech okolních faktorů.
-Každou z těchto zpráv můžeme spočítat jako součin faktoru a zpráv přicházejících z proměnných, které s tímto faktorem sousedí, kromě proměnné, které chceme zprávu posílat. Zbývá nám tedy zjistit v jakém tvaru jsou zprávy z proměnných do faktoru.
+Každou z těchto zpráv můžeme spočítat jako součin faktoru a zpráv přicházejících ze sousedních proměnných, kromě proměnné, které chceme zprávu posílat. Zbývá nám tedy zjistit v jakém tvaru jsou zprávy z proměnných do faktoru.
 
 Stejně jako u $F_s(X, \vec{X}_s)$ nám tady $G_m(X_m, \vec{X}_{sm})$ definuje podgraf faktor grafu. 
 V kořeni tohoto podgrafu leží proměnná $X_m$ a tím se dostáváme na už známý případ.
@@ -392,7 +395,7 @@ Přepsáno ve formě zpráv
 \end{align}
 Zpráva z náhodné proměnné je tedy součinem zpráv ze všech ostatních faktorů.
 
-Zprávy tedy dokážeme počítat rekurzivně, chybí nám ovšem pravidla pro zprávy z uzlů, které jsou listy.
+Zprávy tedy dokážeme počítat rekurzivně, chybí nám ovšem pravidla pro zprávy z listů.
 V případě faktoru je odchozí zpráva ekvivalentní faktoru.
 \begin{equation}
     \mu_{f \rightarrow X}(X) = f(X)
@@ -401,11 +404,11 @@ V případě náhodné proměnné je odchozí zpráva uniformní
 \begin{equation}
     \mu_{X \rightarrow f}(X) = 1
 \end{equation}
-Pro pozorovanou proměnnou je zpráva vždy rovna pozorované hodnotě, bez ohledu na sousední faktory.
+Pro pozorovanou proměnnou je zpráva vždy rovna pozorované hodnotě bez ohledu na sousední faktory.
 
 \subsection{Belief Propagation}
 
-Algoritmus exaktní inference na stromech s pomocí posílání zpráv se nazývá belief propagation~\cite{pearl1988probabilistic}.
+Algoritmus exaktní inference na stromech s pomocí posílání zpráv se nazývá Belief Propagation~\cite{pearl1988probabilistic}.
 Zpráva z vrcholu faktor grafu může být poslána do jiného vrcholu, až když byly obdrženy zprávy ze všech ostatních vrcholů.
 Jakmile vrchol obdržel zprávy ze všech vrcholů, lze spočítat jeho marginální pravděpodobnost.
 Strom můžeme zakořenit v libovolné náhodné proměnné a posílat zprávy z listů do kořene.
@@ -447,7 +450,7 @@ Tomuto se říká dopředný krok propagace.
 \caption{Směr posílání zpráv pro strom zakořeněný ve vrcholu $X_3$ v dopředném kroce.}
 \end{figure}
 
-Belief propagation algoritmus tedy umožňuje na stromech spočítat marginální pravděpodobnost jedné proměnné s linárním počtem poslaných zpráv.
+Belief Propagation algoritmus tedy umožňuje na stromech spočítat marginální pravděpodobnost jedné proměnné s lineárním počtem poslaných zpráv.
 Při rozšíření na spočítání marginální pravděpodobnosti všech proměnných není třeba algoritmus pouštět $n$-krát.
 Stačí si uvědomit, že všem vrcholům chybí pouze zpráva od faktoru na cestě ke kořenu.
 A my můžeme z kořene poslat zprávy zpět k listům hned, jak obdržíme všechny příchozí zprávy.
@@ -494,20 +497,21 @@ Po propagaci všech zpráv až k listům už každá proměnná získala zprávy
 \label{sec:lbp}
 
 Algoritmus Belief Propagation funguje pro inferenci na stromech.
-Hlavní důvod proč nelze použít Belief Propagation na obecných grafech je, že můžeme narazit na cyklus v grafu, což znamená, že žádný z vrcholů v tomto cyklu nebude nikdy mít dostatek příchozích zpráv, aby mohl nějakou zprávu odeslat.
+Hlavním důvodem, proč nelze použít Belief Propagation na obecných grafech je, že můžeme narazit na cyklus v grafu.
+Źádný z vrcholů v tomto cyklu nebude nikdy mít dostatek příchozích zpráv, aby mohl nějakou zprávu odeslat.
 
 Algoritmus Loopy Belief Propagation řeší tento problém relaxací podmínky na příchozí zprávy.
 Pro odeslání zprávy do uzlu není třeba znát zprávy ze všech ostatních sousedních vrcholů.
 Chybějící zprávy jsou nastaveny na jedničku.
 Loopy Belief Propagation je iterativní algoritmus.
-V grafu nemusí existovat vrchol, který může posílat zprávu k nějakému ze svých sousedů.
-Je tedy třeba vybrat vrchol podle nějaké strategie a z něj poslat zprávy do všech sousedních vrcholů.
-V další iteraci je pak vybrán zase jiný vrchol, který bude posílat zprávy.
+V grafu nemusí existovat vrchol, který by mohl poslat zprávu k nějakému ze svých sousedů.
+Je tedy třeba vybrat vrchol podle jiné strategie a z něj poslat zprávy do všech sousedních vrcholů.
+V další iteraci je pak vybrán zase jiný vrchol.
 Iterace končí ve chvíli, kdy se už nemění hodnoty zpráv.
 
-Vzhledem k tomu, že posílané zprávy už neodpovídají skutečným faktorům, je důležitá otázka, zda-li Loopy Belief Propagation vůbec nalezne správné marginální pravděpodobnosti.
-Existují podmínky za kterých algoritmus bude konvergovat~\cite{tatikonda2002loopy}.
-V obecném případě ovšem může algoritmus konvergovat ke špatným pravděpodobnostem, anebo nemusí konvergovat vůbec a pak dochází k oscilacím.
+Vzhledem k tomu, že posílané zprávy už neodpovídají skutečným faktorům, je důležitá otázka, zda Loopy Belief Propagation vůbec nalezne správné marginální pravděpodobnosti.
+Existují podmínky, za kterých algoritmus bude konvergovat~\cite{tatikonda2002loopy}.
+V obecném případě může algoritmus konvergovat ke špatným pravděpodobnostem anebo nemusí konvergovat vůbec a pak dochází k oscilacím.
 Pokud algoritmus nekonverguje ke správným pravděpodobnostem, tak není ani možné se k nim přiblížit nebo je odvodit z oscilací~\cite{murphy1999loopy}.
 V praxi ovšem k problémům většinou nedochází a inference konverguje v rozumném čase.
 
@@ -579,18 +583,20 @@ V praxi ovšem k problémům většinou nedochází a inference konverguje v roz
 
 Popis Loopy Belief Propagation je v algoritmu~\ref{alg:lbp}.
 Při inferenci ve faktor grafu je nejprve třeba inicializovat všechny zprávy.
-Posílání zpráv budeme iterovat dokud zprávy nekonvergují, anebo můžeme nastavit pevný počet iterací.
+Posílání zpráv budeme iterovat, dokud zprávy nekonvergují.
+Druhou možností je nastavit pevný počet iterací.
 Pak vybíráme vrcholy a z každého pošleme zprávu do všech okolních.
 Způsobem výběru vrcholů se budeme zabývat později.
-I náhodný výběr vrcholů povede k výsledku, dodání externí informace či chytřejší heuristiky ovšem může výpočet výrazně urychlit.
+I náhodný výběr vrcholů povede k výsledku.
+Dodání externí informace či chytřejší heuristiky ovšem může výpočet výrazně urychlit.
 
-Poslání zprávy se liší podle toho, zda-li posíláme z proměnné do faktoru, anebo naopak.
-V obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů, kromě toho, do kterého zprávu posíláme.
-Při posílání zprávy z faktoru $f$ do proměnné musíme navíc vynásobit příchozí zprávy hodnotou $f$, následně vysčítat všechny proměnné, kromě té, které zprávu posíláme.
+Poslání zprávy se liší podle toho, zda-li posíláme z proměnné do faktoru anebo naopak.
+V obou případech vynásobíme příchozí zprávy ze všech sousedních vrcholů kromě toho, do kterého zprávu posíláme.
+Při posílání zprávy z faktoru $f$ do proměnné $X$ musíme navíc vynásobit příchozí zprávy hodnotou $f$, následně vysčítat všechny proměnné až na $X$.
 
 Ve faktor grafu se tedy zprávy šíří pouze přes pravděpodobnostní rozdělení jedné proměnné.
-To právě může vést k oscilacím anebo konvergenci ke špatným hodnotám. 
-Příkladem je například skrytý Markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
+Právě to může vést k oscilacím nebo konvergenci ke špatným hodnotám. 
+Příkladem je Skrytý Markovský model se dvěma skrytými binárními proměnnými a pozorováním pro každou skrytou proměnnou.
 Pokud je mezi proměnnými závislost XOR, pak nikdy nebudeme pozorovat $(1, 1)$, ale přesto bude každá proměnná konvergovat k rovnoměrnému rozdělení. A tedy sdružená pravděpodobnost pro pozorování $(1, 1)$ dostane nenulovou pravděpodobnost.
 
 Při počítání zpráv často musíme pronásobit spoustu zpráv z okolních vrcholů.
@@ -602,8 +608,9 @@ Přitom se zprávy zas tak často nemění.
         f_v(\vec{X}) \prod_{u \in ne(v)} \mu_{u \rightarrow v}(u) & \mbox{$v$ je faktor} \\
     \end{cases}
 \end{equation}
-Pak můžeme při odesílání zprávy z vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělit zprávou $\mu_{u \rightarrow v}$, pro faktory marginalizovat, a zpráva je připravena k odeslání.
-$b(v)$ můžeme aktualizovat po výběru vrcholu $v$ pro posílání zpráv, anebo po každém přijetí zprávy.
+Při odesílání zprávy z vrcholu $v$ do vrcholu $u$ pouze $b(v)$ vydělíme zprávou $\mu_{u \rightarrow v}$.
+Pokud je $v$ faktor, pak ještě vysčítáme všechny proměnné kromě $u$ a zpráva je připravena k odeslání.
+Hodnotu $b(v)$ můžeme aktualizovat po výběru vrcholu $v$ pro posílání zpráv nebo po každém přijetí zprávy.
 
 Pro pozorované proměnné je třeba metodu \textsc{Message-To-Factor} upravit tak, aby pouze posílala pozorovanou hodnotu.
 
@@ -611,7 +618,7 @@ Implementace Loopy Belief Algoritmu i se strategiemi pro výběr vrcholů bude p
 
 \section{Propagace s aproximovanými zprávami}
 
-V předchozí sekci byla faktorizována sdružená pravděpodobnost a tak došlo k zjednodušení inference.
+V předchozí sekci byla faktorizována sdružená pravděpodobnost a tak došlo ke zjednodušení inference.
 Mezi jednotlivými vrcholy byly stále posílány exaktní zprávy.
 V této sekci se zaměříme na inferenci v modelech, kde není možné spočítat zprávy exaktně a je třeba je aproximovat.
 Tento problém nastává u některých modelů se spojitými náhodnými proměnnými.

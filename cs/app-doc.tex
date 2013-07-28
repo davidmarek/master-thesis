@@ -1,0 +1,1281 @@
+% !TEX root = prace.tex
+
+\chapter{Dokumentace tříd}
+\label{ap:doc}
+
+\section{Balíček \texttt{alex.infer}}
+\label{alex.infer::doc}\label{alex.infer:balicek-infer}
+
+\subsection{Modul \texttt{factor}}
+\label{alex.infer:modul-factor}\label{alex.infer:module-alex.infer.factor}\index{alex.infer.factor (module)}
+Modul {\hyperref[alex.infer:module-alex.infer.factor]{\code{factor}}} obsahuje implementaci faktorů pro počítání s
+diskrétními pravděpodobnostními rozděleními.
+\index{FactorError}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.FactorError}\pysigline{\strong{exception }\code{alex.infer.factor.}\bfcode{FactorError}}
+Výjimka značící chybu při manipulaci s faktorem.
+
+\end{fulllineitems}
+
+\index{Factor() (třída v alex.infer.factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor}\pysigline{\strong{class }\code{alex.infer.factor.}\bfcode{Factor}}
+Třída reprezentující diskrétní faktor s definovanými operacemi.
+
+Je možné použít všechny standardní matematické operátory (+, -, *, /,
+**). Operátor je možné aplikovat na dva faktory, anebo na faktor a
+skalární hodnotu.
+\index{\_\_init\_\_() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{variables}, \emph{variable\_values}, \emph{prob\_table}\optional{, \emph{logarithmetic=True}}}{}
+Vytvoření nového faktoru.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+    \PY{p}{\PYZob{}}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+    \PY{p}{\PYZcb{}}\PY{p}{)}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{variables} -- seznam proměnných ve faktoru.
+
+\item {} 
+\textbf{variable\_values} -- slovník obsahující pro každou proměnnou seznam možných hodnot.
+
+\item {} 
+\textbf{prob\_table} -- slovník možných přiřazení proměnných a jejich ohodnocení.
+
+\item {} 
+\textbf{logarithmetic} -- přepínač určující, zda-li použít aritmetiku nad zlogaritmovanými hodnotami.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_getitem\_\_() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.__getitem__}\pysiglinewithargsret{\bfcode{\_\_getitem\_\_}}{\emph{assignment}}{}
+Získání ohodnocení pro dané přiřazení.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{p}{[}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{]}
+\PY{g+go}{0.3}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{assignment} -- přiřazení proměnných.
+
+\item[{Vrací}] \leavevmode
+hodnotu dotazovaného přiřazení.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_setitem\_\_() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.__setitem__}\pysiglinewithargsret{\bfcode{\_\_setitem\_\_}}{\emph{assignment}, \emph{value}}{}
+Nastavení hodnoty pro přiřazení proměnných.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{p}{[}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{0.4}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{p}{[}\PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{]}
+\PY{g+go}{0.4}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{assignment} -- přiřazení proměnných.
+
+\item {} 
+\textbf{value} -- nová hodnota.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{pretty\_print() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.pretty_print}\pysiglinewithargsret{\bfcode{pretty\_print}}{\emph{width=79}, \emph{precision=10}}{}
+Vypsání faktoru ve formě tabulky.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{f}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    A               B             Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    a1              b1             0.8}
+\PY{g+go}{    a1              b2             0.2}
+\PY{g+go}{    a2              b1             0.3}
+\PY{g+go}{    a2              b2             0.7}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{width} -- šířka tabulky.
+
+\item {} 
+\textbf{precision} -- počet desetinných míst.
+
+\end{itemize}
+
+\item[{Vrací}] \leavevmode
+řetězec s naformátovanou tabulkou.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_iter\_\_() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.__iter__}\pysiglinewithargsret{\bfcode{\_\_iter\_\_}}{}{}
+Iterace přes jednotlivé hodnoty přiřazení.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{for} \PY{p}{(}\PY{n}{assignment}\PY{p}{,} \PY{n}{value}\PY{p}{)} \PY{o+ow}{in} \PY{n}{f}\PY{p}{:}
+\PY{g+gp}{... }    \PY{k}{print} \PY{n}{assignment}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{\PYZhy{}\PYZgt{}}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{n}{value}
+\PY{g+go}{(\PYZsq{}a1\PYZsq{}, \PYZsq{}b1\PYZsq{}) \PYZhy{}\PYZgt{} 0.8}
+\PY{g+go}{(\PYZsq{}a1\PYZsq{}, \PYZsq{}b2\PYZsq{}) \PYZhy{}\PYZgt{} 0.2}
+\PY{g+go}{(\PYZsq{}a2\PYZsq{}, \PYZsq{}b1\PYZsq{}) \PYZhy{}\PYZgt{} 0.3}
+\PY{g+go}{(\PYZsq{}a2\PYZsq{}, \PYZsq{}b2\PYZsq{}) \PYZhy{}\PYZgt{} 0.7}
+\end{Verbatim}
+
+\end{fulllineitems}
+
+\index{observed() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.observed}\pysiglinewithargsret{\bfcode{observed}}{\emph{assignment\_dict}}{}
+Nastavení pozorovaných hodnot.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{o}{.}\PY{n}{observed}\PY{p}{(}\PY{p}{\PYZob{}}
+\PY{g+gp}{... }    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.6}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.4}\PY{p}{,}
+\PY{g+gp}{... }\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{f}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    A               B             Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    a1              b1             0.6}
+\PY{g+go}{    a1              b2             0.4}
+\PY{g+go}{    a2              b1             0.0}
+\PY{g+go}{    a2              b2             0.0}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{assignment\_dict} -- slovník s pozorovanými přiřazeními a jejich ohodnocením.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{normalize() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.normalize}\pysiglinewithargsret{\bfcode{normalize}}{\optional{\emph{parents}}}{}
+Normalizace hodnot ve faktoru, aby jejich součet byl roven 1.
+
+Pokud je specifikován parametr \code{parents}, pak musí být součet všech
+proměnných, které mají stejné přiřazení pro proměnné z \code{parents}, roven
+1.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{1}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{2}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{o}{.}\PY{n}{normalize}\PY{p}{(}\PY{n}{parents}\PY{o}{=}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{f}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    A               B             Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    a1              b1             0.25}
+\PY{g+go}{    a1              b2             0.75}
+\PY{g+go}{    a2              b1             0.5}
+\PY{g+go}{    a2              b2             0.5}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{parents} -- seznam rodičovských proměnných.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{marginalize() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.marginalize}\pysiglinewithargsret{\bfcode{marginalize}}{\emph{keep}}{}
+Vysčítání proměnných tak, aby zůstaly pouze proměnné z \code{keep}.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{g} \PY{o}{=} \PY{n}{f}\PY{o}{.}\PY{n}{marginalize}\PY{p}{(}\PY{n}{keep}\PY{o}{=}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{g}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{            A                      Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{           a1                       1.0}
+\PY{g+go}{           a2                       1.0}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{keep} -- seznam proměnných, které mají zůstat.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{most\_probable() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.most_probable}\pysiglinewithargsret{\bfcode{most\_probable}}{\optional{\emph{n}}}{}
+Nalezení nejpravděpodobnějších přiřazení proměnných.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{o}{.}\PY{n}{most\PYZus{}probable}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{[(\PYZsq{}a1\PYZsq{}, 0.8), (\PYZsq{}a2\PYZsq{}, 0.2)]}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{n} -- počet požadovaných nejpravděpodobnějších přiřazení.
+
+\item[{Vrací}] \leavevmode
+seznam nejpravděpodobnějších přiřazení a jejich hodnot.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{rename\_variables() (metoda alex.infer.factor.Factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.rename_variables}\pysiglinewithargsret{\bfcode{rename\_variables}}{\emph{mapping}}{}
+Přejmenování proměnných.
+
+Může se stát, že je potřeba přejmenovat proměnné, aby odpovídaly proměnným v jiném faktoru.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f}\PY{o}{.}\PY{n}{rename\PYZus{}variables}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{l+s}{\PYZsq{}}\PY{l+s}{X}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{l+s}{\PYZsq{}}\PY{l+s}{Y}\PY{l+s}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{f}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    X               Y             Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    a1              b1             0.8}
+\PY{g+go}{    a1              b2             0.2}
+\PY{g+go}{    a2              b1             0.3}
+\PY{g+go}{    a2              b2             0.7}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{mapping} -- slovník se zobrazením ze stávajících názvů proměnných do nových názvů.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\textbf{Příklady matematických operací}
+
+Násobení:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f1} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f2} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{C}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{C}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{c1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{c2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{c1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{c2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{c1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{,}\PY{l+s}{\PYZsq{}}\PY{l+s}{c2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.5}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{fr} \PY{o}{=} \PY{n}{f1} \PY{o}{*} \PY{n}{f2}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{fr}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    A           B           C         Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    a1          b1          c1         0.24}
+\PY{g+go}{    a1          b1          c2         0.56}
+\PY{g+go}{    a1          b2          c1         0.10}
+\PY{g+go}{    a1          b2          c2         0.10}
+\PY{g+go}{    a2          b1          c1         0.09}
+\PY{g+go}{    a2          b1          c2         0.21}
+\PY{g+go}{    a2          b2          c1         0.35}
+\PY{g+go}{    a2          b2          c2         0.35}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+
+Umocnění:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f1} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{fr} \PY{o}{=} \PY{n}{f1} \PY{o}{*}\PY{o}{*} \PY{l+m+mi}{2}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{k}{print} \PY{n}{fr}\PY{o}{.}\PY{n}{pretty\PYZus{}print}\PY{p}{(}\PY{l+m+mi}{50}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    A               B             Value}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\PY{g+go}{    a1              b1             0.64}
+\PY{g+go}{    a1              b2             0.04}
+\PY{g+go}{    a2              b1             0.09}
+\PY{g+go}{    a2              b2             0.49}
+\PY{g+go}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}
+\end{Verbatim}
+
+\end{fulllineitems}
+
+
+
+\subsection{Modul \texttt{node}}
+\label{alex.infer:modul-node}
+Modul obsahuje implementace vrcholů tvořících grafický model.
+Pro výpočty jsou používány třídy z modulu {\hyperref[alex.infer:module-alex.infer.factor]{\code{factor}}}.
+\index{alex.infer.node.Node() (třída v alex.infer.factor)}
+
+\hskip\linewidth
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{Node}}
+Abstraktní třída pro reprezentaci vrcholů.
+
+Obsahuje definice základních metod, které musí obsahovat každá implementace vrcholu.
+\index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{name}\optional{, \emph{aliases}}}{}
+Vytvoření nového vrcholu.
+
+Při vytvoření vrcholu je třeba zadat jeho jméno, pod kterým bude možné
+jej nalézt při inferenci a je možné předat aliasy pro proměnné. Aliasy pro
+proměnné slouží k přejmenování proměnných ve zprávách, které přicházejí
+do vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{name} -- jméno vrcholu.
+
+\item {} 
+\textbf{aliases} -- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_neighbor() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}, \emph{**options}}{}
+Přidání souseda.
+
+Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost přidat implementačně závislé parametry.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{options} -- implementačně závislé parametry.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{connect() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{**options}}{}
+Propojení dvou vrcholů.
+
+Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.Node.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{options} -- implementačně závislé parametry.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{init\_messages() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.init_messages}\pysiglinewithargsret{\bfcode{init\_messages}}{}{}
+Inicializace všech zpráv mezi vrcholem a jeho sousedy.
+
+\end{fulllineitems}
+
+\index{message\_from() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.message_from}\pysiglinewithargsret{\bfcode{message\_from}}{\emph{node}, \emph{message}}{}
+Přijmutí zprávy ze sousedního vrcholu.
+
+Zpráva je uložena a použita při dalších výpočtech.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{message} -- zpráva ze sousedního vrcholu.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{message\_to() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.message_to}\pysiglinewithargsret{\bfcode{message\_to}}{\emph{node}}{}
+Poslání zprávy do sousedního vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{normalize() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.normalize}\pysiglinewithargsret{\bfcode{normalize}}{\optional{\emph{parents}}}{}
+Normalizace pravděpodobnostního rozdělení.
+
+Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
+normalizovaný a je tedy třeba jej normalizovat před jakýmkoliv dalším
+použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
+pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
+jedné.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{parents} -- seznam proměnných, které jsou rodiči vrcholu.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{update() (metoda alex.infer.factor.alex.infer.node.Node)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.update}\pysiglinewithargsret{\bfcode{update}}{}{}
+Aktualizace interní pravděpodobnostní distribuce.
+
+Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.
+
+\end{fulllineitems}
+
+\end{fulllineitems}
+\hskip\linewidth
+\index{alex.infer.node.FactorNode() (třída v alex.infer.factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.FactorNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{FactorNode}}
+Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.Node]{\code{alex.infer.node.Node}}}
+
+Abstraktní třída reprezentující vrcholy pro faktory.
+\end{fulllineitems}
+
+\hskip\linewidth
+
+\index{alex.infer.node.VariableNode() (třída v alex.infer.factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.VariableNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{VariableNode}}
+Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.Node]{\code{alex.infer.node.Node}}}
+
+Abstraktní třída reprezentující vrcholy pro proměnné.
+
+\end{fulllineitems}
+
+
+
+\subsubsection{Vrcholy pro diskrétní vrcholy}
+\label{alex.infer:vrcholy-pro-diskretni-vrcholy}\index{alex.infer.node.DiscreteVariableNode() (třída v alex.infer.factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DiscreteVariableNode}}
+Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.VariableNode]{\code{alex.infer.node.VariableNode}}}
+
+Reprezentace diskrétních proměnných.
+\index{belief() (atribut alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.belief}\pysigline{\bfcode{belief}}
+Marginální pravděpodobnostní rozdělení pro proměnnou. Typu {\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}.
+
+\end{fulllineitems}
+
+\index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{name}, \emph{values}, \emph{logarithmetic=True}}{}
+Vytvoření nového vrcholu pro diskrétní proměnné.
+
+Pro vytvoření je třeba jméno proměnné a hodnoty, kterých může nabývat.
+
+Také je možné zadat, jestli používat při výpočtech trik s aritmetikou nad zlogaritmovanými čísly.
+Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{name} -- název proměnné.
+
+\item {} 
+\textbf{values} -- seznam možných hodnot.
+
+\item {} 
+\textbf{logarithmetic} -- zda-li používat trik s logaritmy.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_neighbor() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}}{}
+Přidání souseda.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{connect() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{**options}}{}
+Propojení dvou vrcholů.
+
+Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{init\_messages() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.init_messages}\pysiglinewithargsret{\bfcode{init\_messages}}{}{}
+Inicializace všech zpráv mezi vrcholem a jeho sousedy.
+
+\end{fulllineitems}
+
+\index{message\_from() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.message_from}\pysiglinewithargsret{\bfcode{message\_from}}{\emph{node}, \emph{message}}{}
+Přijmutí zprávy ze sousedního vrcholu.
+
+Zpráva je uložena a použita při dalších výpočtech.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{message} -- zpráva ze sousedního vrcholu.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{message\_to() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.message_to}\pysiglinewithargsret{\bfcode{message\_to}}{\emph{node}}{}
+Poslání zprávy do sousedního vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{normalize() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.normalize}\pysiglinewithargsret{\bfcode{normalize}}{}{}
+Normalizace pravděpodobnostního rozdělení.
+
+Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
+normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+použitím.
+
+\end{fulllineitems}
+
+\index{update() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.update}\pysiglinewithargsret{\bfcode{update}}{}{}
+Aktualizace marginální pravděpodobnostní distribuce.
+
+Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.
+
+\end{fulllineitems}
+
+\index{observed() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.observed}\pysiglinewithargsret{\bfcode{observed}}{\emph{assignment\_dict}}{}
+Nastavení pozorovaných hodnot.
+
+Proměnná je nastavená na pozorované rozdělení. Pravděpodobnost nepozorovaných hodnot
+je nulová.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{assignment\_dict} -- slovník se zobrazením z hodnot do jejich pravděpodobností.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{most\_probable() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.most_probable}\pysiglinewithargsret{\bfcode{most\_probable}}{\emph{n}}{}
+Získání nejpravděpodobnějších hodnot.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{n} -- počet nejpravděpodobnějších hodnot, které mají být vráceny.
+
+\item[{Vrací}] \leavevmode
+seznam dvojic ve tvaru (hodnota, její pravděpodobnost) seřazený podle pravděpodobnosti.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\hskip\linewidth
+\index{alex.infer.node.DiscreteFactorNode() (třída v alex.infer.factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DiscreteFactorNode}}
+Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.FactorNode]{\code{alex.infer.node.FactorNode}}}
+
+Vrchol pro diskrétní faktor, reprezentující diskrétní pravděpodobnostní rozdělení.
+\index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{name}, \emph{factor}}{}
+Vytvoření nového vrcholu pro diskrétní faktor.
+
+Pro vytvoření je třeba jméno faktoru a samotný faktor.
+
+Také je možné zadat, jestli používat při výpočtech trik s aritmetikou nad zlogaritmovanými čísly.
+Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{name} -- název proměnné.
+
+\item {} 
+\textbf{factor} ({\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}) -- faktor reprezentující diskrétní pravděpodobnostní rozdělení.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_neighbor() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}}{}
+Přidání souseda.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{connect() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}}{}
+Propojení dvou vrcholů.
+
+Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor]{\code{add\_neighbor()}}} obou vrcholů a předá jí parametry.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{init\_messages() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.init_messages}\pysiglinewithargsret{\bfcode{init\_messages}}{}{}
+Inicializace všech zpráv mezi vrcholem a jeho sousedy.
+
+\end{fulllineitems}
+
+\index{message\_from() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.message_from}\pysiglinewithargsret{\bfcode{message\_from}}{\emph{node}, \emph{message}}{}
+Přijmutí zprávy ze sousedního vrcholu.
+
+Zpráva je uložena a použita při dalších výpočtech.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{message} -- zpráva ze sousedního vrcholu.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{message\_to() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.message_to}\pysiglinewithargsret{\bfcode{message\_to}}{\emph{node}}{}
+Poslání zprávy do sousedního vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{normalize() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.normalize}\pysiglinewithargsret{\bfcode{normalize}}{\optional{\emph{parents}}}{}
+Normalizace pravděpodobnostního rozdělení.
+
+Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
+normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
+pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
+jedné.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{parents} -- seznam proměnných, které jsou rodiči vrcholu.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{update() (metoda alex.infer.factor.alex.infer.node.DiscreteFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.update}\pysiglinewithargsret{\bfcode{update}}{}{}
+Aktualizace interní reprezentace.
+
+Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsubsection{Vrcholy pro Dirichletovské parametry}
+\label{alex.infer:vrcholy-pro-dirichletovske-parametry}\index{alex.infer.node.DirichletParameterNode() (třída v alex.infer.factor)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DirichletParameterNode}}
+Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.VariableNode]{\code{alex.infer.node.VariableNode}}}
+
+Reprezentace parametrů Dirichletovského rozdělení.
+\index{alpha() (atribut alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.alpha}\pysigline{\bfcode{alpha}}
+Parametry dirichletovského rozdělení. Typu {\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}.
+
+\end{fulllineitems}
+
+\index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{name}, \emph{alpha}\optional{, \emph{aliases}}}{}
+Vytvoření nového vrcholu pro parametry Dirichletovského rozdělení.
+
+Pro vytvoření je třeba jméno proměnné a parametry.
+Aliasy pro proměnné slouží k přejmenování proměnných ve zprávách, které
+přicházejí do vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{name} -- název proměnné.
+
+\item {} 
+\textbf{alpha} ({\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}) -- parametry Dirichletovského rozdělení.
+
+\item {} 
+\textbf{aliases} -- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_neighbor() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}}{}
+Přidání souseda.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}}) -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{connect() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{**options}}{}
+Propojení dvou vrcholů.
+
+Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}}) -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{init\_messages() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.init_messages}\pysiglinewithargsret{\bfcode{init\_messages}}{}{}
+Inicializace všech zpráv mezi vrcholem a jeho sousedy.
+
+\end{fulllineitems}
+
+\index{message\_from() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.message_from}\pysiglinewithargsret{\bfcode{message\_from}}{\emph{node}, \emph{message}}{}
+Přijmutí zprávy ze sousedního vrcholu.
+
+Zpráva je uložena a použita při dalších výpočtech.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{message} -- zpráva ze sousedního vrcholu.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{message\_to() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.message_to}\pysiglinewithargsret{\bfcode{message\_to}}{\emph{node}}{}
+Poslání zprávy do sousedního vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{alex.infer.node.DirichletFactorNode() (třída v alex.infer.factor)}
+\hskip\linewidth
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode}\pysigline{\strong{class }\code{alex.infer.node.}\bfcode{DirichletFactorNode}}
+Předek: {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.FactorNode]{\code{alex.infer.node.FactorNode}}}
+
+    Diskrétní faktor, parametry jeho rozdělení ovšem nejsou pevně dány, ale pochází z vrcholu typu
+{\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode]{\code{DirichletParameterNode}}}.
+\index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{name}\optional{, \emph{aliases}}}{}
+Vytvoření nového vrcholu pro faktor.
+
+Pro vytvoření je třeba jméno faktoru.
+
+Aliasy pro proměnné slouží k přejmenování proměnných ve zprávách, které
+přicházejí do vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{name} -- název faktoru.
+
+\item {} 
+\textbf{aliases} -- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_neighbor() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}}{}
+Přidání souseda.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{connect() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}}{}
+Propojení dvou vrcholů.
+
+Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor]{\code{add\_neighbor()}}} obou vrcholů a předá jí parametry.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{init\_messages() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.init_messages}\pysiglinewithargsret{\bfcode{init\_messages}}{}{}
+Inicializace všech zpráv mezi vrcholem a jeho sousedy.
+
+\end{fulllineitems}
+
+\index{message\_from() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.message_from}\pysiglinewithargsret{\bfcode{message\_from}}{\emph{node}, \emph{message}}{}
+Přijmutí zprávy ze sousedního vrcholu.
+
+Zpráva je uložena a použita při dalších výpočtech.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{node} -- sousední vrchol.
+
+\item {} 
+\textbf{message} -- zpráva ze sousedního vrcholu.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{message\_to() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.message_to}\pysiglinewithargsret{\bfcode{message\_to}}{\emph{node}}{}
+Poslání zprávy do sousedního vrcholu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{node} -- sousední vrchol, kterému má být zpráva zaslána.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{update() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.update}\pysiglinewithargsret{\bfcode{update}}{}{}
+Aktualizace interní reprezentace.
+
+Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{Modul \texttt{lbp}}
+\label{alex.infer:modul-lbp}\index{alex.infer.lbp.LBPError}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBPError}\pysigline{\strong{exception }\code{alex.infer.lbp.}\bfcode{LBPError}}
+Výjimka pro chyby při inferenci.
+
+\end{fulllineitems}
+
+\index{alex.infer.lbp.LBP() (třída v alex.infer.factor)}
+\hskip\linewidth
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP}\pysigline{\strong{class }\code{alex.infer.lbp.}\bfcode{LBP}}
+Inference v grafickém modelu pomocí Loopy Belief Propagation.
+\index{\_\_init\_\_() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{strategy='sequential'}}{}
+Vytvoření nové instance LBP algoritmu.
+
+Je možné nastavit strategii výběru vrcholů:
+\begin{itemize}
+\item {} 
+\emph{sequential} -- vrcholy jsou vybírány v takovém pořadí, v jakém byly vloženy,
+
+\item {} 
+\emph{tree} -- grafický model je ve formě stromu,
+
+\item {} 
+\emph{layers} -- inference na Dynamické Bayesovské síti.
+
+\end{itemize}
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{strategy} -- strategie, která má být použita pro výběr vrcholů.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_nodes() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.add_nodes}\pysiglinewithargsret{\bfcode{add\_nodes}}{\emph{nodes}}{}
+Přidání vrcholů k inferenci.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{nodes} -- seznam vrcholů.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_layer() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.add_layer}\pysiglinewithargsret{\bfcode{add\_layer}}{\emph{layer}}{}
+Přidání vrstvy na konec grafického modelu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{layer} -- seznam vrcholů tvořících jednu vrstvu.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_layers() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.add_layers}\pysiglinewithargsret{\bfcode{add\_layers}}{\emph{layers}}{}
+Přidání vrstev na konec grafického modelu.
+\begin{quote}\begin{description}
+\item[{Parametr}] \leavevmode
+\textbf{layers} -- seznam seznamů s vrcholy.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{clear\_nodes() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.clear_nodes}\pysiglinewithargsret{\bfcode{clear\_nodes}}{}{}
+Smazání všech vrcholů.
+
+\end{fulllineitems}
+
+\index{clear\_layers() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.clear_layers}\pysiglinewithargsret{\bfcode{clear\_layers}}{}{}
+Smazání všech vrstev.
+
+\end{fulllineitems}
+
+\index{init\_messages() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.init_messages}\pysiglinewithargsret{\bfcode{init\_messages}}{}{}
+Inicializace zpráv pro všechny vrcholy.
+
+\end{fulllineitems}
+
+\index{run() (metoda alex.infer.factor.alex.infer.lbp.LBP)}
+
+\begin{fulllineitems}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.lbp.LBP.run}\pysiglinewithargsret{\bfcode{run}}{\emph{n\_iterations=1, from\_layer{]}}}{}
+Spustit inferenci v grafickém modelu.
+
+Je možné nastavit počet iterací, po kterém se má inference zastavit.
+U stromu není třeba zadávat počet iterací, bude provedena pouze jedna.
+
+U vrstev je možné zadat od které vrstvy inferenci provádět.
+Popřípadě budou zprávy propagovány od začátku.
+\begin{quote}\begin{description}
+\item[{Parametry}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{n\_iterations} -- počet iterací.
+
+\item {} 
+\textbf{from\_layer} -- vrstva, od které se mají zprávy propagovat.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
