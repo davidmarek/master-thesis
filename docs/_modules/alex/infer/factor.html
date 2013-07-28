@@ -1,0 +1,713 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>alex.infer.factor &mdash; Alex.Infer 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Alex.Infer 0.9 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigace</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="Rejstřík indexů"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >moduly</a> |</li>
+        <li><a href="../../../index.html">Alex.Infer 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for alex.infer.factor</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements a factor class, which can be used to do computations</span>
+<span class="sd">with probability distributions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">logsumexp</span>
+
+<span class="n">ZERO</span> <span class="o">=</span> <span class="mf">1e-20</span>
+
+
+<span class="k">def</span> <span class="nf">to_log</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert number to log arithmetic.</span>
+
+<span class="sd">    We want to be able to represent zero, therefore every number smaller than</span>
+<span class="sd">    epsilon is considered a zero.</span>
+
+<span class="sd">    :param n: Number to be converted.</span>
+<span class="sd">    :type n: number or array like</span>
+<span class="sd">    :param out: Output array.</span>
+<span class="sd">    :type out: ndarray</span>
+<span class="sd">    :returns: Number in log arithmetic.</span>
+<span class="sd">    :rtype: number or array like</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ZERO</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">ZERO</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n</span><span class="p">[</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">ZERO</span><span class="p">]</span> <span class="o">=</span> <span class="n">ZERO</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">from_log</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert number from log arithmetic.</span>
+
+<span class="sd">    :param n: Number to be converted from log arithmetic.</span>
+<span class="sd">    :type n: number or array like</span>
+<span class="sd">    :returns: Number in decimal scale.</span>
+<span class="sd">    :rtype: number or array like</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+
+<span class="nd">@np.vectorize</span>
+<span class="k">def</span> <span class="nf">logsubexp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subtract one number from another in log arithmetic.</span>
+
+<span class="sd">    :param a: Minuend.</span>
+<span class="sd">    :type a: number or array like</span>
+<span class="sd">    :param b: Subtrahend.</span>
+<span class="sd">    :type b: number or array like</span>
+<span class="sd">    :returns: Difference.</span>
+<span class="sd">    :rtype: number or array like</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Computing the log of a negative number.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ZERO</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="FactorError"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.FactorError">[docs]</a><span class="k">class</span> <span class="nc">FactorError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="Factor"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor">[docs]</a><span class="k">class</span> <span class="nc">Factor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic factor.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__div__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_div</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Factor.__getitem__"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.__getitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assignment</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the value of a given assignment.</span>
+
+<span class="sd">        :param assignment: Assignment of variables whose value should be returned.</span>
+<span class="sd">        :type assignment: tuple</span>
+<span class="sd">        :returns: Value in table at assignment.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_from_assignment</span><span class="p">(</span><span class="n">assignment</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="Factor.__init__"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">variable_values</span><span class="p">,</span> <span class="n">prob_table</span><span class="p">,</span> <span class="n">logarithmetic</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new factor.</span>
+
+<span class="sd">        Needs a list of variables, because assignments must be in the same</span>
+<span class="sd">        order. Variable values are used to compute properties of variables,</span>
+<span class="sd">        like their cardinalities. Probability table must contain a value for</span>
+<span class="sd">        each possible assignment of variables. They key must always be a tuple,</span>
+<span class="sd">        this can be tricky, when there is only one variable.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; f = Factor(</span>
+<span class="sd">            ...     [&#39;A&#39;, &#39;B&#39;],</span>
+<span class="sd">            ...     {</span>
+<span class="sd">            ...         &#39;A&#39;: [&#39;a1&#39;, &#39;a2&#39;],</span>
+<span class="sd">            ...         &#39;B&#39;: [&#39;b1&#39;, &#39;b2&#39;],</span>
+<span class="sd">            ...     },</span>
+<span class="sd">            ...     {</span>
+<span class="sd">            ...         (&#39;a1&#39;, &#39;b1&#39;): 0.8,</span>
+<span class="sd">            ...         (&#39;a2&#39;, &#39;b1&#39;): 0.2,</span>
+<span class="sd">            ...         (&#39;a1&#39;, &#39;b2&#39;): 0.7,</span>
+<span class="sd">            ...         (&#39;a2&#39;, &#39;b2&#39;): 0.3,</span>
+<span class="sd">            ...     })</span>
+
+<span class="sd">        :param variables: Variables in the domain of this factor.</span>
+<span class="sd">        :type variables: list</span>
+<span class="sd">        :param variable_values: Dictionary containing for each variable a list of possible values.</span>
+<span class="sd">        :type variable_values: dict</span>
+<span class="sd">        :param prob_table: Probality table, contains a value for each possible assignment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span> <span class="o">=</span> <span class="n">variable_values</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span> <span class="o">=</span> <span class="n">logarithmetic</span>
+        <span class="k">if</span> <span class="n">logarithmetic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logaddexp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sub</span> <span class="o">=</span> <span class="n">logsubexp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mul</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_div</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span> <span class="o">=</span> <span class="n">to_log</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span> <span class="o">=</span> <span class="n">from_log</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ZERO</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sum</span> <span class="o">=</span> <span class="n">logsumexp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mul</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_div</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zero</span> <span class="o">=</span> <span class="n">ZERO</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span>
+
+        <span class="c"># Create a translation table from variable values to indexes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_translation_table</span><span class="p">()</span>
+
+        <span class="c"># Compute cardinalities.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable_values</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+                              <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prob_table</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span> <span class="o">=</span> <span class="n">prob_table</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prob_table</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor_table_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c"># Compute strides (how many elements in the prob table we have to skip</span>
+        <span class="c"># to get a new assignment of a variable).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_strides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">)</span>
+
+        <span class="c"># Save the values if the prob_table is a dictionary.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prob_table</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">assignment</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">prob_table</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_from_assignment</span><span class="p">(</span><span class="n">assignment</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="c"># Convert values to log form.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">)</span>
+
+        <span class="c"># Save the factor table in case we&#39;ll modify it with observation.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unobserved_factor_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Factor.__iter__"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.__iter__">[docs]</a>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over assignments and values.</span>
+
+<span class="sd">        Each element is a tuple, where the first element is the assignment</span>
+<span class="sd">        and the second element is the probability of this assignment.</span>
+
+<span class="sd">        Example of an element is ``((&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), 0.8)``.</span>
+
+<span class="sd">        :rtype: (tuple, float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_assignment_from_index</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mul</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pow</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Factor.__setitem__"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.__setitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assignment</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set a value.</span>
+
+<span class="sd">        :param assignment: Assignment of variables whose value should be changed.</span>
+<span class="sd">        :type assignment: tuple</span>
+<span class="sd">        :param value: The new value.</span>
+<span class="sd">        :type value: number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_from_assignment</span><span class="p">(</span><span class="n">assignment</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a factor to a string representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_apply_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op_scalar</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">logarithmetic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FactorError</span><span class="p">(</span><span class="s">&#39;Factors must both use log arithmetic.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op_same</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_op_different</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_apply_op_different</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply an operation on two factors, which don&#39;t have the same sets</span>
+<span class="sd">        of variables.</span>
+
+<span class="sd">        :param other: The other factor.</span>
+<span class="sd">        :type other: :class:`Factor`</span>
+<span class="sd">        :param op: Binary function.</span>
+<span class="sd">        :return: The resulting factor.</span>
+<span class="sd">        :rtype: :class:`Factor`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># New factor will have variables which are a union of variables from</span>
+        <span class="c"># this and other factor. They will be sorted because otherwise there</span>
+        <span class="c"># could exist two factors with same variables, but in different other.</span>
+        <span class="n">new_variables</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">new_variable_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">)</span>
+        <span class="n">new_variable_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">variable_values</span><span class="p">)</span>
+
+        <span class="c"># The cardinalities will stay the same, we just have to add</span>
+        <span class="c"># cardinalities for variables from both factors.</span>
+        <span class="n">new_cardinalities</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">)</span>
+        <span class="n">new_cardinalities</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">)</span>
+
+        <span class="c"># Compute the length of new factor table.</span>
+        <span class="n">new_factor_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor_table_length</span><span class="p">(</span><span class="n">new_cardinalities</span><span class="p">)</span>
+
+        <span class="c"># Create a new factor table.</span>
+        <span class="n">new_factor_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">new_factor_length</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="n">assignment</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">index_self</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">index_other</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">reversed_variables</span> <span class="o">=</span> <span class="n">new_variables</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_factor_length</span><span class="p">):</span>
+            <span class="c"># Apply the operator.</span>
+            <span class="n">new_factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">index_self</span><span class="p">],</span>
+                                     <span class="n">other</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">index_other</span><span class="p">])</span>
+
+            <span class="c"># Update indexes, start with variable with smallest stride.</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">reversed_variables</span><span class="p">:</span>
+                <span class="c"># Move to next value of a variable.</span>
+                <span class="n">assignment</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c"># If we go past the last value of one variable, we need to</span>
+                <span class="c"># move onto next variable.</span>
+                <span class="k">if</span> <span class="n">assignment</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">==</span> <span class="n">new_cardinalities</span><span class="p">[</span><span class="n">var</span><span class="p">]:</span>
+                    <span class="n">assignment</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">index_self</span> <span class="o">-=</span> <span class="p">((</span><span class="n">new_cardinalities</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                    <span class="n">index_other</span> <span class="o">-=</span> <span class="p">((</span><span class="n">new_cardinalities</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span>
+                                    <span class="n">other</span><span class="o">.</span><span class="n">strides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="c"># Otherwise we just update this variable and don&#39;t have to do</span>
+                <span class="c"># anything with other variables.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">index_self</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">index_other</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">strides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">Factor</span><span class="p">(</span><span class="n">new_variables</span><span class="p">,</span>
+                      <span class="n">new_variable_values</span><span class="p">,</span>
+                      <span class="n">new_factor_table</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_apply_op_same</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply an operation on two factors, which must have the same sets</span>
+<span class="sd">        of variables.</span>
+
+<span class="sd">        :param other: The other factor.</span>
+<span class="sd">        :type other: :class:`Factor`</span>
+<span class="sd">        :param op: Binary function.</span>
+<span class="sd">        :return: The resulting factor.</span>
+<span class="sd">        :rtype: :class:`Factor`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">,</span>
+                      <span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">factor_table</span><span class="p">),</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_apply_op_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply an operation on a factor and a scalar.</span>
+
+<span class="sd">        :param other: The other operand.</span>
+<span class="sd">        :type other: number</span>
+<span class="sd">        :param op: Binary function.</span>
+<span class="sd">        :return: The resulting factor.</span>
+<span class="sd">        :rtype: :class:`Factor`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pow</span><span class="p">:</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">,</span>
+                      <span class="n">op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">,</span> <span class="n">other</span><span class="p">),</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compute_strides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">cardinalities</span><span class="p">,</span> <span class="n">factor_length</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Strides for variables of given factor table.</span>
+
+<span class="sd">        Compute a stride for each variable. For example there are three</span>
+<span class="sd">        variables A, B, and C with cardinalities 2, 3, and 4. The length of</span>
+<span class="sd">        factor is 2 * 3 * 4 = 24. To get from assignment A = 0 to A = 1, we</span>
+<span class="sd">        have to go over 3 * 4 values: 000, 001, 002, 003, 010, ..., 023, 100.</span>
+<span class="sd">        As a result, the strides of A, B, and C will be 12, 4, 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">strides</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">last_stride</span> <span class="o">=</span> <span class="n">factor_length</span>
+        <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+            <span class="n">last_stride</span> <span class="o">=</span> <span class="n">last_stride</span> <span class="o">/</span> <span class="n">cardinalities</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span>
+            <span class="n">strides</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_stride</span>
+        <span class="k">return</span> <span class="n">strides</span>
+
+    <span class="k">def</span> <span class="nf">_create_translation_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a translation from string values to numbers.</span>
+
+<span class="sd">        Variable values can be anything, but arrays are indexed by</span>
+<span class="sd">        numbers. Translation table is used for getting an index from an</span>
+<span class="sd">        assignment.</span>
+
+<span class="sd">        For example for a variable X with values [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;], the</span>
+<span class="sd">        translation will be: &#39;a&#39;: 0, &#39;b&#39;: 1, &#39;c&#39;: 2, &#39;d&#39;: 3.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">[</span><span class="n">var</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="k">def</span> <span class="nf">_factor_table_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cardinalities</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Length of the factor table (number of assignments).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">cardinalities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_get_assignment_from_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">chosen_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get assignment from a factor table at given index.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">chosen_vars</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">chosen_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span>
+
+        <span class="n">assignment</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">chosen_vars</span><span class="p">:</span>
+                <span class="n">assignment</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">index</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">var</span><span class="p">]])</span>
+            <span class="n">index</span> <span class="o">%=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">assignment</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_index_from_assignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assignment</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transform variables assignment to index into factor table.&quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">assignment_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="n">assignment</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">*</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">assignment_i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">index</span>
+
+<div class="viewcode-block" id="Factor.marginalize"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.marginalize">[docs]</a>    <span class="k">def</span> <span class="nf">marginalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Marginalize all but specified variables.</span>
+
+<span class="sd">        Marginalizing means summing out values which are not in `keep`. The</span>
+<span class="sd">        result is a new factor, which contains only variables from `keep`.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; f = Factor([&#39;A&#39;, &#39;B&#39;],</span>
+<span class="sd">            ...                    {&#39;A&#39;: [&#39;a1&#39;, &#39;a2&#39;], &#39;B&#39;: [&#39;b1&#39;, &#39;b2&#39;]},</span>
+<span class="sd">            ...                    {</span>
+<span class="sd">            ...                         (&#39;a1&#39;, &#39;b1&#39;): 0.8,</span>
+<span class="sd">            ...                         (&#39;a2&#39;, &#39;b1&#39;): 0.2,</span>
+<span class="sd">            ...                         (&#39;a1&#39;, &#39;b2&#39;): 0.3,</span>
+<span class="sd">            ...                         (&#39;a2&#39;, &#39;b2&#39;): 0.7</span>
+<span class="sd">            ...                    })</span>
+<span class="sd">            &gt;&gt;&gt; result = f.marginalize([&#39;A&#39;])</span>
+<span class="sd">            &gt;&gt;&gt; print result.pretty_print(width=30)</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                   A            Value</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                  a1             1.1</span>
+<span class="sd">                  a2             0.9</span>
+<span class="sd">            ------------------------------</span>
+
+<span class="sd">        :param keep: Variables which should be left in marginalized factor.</span>
+<span class="sd">        :type keep: list of str</span>
+<span class="sd">        :returns: Marginalized factor.</span>
+<span class="sd">        :rtype: :class:`Factor`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Assignment counter</span>
+        <span class="n">assignment</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c"># New cardinalities and new factor table.</span>
+        <span class="n">new_cardinalities</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
+        <span class="n">new_factor_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor_table_length</span><span class="p">(</span><span class="n">new_cardinalities</span><span class="p">)</span>
+        <span class="n">new_factor_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">new_factor_length</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">new_factor_table</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zero</span>
+        <span class="c"># Strides for resulting variables in the new factor table.</span>
+        <span class="n">new_strides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_strides</span><span class="p">(</span><span class="n">keep</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">,</span>
+                                            <span class="n">new_factor_length</span><span class="p">)</span>
+        <span class="c"># Index into the new factor table.</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c"># Iterate over every element in the old factor table and add them to</span>
+        <span class="c"># the correct element in the new factor table.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">):</span>
+            <span class="n">new_factor_table</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">new_factor_table</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="c"># Update the assignment and indexes.</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">:</span>
+                <span class="c"># The assignment of variable var changed, so we must add its</span>
+                <span class="c"># stride to the index.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">assignment</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">index</span> <span class="o">+=</span> <span class="n">new_strides</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+                <span class="c"># The assignment of variable var overflowed to 0, we must</span>
+                <span class="c"># subtract the cardinality from index.</span>
+                <span class="k">if</span> <span class="n">assignment</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">[</span><span class="n">var</span><span class="p">]:</span>
+                    <span class="n">assignment</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">index</span> <span class="o">-=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">*</span>
+                              <span class="n">new_strides</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+
+        <span class="c"># Return new factor with marginalized variables.</span>
+        <span class="n">new_variable_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">Factor</span><span class="p">(</span><span class="n">keep</span><span class="p">,</span> <span class="n">new_variable_values</span><span class="p">,</span> <span class="n">new_factor_table</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Factor.most_probable"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.most_probable">[docs]</a>    <span class="k">def</span> <span class="nf">most_probable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of most probable assignments from the table.</span>
+
+<span class="sd">        Returns a sorted list of assignment and their values according to</span>
+<span class="sd">        their probability. The size of the list can be changed by specifying</span>
+<span class="sd">        n.</span>
+
+<span class="sd">        :param n: The number of most probable elements, which should be returned.</span>
+<span class="sd">        :type n: int</span>
+<span class="sd">        :returns: A list of tuples (assignment, value) in descending order.</span>
+<span class="sd">        :rtype: list of (tuple, float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indxs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">)))[:</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_assignment_from_index</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">_decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indxs</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Factor.normalize"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Normalize a factor table.</span>
+
+<span class="sd">        The table is normalized so all elements sum to one.</span>
+<span class="sd">        The parents argument is a list of names of parents. If it is</span>
+<span class="sd">        specified, then only those rows in table, which share the same</span>
+<span class="sd">        parents, are normalized.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; f = Factor([&#39;A&#39;, &#39;B&#39;],</span>
+<span class="sd">            ...                    {&#39;A&#39;: [&#39;a1&#39;, &#39;a2&#39;], &#39;B&#39;: [&#39;b1&#39;, &#39;b2&#39;]},</span>
+<span class="sd">            ...                    {</span>
+<span class="sd">            ...                         (&#39;a1&#39;, &#39;b1&#39;): 3,</span>
+<span class="sd">            ...                         (&#39;a1&#39;, &#39;b2&#39;): 1,</span>
+<span class="sd">            ...                         (&#39;a2&#39;, &#39;b1&#39;): 1,</span>
+<span class="sd">            ...                         (&#39;a2&#39;, &#39;b2&#39;): 1,</span>
+<span class="sd">            ...                    })</span>
+<span class="sd">            &gt;&gt;&gt; f.normalize(parents=[&#39;B&#39;])</span>
+<span class="sd">            &gt;&gt;&gt; print f.pretty_print(width=30)</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                A         B       Value</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                a1        b1       0.75</span>
+<span class="sd">                a1        b2       0.5</span>
+<span class="sd">                a2        b1       0.25</span>
+<span class="sd">                a2        b2       0.5</span>
+<span class="sd">            ------------------------------</span>
+
+<span class="sd">        :param parents: Parents of the factor.</span>
+<span class="sd">        :type parents: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">parents</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">sums</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zero</span><span class="p">)</span>
+            <span class="n">assignments</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">assignments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_assignment_from_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span>
+                <span class="n">sums</span><span class="p">[</span><span class="n">assignments</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">sums</span><span class="p">[</span><span class="n">assignments</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">value</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_div</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sums</span><span class="p">[</span><span class="n">assignments</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_div</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Factor.observed"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.observed">[docs]</a>    <span class="k">def</span> <span class="nf">observed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assignment_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set observation.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; f = Factor(</span>
+<span class="sd">            ...     [&#39;X&#39;],</span>
+<span class="sd">            ...     {</span>
+<span class="sd">            ...         &#39;X&#39;: [&#39;x0&#39;, &#39;x1&#39;],</span>
+<span class="sd">            ...     },</span>
+<span class="sd">            ...     {</span>
+<span class="sd">            ...         (&#39;x0&#39;,): 0.5,</span>
+<span class="sd">            ...         (&#39;x1&#39;,): 0.5,</span>
+<span class="sd">            ...     })</span>
+<span class="sd">            &gt;&gt;&gt; print f.pretty_print(width=30, precision=3)</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                   X            Value</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                  x0             0.5</span>
+<span class="sd">                  x1             0.5</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">            &gt;&gt;&gt; f.observed({(&#39;x0&#39;,): 0.8, (&#39;x1&#39;,): 0.2})</span>
+<span class="sd">            &gt;&gt;&gt; print f.pretty_print(width=30, precision=3)</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                   X            Value</span>
+<span class="sd">            ------------------------------</span>
+<span class="sd">                  x0             0.8</span>
+<span class="sd">                  x1             0.2</span>
+<span class="sd">            ------------------------------</span>
+
+<span class="sd">        :param assignment_dict: Observed values for different assignments of values or None.</span>
+<span class="sd">        :type assignment_dict: dict or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">assignment_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># Clear the factor table.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zero</span>
+            <span class="k">for</span> <span class="n">assignment</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">assignment_dict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_index_from_assignment</span><span class="p">(</span><span class="n">assignment</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unobserved_factor_table</span>
+</div>
+<div class="viewcode-block" id="Factor.pretty_print"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.pretty_print">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">79</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a readable representation of the factor.</span>
+
+<span class="sd">        Creates a table with a column for each variable and value. Every row</span>
+<span class="sd">        represents one assignemnt and its corresponding value. The default</span>
+<span class="sd">        width of the table is 79 chars, to fit to terminal window.</span>
+
+<span class="sd">        :param width: Width of the table.</span>
+<span class="sd">        :type width: int</span>
+<span class="sd">        :param precision: Precision of values.</span>
+<span class="sd">        :type precision: int</span>
+<span class="sd">        :returns: Pretty printed factor table.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">num_columns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">column_len</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="n">num_columns</span>
+        <span class="n">format_str</span> <span class="o">=</span> <span class="s">&quot;{:^</span><span class="si">%d</span><span class="s">}&quot;</span> <span class="o">%</span> <span class="n">column_len</span>
+        <span class="n">value_str</span> <span class="o">=</span> <span class="s">&quot;{:^</span><span class="si">%d</span><span class="s">.</span><span class="si">%d</span><span class="s">}&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">column_len</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">width</span> <span class="o">*</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Value&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">width</span> <span class="o">*</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_length</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">assignment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_assignment_from_index</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">assignment</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">value_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">width</span> <span class="o">*</span> <span class="s">&quot;-&quot;</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="Factor.rename_variables"><a class="viewcode-back" href="../../../alex.infer.html#alex.infer.factor.Factor.rename_variables">[docs]</a>    <span class="k">def</span> <span class="nf">rename_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                <span class="n">old_variable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">new_variable</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_variable</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">[</span><span class="n">new_variable</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">new_variable</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">[</span><span class="n">new_variable</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">cardinalities</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span><span class="p">[</span><span class="n">new_variable</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">translation_table</span><span class="p">[</span><span class="n">old_variable</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">sum_other</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">factor_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">)</span>
+        <span class="n">new_factor_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub</span><span class="p">(</span><span class="n">factor_sum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor_table</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">variable_values</span><span class="p">,</span>
+                      <span class="n">new_factor_table</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">logarithmetic</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Rychlé vyhledávání</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="hledej" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigace</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="Rejstřík indexů"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >moduly</a> |</li>
+        <li><a href="../../../index.html">Alex.Infer 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, David Marek.
+      Vytvořeno pomocí <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

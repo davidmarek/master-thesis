@@ -1,0 +1,1278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Balíček infer &mdash; Alex.Infer 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Alex.Infer 0.9 documentation" href="index.html" />
+    <link rel="up" title="Balíček alex" href="alex.html" />
+    <link rel="prev" title="Balíček alex" href="alex.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigace</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Rejstřík indexů"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >moduly</a> |</li>
+        <li class="right" >
+          <a href="alex.html" title="Balíček alex"
+             accesskey="P">předchozí</a> |</li>
+        <li><a href="index.html">Alex.Infer 0.9 documentation</a> &raquo;</li>
+          <li><a href="alex.html" accesskey="U">Balíček <tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">alex</span></tt></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="balicek-infer">
+<h1>Balíček <tt class="xref py py-mod docutils literal"><span class="pre">infer</span></tt><a class="headerlink" href="#balicek-infer" title="Trvalý odkaz na tento nadpis">¶</a></h1>
+<div class="section" id="module-alex.infer.factor">
+<span id="modul-factor"></span><h2>Modul <tt class="xref py py-mod docutils literal"><span class="pre">factor</span></tt><a class="headerlink" href="#module-alex.infer.factor" title="Trvalý odkaz na tento nadpis">¶</a></h2>
+<p>Modul <a class="reference internal" href="#module-alex.infer.factor" title="alex.infer.factor"><tt class="xref py py-mod docutils literal"><span class="pre">factor</span></tt></a> obsahuje implementaci faktorů pro počítání s
+diskrétními pravděpodobnostními rozděleními.</p>
+<dl class="exception">
+<dt id="alex.infer.factor.FactorError">
+<em class="property">exception </em><tt class="descclassname">alex.infer.factor.</tt><tt class="descname">FactorError</tt><a class="reference internal" href="_modules/alex/infer/factor.html#FactorError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.FactorError" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Výjimka značící chybu při manipulaci s faktorem.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="alex.infer.factor.Factor">
+<em class="property">class </em><tt class="descclassname">alex.infer.factor.</tt><tt class="descname">Factor</tt><a class="reference internal" href="_modules/alex/infer/factor.html#Factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Třída reprezentující diskrétní faktor s definovanými operacemi.</p>
+<p>Je možné použít všechny standardní matematické operátory (+, -, *, /,
+**). Operátor je možné aplikovat na dva faktory, anebo na faktor a
+skalární hodnotu.</p>
+<dl class="method">
+<dt id="alex.infer.factor.Factor.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>variables</em>, <em>variable_values</em>, <em>prob_table</em><span class="optional">[</span>, <em>logarithmetic=True</em><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nového faktoru.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+    <span class="p">{</span>
+        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>variables</strong> &#8211; seznam proměnných ve faktoru.</li>
+<li><strong>variable_values</strong> &#8211; slovník obsahující pro každou proměnnou seznam možných hodnot.</li>
+<li><strong>prob_table</strong> &#8211; slovník možných přiřazení proměnných a jejich ohodnocení.</li>
+<li><strong>logarithmetic</strong> &#8211; přepínač určující, zda-li použít aritmetiku nad zlogaritmovanými hodnotami.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>assignment</em><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.__getitem__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Získání ohodnocení pro dané přiřazení.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">)]</span>
+<span class="go">0.3</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>assignment</strong> &#8211; přiřazení proměnných.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Vrací:</th><td class="field-body">hodnotu dotazovaného přiřazení.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>assignment</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.__setitem__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Nastavení hodnoty pro přiřazení proměnných.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">[(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">)]</span>
+<span class="go">0.4</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>assignment</strong> &#8211; přiřazení proměnných.</li>
+<li><strong>value</strong> &#8211; nová hodnota.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.pretty_print">
+<tt class="descname">pretty_print</tt><big>(</big><em>width=79</em>, <em>precision=10</em><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.pretty_print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.pretty_print" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vypsání faktoru ve formě tabulky.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    A               B             Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    a1              b1             0.8</span>
+<span class="go">    a1              b2             0.2</span>
+<span class="go">    a2              b1             0.3</span>
+<span class="go">    a2              b2             0.7</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first simple">
+<li><strong>width</strong> &#8211; šířka tabulky.</li>
+<li><strong>precision</strong> &#8211; počet desetinných míst.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Vrací:</th><td class="field-body"><p class="first last">řetězec s naformátovanou tabulkou.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.__iter__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.__iter__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Iterace přes jednotlivé hodnoty přiřazení.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">assignment</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">assignment</span><span class="p">,</span> <span class="s">&#39;-&gt;&#39;</span><span class="p">,</span> <span class="n">value</span>
+<span class="go">(&#39;a1&#39;, &#39;b1&#39;) -&gt; 0.8</span>
+<span class="go">(&#39;a1&#39;, &#39;b2&#39;) -&gt; 0.2</span>
+<span class="go">(&#39;a2&#39;, &#39;b1&#39;) -&gt; 0.3</span>
+<span class="go">(&#39;a2&#39;, &#39;b2&#39;) -&gt; 0.7</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.observed">
+<tt class="descname">observed</tt><big>(</big><em>assignment_dict</em><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.observed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.observed" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Nastavení pozorovaných hodnot.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">observed</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.6</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.4</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    A               B             Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    a1              b1             0.6</span>
+<span class="go">    a1              b2             0.4</span>
+<span class="go">    a2              b1             0.0</span>
+<span class="go">    a2              b2             0.0</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>assignment_dict</strong> &#8211; slovník s pozorovanými přiřazeními a jejich ohodnocením.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.normalize">
+<tt class="descname">normalize</tt><big>(</big><span class="optional">[</span><em>parents</em><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.normalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Normalizace hodnot ve faktoru, aby jejich součet byl roven 1.</p>
+<p>Pokud je specifikován parametr <tt class="docutils literal"><span class="pre">parents</span></tt>, pak musí být součet všech
+proměnných, které mají stejné přiřazení pro proměnné z <tt class="docutils literal"><span class="pre">parents</span></tt>, roven
+1.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;A&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    A               B             Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    a1              b1             0.25</span>
+<span class="go">    a1              b2             0.75</span>
+<span class="go">    a2              b1             0.5</span>
+<span class="go">    a2              b2             0.5</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>parents</strong> &#8211; seznam rodičovských proměnných.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.marginalize">
+<tt class="descname">marginalize</tt><big>(</big><em>keep</em><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.marginalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.marginalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vysčítání proměnných tak, aby zůstaly pouze proměnné z <tt class="docutils literal"><span class="pre">keep</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">marginalize</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;A&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">            A                      Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">           a1                       1.0</span>
+<span class="go">           a2                       1.0</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>keep</strong> &#8211; seznam proměnných, které mají zůstat.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.most_probable">
+<tt class="descname">most_probable</tt><big>(</big><span class="optional">[</span><em>n</em><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.most_probable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.most_probable" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Nalezení nejpravděpodobnějších přiřazení proměnných.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">most_probable</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[(&#39;a1&#39;, 0.8), (&#39;a2&#39;, 0.2)]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>n</strong> &#8211; počet požadovaných nejpravděpodobnějších přiřazení.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Vrací:</th><td class="field-body">seznam nejpravděpodobnějších přiřazení a jejich hodnot.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.Factor.rename_variables">
+<tt class="descname">rename_variables</tt><big>(</big><em>mapping</em><big>)</big><a class="reference internal" href="_modules/alex/infer/factor.html#Factor.rename_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alex.infer.factor.Factor.rename_variables" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přejmenování proměnných.</p>
+<p>Může se stát, že je potřeba přejmenovat proměnné, aby odpovídaly proměnným v jiném faktoru.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">rename_variables</span><span class="p">({</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="s">&#39;Y&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    X               Y             Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    a1              b1             0.8</span>
+<span class="go">    a1              b2             0.2</span>
+<span class="go">    a2              b1             0.3</span>
+<span class="go">    a2              b2             0.7</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>mapping</strong> &#8211; slovník se zobrazením ze stávajících názvů proměnných do nových názvů.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p><strong>Příklady matematických operací</strong></p>
+<p>Násobení:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f2</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;C&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">],</span> <span class="s">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;c1&#39;</span><span class="p">,</span> <span class="s">&#39;c2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;b1&#39;</span><span class="p">,</span><span class="s">&#39;c1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;b1&#39;</span><span class="p">,</span><span class="s">&#39;c2&#39;</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;b2&#39;</span><span class="p">,</span><span class="s">&#39;c1&#39;</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;b2&#39;</span><span class="p">,</span><span class="s">&#39;c2&#39;</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fr</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">*</span> <span class="n">f2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">fr</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    A           B           C         Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    a1          b1          c1         0.24</span>
+<span class="go">    a1          b1          c2         0.56</span>
+<span class="go">    a1          b2          c1         0.10</span>
+<span class="go">    a1          b2          c2         0.10</span>
+<span class="go">    a2          b1          c1         0.09</span>
+<span class="go">    a2          b1          c2         0.21</span>
+<span class="go">    a2          b2          c1         0.35</span>
+<span class="go">    a2          b2          c2         0.35</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+<p>Umocnění:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span> <span class="o">=</span> <span class="n">Factor</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;a2&#39;</span><span class="p">],</span> <span class="s">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;b1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a1&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b1&#39;</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="s">&#39;a2&#39;</span><span class="p">,</span> <span class="s">&#39;b2&#39;</span><span class="p">):</span> <span class="mf">0.7</span>
+<span class="gp">... </span>    <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fr</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">fr</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    A               B             Value</span>
+<span class="go">--------------------------------------------------</span>
+<span class="go">    a1              b1             0.64</span>
+<span class="go">    a1              b2             0.04</span>
+<span class="go">    a2              b1             0.09</span>
+<span class="go">    a2              b2             0.49</span>
+<span class="go">--------------------------------------------------</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="modul-node">
+<h2>Modul <tt class="xref py py-mod docutils literal"><span class="pre">node</span></tt><a class="headerlink" href="#modul-node" title="Trvalý odkaz na tento nadpis">¶</a></h2>
+<p>Modul obsahuje implementace vrcholů tvořících grafický model.
+Pro výpočty jsou používány třídy z modulu <a class="reference internal" href="#module-alex.infer.factor" title="alex.infer.factor"><tt class="xref py py-mod docutils literal"><span class="pre">factor</span></tt></a>.</p>
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.Node">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">Node</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Abstraktní třída pro reprezentaci vrcholů.</p>
+<p>Obsahuje definice základních metod, které musí obsahovat každá implementace vrcholu.</p>
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em><span class="optional">[</span>, <em>aliases</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nového vrcholu.</p>
+<p>Při vytvoření vrcholu je třeba zadat jeho jméno, pod kterým bude možné
+jej nalézt při inferenci a je možné předat aliasy pro proměnné. Aliasy pro
+proměnné slouží k přejmenování proměnných ve zprávách, které přicházejí
+do vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; jméno vrcholu.</li>
+<li><strong>aliases</strong> &#8211; zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.add_neighbor">
+<tt class="descname">add_neighbor</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání souseda.</p>
+<p>Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost přidat implementačně závislé parametry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>options</strong> &#8211; implementačně závislé parametry.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.connect">
+<tt class="descname">connect</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Propojení dvou vrcholů.</p>
+<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.Node.add_neighbor" title="alex.infer.factor.alex.infer.node.Node.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> a předá jí parametry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>options</strong> &#8211; implementačně závislé parametry.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.init_messages">
+<tt class="descname">init_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.init_messages" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inicializace všech zpráv mezi vrcholem a jeho sousedy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.message_from">
+<tt class="descname">message_from</tt><big>(</big><em>node</em>, <em>message</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.message_from" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přijmutí zprávy ze sousedního vrcholu.</p>
+<p>Zpráva je uložena a použita při dalších výpočtech.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>message</strong> &#8211; zpráva ze sousedního vrcholu.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.message_to">
+<tt class="descname">message_to</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.message_to" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Poslání zprávy do sousedního vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol, kterému má být zpráva zaslána.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.normalize">
+<tt class="descname">normalize</tt><big>(</big><span class="optional">[</span><em>parents</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.normalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Normalizace pravděpodobnostního rozdělení.</p>
+<p>Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
+normalizovaný a je tedy třeba jej normalizovat před jakýmkoliv dalším
+použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
+pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
+jedné.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>parents</strong> &#8211; seznam proměnných, které jsou rodiči vrcholu.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.Node.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.update" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Aktualizace interní pravděpodobnostní distribuce.</p>
+<p>Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.FactorNode">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">FactorNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.FactorNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.Node" title="alex.infer.factor.alex.infer.node.Node"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.Node</span></tt></a></p>
+<p>Abstraktní třída reprezentující vrcholy pro faktory.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.VariableNode">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">VariableNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.VariableNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.Node" title="alex.infer.factor.alex.infer.node.Node"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.Node</span></tt></a></p>
+<p>Abstraktní třída reprezentující vrcholy pro proměnné.</p>
+</dd></dl>
+
+<div class="section" id="vrcholy-pro-diskretni-vrcholy">
+<h3>Vrcholy pro diskrétní vrcholy<a class="headerlink" href="#vrcholy-pro-diskretni-vrcholy" title="Trvalý odkaz na tento nadpis">¶</a></h3>
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">DiscreteVariableNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.VariableNode" title="alex.infer.factor.alex.infer.node.VariableNode"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.VariableNode</span></tt></a></p>
+<p>Reprezentace diskrétních proměnných.</p>
+<dl class="attribute">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.belief">
+<tt class="descname">belief</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.belief" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Marginální pravděpodobnostní rozdělení pro proměnnou. Typu <a class="reference internal" href="#alex.infer.factor.Factor" title="alex.infer.factor.Factor"><tt class="xref py py-class docutils literal"><span class="pre">Factor</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>values</em>, <em>logarithmetic=True</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nového vrcholu pro diskrétní proměnné.</p>
+<p>Pro vytvoření je třeba jméno proměnné a hodnoty, kterých může nabývat.</p>
+<p>Také je možné zadat, jestli používat při výpočtech trik s aritmetikou nad zlogaritmovanými čísly.
+Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; název proměnné.</li>
+<li><strong>values</strong> &#8211; seznam možných hodnot.</li>
+<li><strong>logarithmetic</strong> &#8211; zda-li používat trik s logaritmy.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor">
+<tt class="descname">add_neighbor</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání souseda.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect">
+<tt class="descname">connect</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Propojení dvou vrcholů.</p>
+<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> a předá jí parametry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.init_messages">
+<tt class="descname">init_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.init_messages" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inicializace všech zpráv mezi vrcholem a jeho sousedy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.message_from">
+<tt class="descname">message_from</tt><big>(</big><em>node</em>, <em>message</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.message_from" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přijmutí zprávy ze sousedního vrcholu.</p>
+<p>Zpráva je uložena a použita při dalších výpočtech.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>message</strong> &#8211; zpráva ze sousedního vrcholu.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.message_to">
+<tt class="descname">message_to</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.message_to" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Poslání zprávy do sousedního vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol, kterému má být zpráva zaslána.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.normalize">
+<tt class="descname">normalize</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.normalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Normalizace pravděpodobnostního rozdělení.</p>
+<p>Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
+normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+použitím.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.update" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Aktualizace marginální pravděpodobnostní distribuce.</p>
+<p>Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.observed">
+<tt class="descname">observed</tt><big>(</big><em>assignment_dict</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.observed" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Nastavení pozorovaných hodnot.</p>
+<p>Proměnná je nastavená na pozorované rozdělení. Pravděpodobnost nepozorovaných hodnot
+je nulová.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>assignment_dict</strong> &#8211; slovník se zobrazením z hodnot do jejich pravděpodobností.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.most_probable">
+<tt class="descname">most_probable</tt><big>(</big><em>n</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.most_probable" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Získání nejpravděpodobnějších hodnot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>n</strong> &#8211; počet nejpravděpodobnějších hodnot, které mají být vráceny.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Vrací:</th><td class="field-body">seznam dvojic ve tvaru (hodnota, její pravděpodobnost) seřazený podle pravděpodobnosti.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">DiscreteFactorNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.FactorNode" title="alex.infer.factor.alex.infer.node.FactorNode"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.FactorNode</span></tt></a></p>
+<p>Vrchol pro diskrétní faktor, reprezentující diskrétní pravděpodobnostní rozdělení.</p>
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>factor</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nového vrcholu pro diskrétní faktor.</p>
+<p>Pro vytvoření je třeba jméno faktoru a samotný faktor.</p>
+<p>Také je možné zadat, jestli používat při výpočtech trik s aritmetikou nad zlogaritmovanými čísly.
+Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; název proměnné.</li>
+<li><strong>factor</strong> (<a class="reference internal" href="#alex.infer.factor.Factor" title="alex.infer.factor.Factor"><tt class="xref py py-class docutils literal"><span class="pre">Factor</span></tt></a>) &#8211; faktor reprezentující diskrétní pravděpodobnostní rozdělení.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor">
+<tt class="descname">add_neighbor</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání souseda.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.connect">
+<tt class="descname">connect</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Propojení dvou vrcholů.</p>
+<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> obou vrcholů a předá jí parametry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.init_messages">
+<tt class="descname">init_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.init_messages" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inicializace všech zpráv mezi vrcholem a jeho sousedy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.message_from">
+<tt class="descname">message_from</tt><big>(</big><em>node</em>, <em>message</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.message_from" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přijmutí zprávy ze sousedního vrcholu.</p>
+<p>Zpráva je uložena a použita při dalších výpočtech.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>message</strong> &#8211; zpráva ze sousedního vrcholu.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.message_to">
+<tt class="descname">message_to</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.message_to" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Poslání zprávy do sousedního vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol, kterému má být zpráva zaslána.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.normalize">
+<tt class="descname">normalize</tt><big>(</big><span class="optional">[</span><em>parents</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.normalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Normalizace pravděpodobnostního rozdělení.</p>
+<p>Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
+normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
+pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
+jedné.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>parents</strong> &#8211; seznam proměnných, které jsou rodiči vrcholu.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.update" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Aktualizace interní reprezentace.</p>
+<p>Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="vrcholy-pro-dirichletovske-parametry">
+<h3>Vrcholy pro Dirichletovské parametry<a class="headerlink" href="#vrcholy-pro-dirichletovske-parametry" title="Trvalý odkaz na tento nadpis">¶</a></h3>
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">DirichletParameterNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.VariableNode" title="alex.infer.factor.alex.infer.node.VariableNode"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.VariableNode</span></tt></a></p>
+<p>Reprezentace parametrů Dirichletovského rozdělení.</p>
+<dl class="attribute">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.alpha">
+<tt class="descname">alpha</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.alpha" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Parametry dirichletovského rozdělení. Typu <a class="reference internal" href="#alex.infer.factor.Factor" title="alex.infer.factor.Factor"><tt class="xref py py-class docutils literal"><span class="pre">Factor</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>alpha</em><span class="optional">[</span>, <em>aliases</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nového vrcholu pro parametry Dirichletovského rozdělení.</p>
+<p>Pro vytvoření je třeba jméno proměnné a parametry.
+Aliasy pro proměnné slouží k přejmenování proměnných ve zprávách, které
+přicházejí do vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; název proměnné.</li>
+<li><strong>alpha</strong> (<a class="reference internal" href="#alex.infer.factor.Factor" title="alex.infer.factor.Factor"><tt class="xref py py-class docutils literal"><span class="pre">Factor</span></tt></a>) &#8211; parametry Dirichletovského rozdělení.</li>
+<li><strong>aliases</strong> &#8211; zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor">
+<tt class="descname">add_neighbor</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání souseda.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode" title="alex.infer.factor.alex.infer.node.DirichletFactorNode"><tt class="xref py py-class docutils literal"><span class="pre">DirichletFactorNode</span></tt></a>) &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.connect">
+<tt class="descname">connect</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Propojení dvou vrcholů.</p>
+<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> a předá jí parametry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode" title="alex.infer.factor.alex.infer.node.DirichletFactorNode"><tt class="xref py py-class docutils literal"><span class="pre">DirichletFactorNode</span></tt></a>) &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.init_messages">
+<tt class="descname">init_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.init_messages" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inicializace všech zpráv mezi vrcholem a jeho sousedy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.message_from">
+<tt class="descname">message_from</tt><big>(</big><em>node</em>, <em>message</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.message_from" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přijmutí zprávy ze sousedního vrcholu.</p>
+<p>Zpráva je uložena a použita při dalších výpočtech.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>message</strong> &#8211; zpráva ze sousedního vrcholu.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.message_to">
+<tt class="descname">message_to</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.message_to" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Poslání zprávy do sousedního vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol, kterému má být zpráva zaslána.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode">
+<em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">DirichletFactorNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.FactorNode" title="alex.infer.factor.alex.infer.node.FactorNode"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.FactorNode</span></tt></a></p>
+<p>Diskrétní faktor, který ovšem bere své parametry z
+<a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode" title="alex.infer.factor.alex.infer.node.DirichletParameterNode"><tt class="xref py py-class docutils literal"><span class="pre">DirichletParameterNode</span></tt></a> vrcholu.</p>
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em><span class="optional">[</span>, <em>aliases</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nového vrcholu pro faktor.</p>
+<p>Pro vytvoření je třeba jméno faktoru.</p>
+<p>Aliasy pro proměnné slouží k přejmenování proměnných ve zprávách, které
+přicházejí do vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>name</strong> &#8211; název faktoru.
+:arg aliases: zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor">
+<tt class="descname">add_neighbor</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání souseda.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.connect">
+<tt class="descname">connect</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Propojení dvou vrcholů.</p>
+<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> obou vrcholů a předá jí parametry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.init_messages">
+<tt class="descname">init_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.init_messages" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inicializace všech zpráv mezi vrcholem a jeho sousedy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.message_from">
+<tt class="descname">message_from</tt><big>(</big><em>node</em>, <em>message</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.message_from" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přijmutí zprávy ze sousedního vrcholu.</p>
+<p>Zpráva je uložena a použita při dalších výpočtech.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>message</strong> &#8211; zpráva ze sousedního vrcholu.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.message_to">
+<tt class="descname">message_to</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.message_to" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Poslání zprávy do sousedního vrcholu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol, kterému má být zpráva zaslána.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.update" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Aktualizace interní reprezentace.</p>
+<p>Příchozí zprávy jsou pouze uloženy a je potřeba aktualizovat interní
+reprezentaci jejich součinu před počítáním odchozích zpráv.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="modul-lbp">
+<h2>Modul <tt class="xref py py-mod docutils literal"><span class="pre">lbp</span></tt><a class="headerlink" href="#modul-lbp" title="Trvalý odkaz na tento nadpis">¶</a></h2>
+<dl class="exception">
+<dt id="alex.infer.factor.alex.infer.lbp.LBPError">
+<em class="property">exception </em><tt class="descclassname">alex.infer.lbp.</tt><tt class="descname">LBPError</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBPError" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Výjimka pro chyby při inferenci.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP">
+<em class="property">class </em><tt class="descclassname">alex.infer.lbp.</tt><tt class="descname">LBP</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inference v grafickém modelu pomocí Loopy Belief Propagation.</p>
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>strategy='sequential'</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Vytvoření nové instance LBP algoritmu.</p>
+<p>Je možné nastavit strategii výběru vrcholů:</p>
+<ul class="simple">
+<li><em>sequential</em> &#8211; vrcholy jsou vybírány v takovém pořadí, v jakém byly vloženy,</li>
+<li><em>tree</em> &#8211; grafický model je ve formě stromu,</li>
+<li><em>layers</em> &#8211; inference na Dynamické Bayesovské síti.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>strategy</strong> &#8211; strategie, která má být použita pro výběr vrcholů.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.add_nodes">
+<tt class="descname">add_nodes</tt><big>(</big><em>nodes</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.add_nodes" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání vrcholů k inferenci.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>nodes</strong> &#8211; seznam vrcholů.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.add_layer">
+<tt class="descname">add_layer</tt><big>(</big><em>layer</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.add_layer" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání vrstvy na konec grafického modelu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>layer</strong> &#8211; seznam vrcholů tvořících jednu vrstvu.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.add_layers">
+<tt class="descname">add_layers</tt><big>(</big><em>layers</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.add_layers" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Přidání vrstev na konec grafického modelu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>layers</strong> &#8211; seznam seznamů s vrcholy.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.clear_nodes">
+<tt class="descname">clear_nodes</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.clear_nodes" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Smazání všech vrcholů.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.clear_layers">
+<tt class="descname">clear_layers</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.clear_layers" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Smazání všech vrstev.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.init_messages">
+<tt class="descname">init_messages</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.init_messages" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Inicializace zpráv pro všechny vrcholy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alex.infer.factor.alex.infer.lbp.LBP.run">
+<tt class="descname">run</tt><big>(</big><em>n_iterations=1, from_layer]</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.lbp.LBP.run" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<dd><p>Spustit inferenci v grafickém modelu.</p>
+<p>Je možné nastavit počet iterací, po kterém se má inference zastavit.
+U stromu není třeba zadávat počet iterací, bude provedena pouze jedna.</p>
+<p>U vrstev je možné zadat od které vrstvy inferenci provádět.
+Popřípadě budou zprávy propagovány od začátku.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_iterations</strong> &#8211; počet iterací.</li>
+<li><strong>from_layer</strong> &#8211; vrstva, od které se mají zprávy propagovat.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Obsah</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Balíček <tt class="docutils literal"><span class="pre">infer</span></tt></a><ul>
+<li><a class="reference internal" href="#module-alex.infer.factor">Modul <tt class="docutils literal"><span class="pre">factor</span></tt></a></li>
+<li><a class="reference internal" href="#modul-node">Modul <tt class="docutils literal"><span class="pre">node</span></tt></a><ul>
+<li><a class="reference internal" href="#vrcholy-pro-diskretni-vrcholy">Vrcholy pro diskrétní vrcholy</a></li>
+<li><a class="reference internal" href="#vrcholy-pro-dirichletovske-parametry">Vrcholy pro Dirichletovské parametry</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modul-lbp">Modul <tt class="docutils literal"><span class="pre">lbp</span></tt></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Přechozí téma</h4>
+  <p class="topless"><a href="alex.html"
+                        title="předchozí kapitola">Balíček <tt class="docutils literal docutils literal docutils literal"><span class="pre">alex</span></tt></a></p>
+  <h3>Tato stránka</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/alex.infer.txt"
+           rel="nofollow">Ukázat zdroj</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Rychlé vyhledávání</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="hledej" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigace</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Rejstřík indexů"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >moduly</a> |</li>
+        <li class="right" >
+          <a href="alex.html" title="Balíček alex"
+             >předchozí</a> |</li>
+        <li><a href="index.html">Alex.Infer 0.9 documentation</a> &raquo;</li>
+          <li><a href="alex.html" >Balíček <tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">alex</span></tt></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, David Marek.
+      Vytvořeno pomocí <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

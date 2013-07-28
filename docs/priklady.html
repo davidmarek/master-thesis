@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Příklady &mdash; Alex.Infer 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Alex.Infer 0.9 documentation" href="index.html" />
+    <link rel="next" title="Balíček alex" href="alex.html" />
+    <link rel="prev" title="Dokumentace knihovny Alex.Infer" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigace</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Rejstřík indexů"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >moduly</a> |</li>
+        <li class="right" >
+          <a href="alex.html" title="Balíček alex"
+             accesskey="N">další</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Dokumentace knihovny Alex.Infer"
+             accesskey="P">předchozí</a> |</li>
+        <li><a href="index.html">Alex.Infer 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="priklady">
+<h1>Příklady<a class="headerlink" href="#priklady" title="Trvalý odkaz na tento nadpis">¶</a></h1>
+<div class="section" id="jednoduchy-graficky-model">
+<h2>Jednoduchý grafický model<a class="headerlink" href="#jednoduchy-graficky-model" title="Trvalý odkaz na tento nadpis">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">alex.infer.node</span> <span class="kn">import</span> <span class="n">DiscreteVariableNode</span><span class="p">,</span> <span class="n">DiscreteFactorNode</span>
+<span class="kn">from</span> <span class="nn">alex.infer.factor</span> <span class="kn">import</span> <span class="n">Factor</span>
+<span class="kn">from</span> <span class="nn">alex.infer.lbp</span> <span class="kn">import</span> <span class="n">LBP</span>
+
+<span class="c">#</span>
+<span class="c"># Proměnné pro první obrátku.</span>
+<span class="c">#</span>
+<span class="n">hid_1</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+<span class="n">obs_1</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_obs_1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+
+<span class="n">obs_factor_1</span> <span class="o">=</span> <span class="n">DiscreteFactorNode</span><span class="p">(</span><span class="s">&#39;food_obs_factor_1&#39;</span><span class="p">,</span> <span class="n">Factor</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">&#39;food_1&#39;</span><span class="p">,</span> <span class="s">&#39;food_obs_1&#39;</span><span class="p">],</span>
+    <span class="p">{</span>
+        <span class="s">&#39;food_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+        <span class="s">&#39;food_obs_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">}))</span>
+
+<span class="c">#</span>
+<span class="c"># Proměnné pro druhou obrátku.</span>
+<span class="c">#</span>
+<span class="n">hid_2</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_2&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+<span class="n">obs_2</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_obs_2&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+
+<span class="n">obs_factor_2</span> <span class="o">=</span> <span class="n">DiscreteFactorNode</span><span class="p">(</span><span class="s">&#39;food_obs_factor_2&#39;</span><span class="p">,</span> <span class="n">Factor</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">&#39;food_2&#39;</span><span class="p">,</span> <span class="s">&#39;food_obs_2&#39;</span><span class="p">],</span>
+    <span class="p">{</span>
+        <span class="s">&#39;food_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+        <span class="s">&#39;food_obs_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">}))</span>
+
+<span class="c">#</span>
+<span class="c"># Přechodový faktor spojující skryté proměnné z první a druhé obrátky.</span>
+<span class="c">#</span>
+<span class="n">trans_factor</span> <span class="o">=</span> <span class="n">DiscreteFactorNode</span><span class="p">(</span><span class="s">&#39;food_trans_factor&#39;</span><span class="p">,</span> <span class="n">Factor</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">&#39;food_1&#39;</span><span class="p">,</span> <span class="s">&#39;food_2&#39;</span><span class="p">],</span>
+    <span class="p">{</span>
+        <span class="s">&#39;food_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+        <span class="s">&#39;food_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.99</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.01</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.01</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.99</span><span class="p">,</span>
+    <span class="p">}))</span>
+
+<span class="c">#</span>
+<span class="c"># Propojení jednotlivých vrcholů v modelu.</span>
+<span class="c">#</span>
+<span class="n">obs_factor_1</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_1</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">obs_factor_1</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">obs_1</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">obs_factor_2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">obs_factor_2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">obs_2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">trans_factor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_1</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">trans_factor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c"># Nastavení pozorovaných hodnot.</span>
+<span class="c">#</span>
+<span class="n">obs_1</span><span class="o">.</span><span class="n">observed</span><span class="p">({</span>
+    <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,):</span> <span class="mf">0.6</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,):</span> <span class="mf">0.4</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="n">obs_2</span><span class="o">.</span><span class="n">observed</span><span class="p">({</span>
+    <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,):</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,):</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c">#</span>
+<span class="c"># Inference</span>
+<span class="c">#</span>
+<span class="n">lbp</span> <span class="o">=</span> <span class="n">LBP</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s">&#39;tree&#39;</span><span class="p">)</span>
+<span class="n">lbp</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">([</span><span class="n">obs_1</span><span class="p">,</span> <span class="n">obs_2</span><span class="p">,</span> <span class="n">hid_1</span><span class="p">,</span> <span class="n">hid_2</span><span class="p">,</span> <span class="n">obs_factor_1</span><span class="p">,</span> <span class="n">obs_factor_2</span><span class="p">,</span>
+               <span class="n">trans_factor</span><span class="p">])</span>
+<span class="n">lbp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="c">#</span>
+<span class="c"># Vypsat nejpravděpodobnější hodnotu z druhé obrátky a její pravděpodobnost.</span>
+<span class="c">#</span>
+<span class="k">print</span> <span class="n">hid_2</span><span class="o">.</span><span class="n">belief</span><span class="o">.</span><span class="n">most_probable</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="model-s-trenovatelnymi-parametry">
+<h2>Model s trénovatelnými parametry<a class="headerlink" href="#model-s-trenovatelnymi-parametry" title="Trvalý odkaz na tento nadpis">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">alex.ml.bn.node</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DiscreteVariableNode</span><span class="p">,</span> <span class="n">DiscreteFactorNode</span><span class="p">,</span>
+                            <span class="n">DirichletParameterNode</span><span class="p">,</span>
+                            <span class="n">DirichletFactorNode</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">alex.ml.bn.factor</span> <span class="kn">import</span> <span class="n">Factor</span>
+<span class="kn">from</span> <span class="nn">alex.ml.bn.lbp</span> <span class="kn">import</span> <span class="n">LBP</span>
+
+<span class="n">obs_probability</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c">#</span>
+<span class="c"># Proměnné pro první obrátku.</span>
+<span class="c">#</span>
+<span class="n">hid_1</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+<span class="n">obs_1</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_obs_1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+
+<span class="n">obs_factor_1</span> <span class="o">=</span> <span class="n">DiscreteFactorNode</span><span class="p">(</span><span class="s">&#39;food_obs_factor_1&#39;</span><span class="p">,</span> <span class="n">Factor</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">&#39;food_1&#39;</span><span class="p">,</span> <span class="s">&#39;food_obs_1&#39;</span><span class="p">],</span>
+    <span class="p">{</span>
+        <span class="s">&#39;food_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+        <span class="s">&#39;food_obs_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">obs_probability</span><span class="p">))</span>
+
+<span class="c">#</span>
+<span class="c"># Proměnné pro druhou obrátku.</span>
+<span class="c">#</span>
+<span class="n">hid_2</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_2&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+<span class="n">obs_2</span> <span class="o">=</span> <span class="n">DiscreteVariableNode</span><span class="p">(</span><span class="s">&#39;food_obs_2&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">])</span>
+
+<span class="n">obs_factor_2</span> <span class="o">=</span> <span class="n">DiscreteFactorNode</span><span class="p">(</span><span class="s">&#39;food_obs_factor_2&#39;</span><span class="p">,</span> <span class="n">Factor</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">&#39;food_2&#39;</span><span class="p">,</span> <span class="s">&#39;food_obs_2&#39;</span><span class="p">],</span>
+    <span class="p">{</span>
+        <span class="s">&#39;food_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+        <span class="s">&#39;food_obs_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">obs_probability</span><span class="p">))</span>
+
+<span class="c">#</span>
+<span class="c"># Faktor pro přechodovou pravděpodobnost a jeho parametr.</span>
+<span class="c">#</span>
+<span class="n">trans_factor</span> <span class="o">=</span> <span class="n">DirichletFactorNode</span><span class="p">(</span><span class="s">&#39;food_trans_factor&#39;</span><span class="p">)</span>
+<span class="n">trans_param</span> <span class="o">=</span> <span class="n">DirichletParameterNode</span><span class="p">(</span><span class="s">&#39;food_trans_param&#39;</span><span class="p">,</span> <span class="n">Factor</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">&#39;food_1&#39;</span><span class="p">,</span> <span class="s">&#39;food_2&#39;</span><span class="p">],</span>
+    <span class="p">{</span>
+        <span class="s">&#39;food_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+        <span class="s">&#39;food_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;chinese&#39;</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,</span> <span class="s">&#39;indian&#39;</span><span class="p">):</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">}))</span>
+
+<span class="c">#</span>
+<span class="c"># Propojení uzlů do grafického modelu.</span>
+<span class="c">#</span>
+<span class="n">obs_factor_1</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_1</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">obs_factor_1</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">obs_1</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">obs_factor_2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">obs_factor_2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">obs_2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">trans_factor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_1</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">trans_factor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hid_2</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">trans_factor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">trans_param</span><span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c"># Nastavení pozorovaných hodnot.</span>
+<span class="c">#</span>
+<span class="n">obs_1</span><span class="o">.</span><span class="n">observed</span><span class="p">({</span>
+    <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,):</span> <span class="mf">0.1</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="n">obs_2</span><span class="o">.</span><span class="n">observed</span><span class="p">({</span>
+    <span class="p">(</span><span class="s">&#39;chinese&#39;</span><span class="p">,):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">&#39;indian&#39;</span><span class="p">,):</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c">#</span>
+<span class="c"># Inference</span>
+<span class="c">#</span>
+<span class="n">lbp</span> <span class="o">=</span> <span class="n">LBP</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s">&#39;tree&#39;</span><span class="p">)</span>
+<span class="n">lbp</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">([</span><span class="n">obs_1</span><span class="p">,</span> <span class="n">obs_2</span><span class="p">,</span> <span class="n">hid_1</span><span class="p">,</span> <span class="n">hid_2</span><span class="p">,</span> <span class="n">obs_factor_1</span><span class="p">,</span> <span class="n">obs_factor_2</span><span class="p">,</span>
+                <span class="n">trans_factor</span><span class="p">])</span>
+<span class="n">lbp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Obsah</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Příklady</a><ul>
+<li><a class="reference internal" href="#jednoduchy-graficky-model">Jednoduchý grafický model</a></li>
+<li><a class="reference internal" href="#model-s-trenovatelnymi-parametry">Model s trénovatelnými parametry</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Přechozí téma</h4>
+  <p class="topless"><a href="index.html"
+                        title="předchozí kapitola">Dokumentace knihovny Alex.Infer</a></p>
+  <h4>Další téma</h4>
+  <p class="topless"><a href="alex.html"
+                        title="další kapitola">Balíček <tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">alex</span></tt></a></p>
+  <h3>Tato stránka</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/priklady.txt"
+           rel="nofollow">Ukázat zdroj</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Rychlé vyhledávání</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="hledej" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigace</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Rejstřík indexů"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >moduly</a> |</li>
+        <li class="right" >
+          <a href="alex.html" title="Balíček alex"
+             >další</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Dokumentace knihovny Alex.Infer"
+             >předchozí</a> |</li>
+        <li><a href="index.html">Alex.Infer 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, David Marek.
+      Vytvořeno pomocí <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
