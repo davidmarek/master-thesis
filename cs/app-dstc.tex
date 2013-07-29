@@ -1,1 +1,209 @@
+% !TEX root = prace.tex
+\chapter{Zpracování dialogů z DSTC}
+\label{ap:dstc}
 
+\section{Soubory}
+\label{sec:dstcfiles}
+Předvedeme použití vytvořené knihovny na data z Dialog State Tracking Challenge.
+Všechny potřebné data a zdrojové kódy jsou na přiloženém CD.
+V adresáři \texttt{dstc/} je velké množství modulů a dalších adresářů:
+\begin{itemize}
+\item \texttt{dstcutils.py}, \texttt{jsonpath.py}, \texttt{ontology.py}, \texttt{pddiscrete.py}, \\\texttt{common.py}, \texttt{preprocessing.py} -- pomocné moduly pro práci s daty, vytvořené členy výzkumné skupiny pracující na projektu Vystadial,
+
+\item \texttt{loader.py} -- modul pro načítání dat z formátu JSON~\cite{crockford2006application} do interní reprezentace, 
+
+\item \texttt{system\_dm.py} -- skript pro zpracování dat používající vytvořenou knihovnu pro odhad stavu v jednotlivých dialozích.
+Použitá datová sada, vstupní a výstupní soubory, parametry grafického modelu a další parametry nutné pro výpočet je možné skriptu zadat buď pomocí přepínačů na příkazové řádce, anebo v konfiguračním souboru.
+
+\item \texttt{test\_run.sh} -- bashový skript pro spuštění celé pipeline od zpracování dat až po zobrazení výsledků,
+
+\item \texttt{test1.conf}, \texttt{test2.conf}, \texttt{test3.conf}, \texttt{test4.conf} -- konfigurační soubory pro spuštění skriptu \texttt{system\_dm.py} na testovací datové sady ze všech čtyř dialogových systémů.
+
+\item V adresáři \texttt{dstc/bin/} je baseline dialogový systém a skripty pro zpracování výsledků od organizátorů soutěže:
+	\begin{itemize}
+	\item \texttt{baseline} -- baseline dialogový systém,
+	\item \texttt{score} -- skript pro vyhodnocení výstupu soutěžního systému,
+	\item \texttt{report} -- skript pro zobrazení výsledků soutěžního systému v čitelné podobě,
+	\item \texttt{validate} -- skript pro validaci výstupu soutěžního systému,
+	\item Pomocné moduly pro tyto skripty jsou v adresáři \texttt{dstc/lib/}.
+	\end{itemize}
+
+\item V adresáři \texttt{dstc/data/} jsou všechny 4 testovací datové sady, každá ve vlastním adresáři (\texttt{test1/}, \texttt{test2/}, \texttt{test3/}, \texttt{test4/}).
+Každá datová sada se pak skládá z podadresářů pro jednotlivé hovory.
+Každý hovor se skládá ze dvou souborů:
+	\begin{itemize}
+	\item \texttt{dstc.log.json} -- záznam z dialogového systému obsahující všechny informace o dialogu ve formátu JSON,
+	\item \texttt{dstc.labels.json} -- soubor obsahující správné hypotézy, tedy řešení úlohy. Tento soubor samozřejmě před skončením soutěže v datech  chyběl.
+	\end{itemize}
+
+\item V adresáři \texttt{dstc/config/} jsou soubory obsahující cesty k jednotlivým dialogům pro každou testovací sadu.
+\end{itemize}
+
+\section{Konfigurace}
+
+Skript \texttt{system\_dm.py} očekává řadu parametrů pro správné fungování.
+Parametry je možné zadat na příkazové řádce, například:
+\begin{verbatim}
+$ python system_dm.py \
+    --dataroot=data/ \
+    --dataset=config/test1.sessions \
+    --scorefile=track_test1.json
+\end{verbatim}
+
+Popřípadě je možné vytvořit konfigurační soubor obsahující pouze parametry:
+\begin{verbatim}
+--dataroot=data/
+--dataset=config/test1.sessions
+--scorefile=track_test1.json
+\end{verbatim}
+a tento soubor pak předat jako jediný parametr:
+\begin{verbatim}
+$ python system_dm.py --flagfile test1.conf
+\end{verbatim}
+
+Většina vlastností systému pro odhad stavu je konfigurovatelná, ale jen malý počet parametrů je povinný.
+Představíme si ty nejdůležitější parametry:
+\begin{itemize}
+\item \emph{dataroot} -- povinný, adresář obsahující datové sady,
+\item \emph{dataset} -- povinný, konfigurační soubor obsahující seznam cest k jednotlivým dialogům,
+\item \emph{scorefile} -- povinný, název souboru, do kterého má být zapsán výsledek zpracování dialogů,
+\item \emph{slu} (live / batch) -- přepínač, zda-li pracovat s hypotézami z live nebo batch dat,
+\item \emph{remove\_inconsistent} -- mazat nekonzistentní hypotézy (např. v jedné hypotéze více hodnot pro jeden slot),
+\item \emph{processes} -- systém podporuje zpracování na více jádrech, pomocí tohoto přepínače je možné nastavit počet jader, pro jedno jádro systém přepne do ladícího módu, kdy si udržuje v paměti všechny dialogy. Nehodí se pro velké datové sady.
+\item \emph{prob\_same} -- hodnota parametru $\theta_o$, tedy pravděpodobnost, že pozorování odpovídá skryté proměnné,
+\item \emph{prob\_trans} -- hodnota parametru $\theta_t$, tedy pravděpodobnost, že se hodnota skryté proměnné nezmění v další obrátce.
+\end{itemize}
+
+Přepínače jsou implementovány pomocí knihovny \texttt{python-gflags}, tedy je třeba ji mít nainstalovanout.
+
+\section{Výpočet}
+
+V předchozí sekci bylo ukázáno jakým způsobem lze nastavit a spustit skript \texttt{system\_dm.py}, který provede odhad dialogového stavu.
+Výsledkem je soubor ve formátu JSON, kde pro každý dialog a každou jeho obrátku jsou vyznačeny hypotézy pro každý slot.
+V příkladu~\ref{ex:res} je ukázáno jak vypadá výstup pro jeden slot, v tomto případě se jedná o počáteční zastávku, kde hodnota \uv{shadyside} má pravděpodobnost přibližně $0.56$.
+
+\begin{example}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\PY{n+nt}{\PYZdq{}from.neighborhood\PYZdq{}}\PY{p}{:} \PY{p}{\PYZob{}}
+    \PY{n+nt}{\PYZdq{}hyps\PYZdq{}}\PY{p}{:} \PY{p}{[}
+        \PY{p}{\PYZob{}}
+	    \PY{n+nt}{\PYZdq{}score\PYZdq{}}\PY{p}{:} \PY{l+m+mf}{0.5637651968841264}\PY{p}{,}
+            \PY{n+nt}{\PYZdq{}slots\PYZdq{}}\PY{p}{:} \PY{p}{\PYZob{}}
+	        \PY{n+nt}{\PYZdq{}from.neighborhood\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}shadyside\PYZdq{}}
+            \PY{p}{\PYZcb{}}
+        \PY{p}{\PYZcb{}}
+    \PY{p}{]}
+\PY{p}{\PYZcb{}}\PY{p}{,}
+\end{Verbatim}
+\caption{Část výsledku systému pro odhad stavu.}
+\label{ex:res}
+\end{example}
+
+Nyní by bylo třeba výsledky zpracovat a následně zobrazit.
+Všechny tři kroky je možné provést naráz použitím skriptu \texttt{test\_run.sh}:
+
+\begin{verbatim}
+$ ./test_run.sh test1.conf
+\end{verbatim}
+
+Ukázka výsledků je v příkladech~\ref{ex:res1}~a~\ref{ex:res2}. 
+Ve výsledku jsou zobrazeny tři tabulky s výsledky. 
+V první tabulce (\uv{schedule1}) jsou statistiky počítány po každé obrátce.
+V druhé tabulce (\uv{schedule2}) jsou statistiky počítány pro slot pouze pokud se o něm v dané obrátce mluvilo.
+Nakonec ve třetí tabulce (\uv{schedule3}) jsou statistiky počítány pouze na konci dialogu.
+
+Jednotlivé sloupce reprezentují různé sloty, navíc je zde sloupec \emph{joint}, který hodnotí sdruženou informaci o všech slotech v dané obrátce, a sloupec \emph{all}, který obsahuje průměrné skóre.
+
+Jednotlivé řádky obsahují statistiky o slotech, zvlášť zajímavé jsou:
+\begin{itemize}
+\item accuracy -- přesnost,
+\item avgp -- průměrné skóre přiřazené správné hypotéze,
+\item l2 -- Brier skóre.
+\end{itemize}
+
+Nakonec jsou zobrazeny i základní informace o celém výpočtu, například jaká datová sada byla zpracována, počet hovorů, počet obrátek, celkový čas a průměrný čas na jednu obrátku.
+
+{
+\footnotesize
+\begin{example}
+\begin{lstlisting}[language=c,frame=none]
+----------------------------------------------------------------------------
+                                    schedule1
+----------------------------------------------------------------------------
+               route from.d from.m from.n to.des to.mon to.nei  joint    all
+            N  10085  10085  10085  10085  10085  10085  10085  10085  90765
+     accuracy 0.8817 0.6969 0.9841 0.7771 0.8256 0.9845 0.7327 0.2642 0.8534
+         avgp 0.8794 0.6779 0.9811 0.6765 0.8235 0.9828 0.7185 0.2465 0.8370
+     hypcount 0.0773 0.2038 0.0103 0.2442 0.0435 0.0045 0.0353 0.4943 0.0729
+           l2 0.1703 0.4542 0.0268 0.4575 0.2495 0.0243 0.3981 1.0655 0.2304
+          mrr 0.8977 0.7239 0.9850 0.7838 0.8329 0.9846 0.7333 0.2888 0.8606
+     nonempty 0.0682 0.1660 0.0103 0.2442 0.0367 0.0045 0.0348 0.4943 0.0669
+  roc.v1_ca05 0.0000 0.0000 0.9841 0.0000 0.0000 0.9845 0.0000 0.0000 0.0000
+  roc.v1_ca10 0.8617 0.0000 0.9841 0.0000 0.0000 0.9845 0.0000 0.0000 0.0000
+  roc.v1_ca20 0.8817 0.0000 0.9841 0.0000 0.8256 0.9845 0.0000 0.0000 0.8534
+   roc.v1_eer 0.8817 0.6969 0.9841 0.4288 0.8256 0.9845 0.7327 0.2642 0.8534
+  roc.v2_ca05 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v2_ca10 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v2_ca20 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+
+----------------------------------------------------------------------------
+                                    schedule2
+----------------------------------------------------------------------------
+               route from.d from.m from.n to.des to.mon to.nei  joint    all
+            N   6100   4837    926   2706   4070    904   2283   9974  27536
+     accuracy 0.8590 0.6729 0.9471 0.6936 0.6784 0.9436 0.4717 0.2669 0.7309
+         avgp 0.8589 0.6685 0.9449 0.6414 0.6773 0.9351 0.4496 0.2490 0.7212
+     hypcount 0.0807 0.1784 0.0248 0.1778 0.0744 0.0243 0.0604 0.4927 0.0934
+           l2 0.1994 0.4670 0.0780 0.5071 0.4562 0.0918 0.7784 1.0621 0.3939
+          mrr 0.8769 0.6997 0.9514 0.7051 0.6907 0.9441 0.4733 0.2916 0.7443
+     nonempty 0.0723 0.1333 0.0248 0.1778 0.0585 0.0243 0.0600 0.4927 0.0812
+  roc.v1_ca05 0.0000 0.0000 0.9471 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v1_ca10 0.0000 0.0000 0.9471 0.0000 0.0000 0.9436 0.0000 0.0000 0.0000
+  roc.v1_ca20 0.8590 0.0000 0.9471 0.0000 0.0000 0.9436 0.0000 0.0000 0.0000
+   roc.v1_eer 0.8590 0.6729 0.9471 0.6936 0.6784 0.9436 0.4717 0.2669 0.7309
+  roc.v2_ca05 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v2_ca10 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v2_ca20 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+\end{lstlisting}
+\caption{Výsledek systému pro odhad stavu podle prvních dvou typů hodnocení.}
+\label{ex:res1}
+\end{example}
+
+\begin{example}
+\begin{lstlisting}[language=c,frame=none]
+----------------------------------------------------------------------------
+                                    schedule3
+----------------------------------------------------------------------------
+               route from.d from.m from.n to.des to.mon to.nei  joint    all
+            N    897    874    422    767    767    354    620    901   5784
+     accuracy 0.8863 0.6739 0.9645 0.7471 0.7249 0.9520 0.4048 0.1576 0.7076
+         avgp 0.8827 0.6368 0.9496 0.5949 0.7159 0.9426 0.3581 0.1526 0.6692
+     hypcount 0.0836 0.2574 0.0355 0.3494 0.0704 0.0198 0.1145 0.6071 0.1376
+           l2 0.1656 0.5109 0.0713 0.5730 0.4012 0.0811 0.9077 1.1984 0.4673
+          mrr 0.9036 0.7008 0.9656 0.7562 0.7347 0.9520 0.4073 0.1770 0.7184
+     nonempty 0.0758 0.2082 0.0355 0.3494 0.0600 0.0198 0.1129 0.6071 0.1272
+  roc.v1_ca05 0.0000 0.0000 0.9645 0.0000 0.0000 0.9520 0.0000 0.0000 0.0000
+  roc.v1_ca10 0.8740 0.0000 0.9645 0.0000 0.0000 0.9520 0.0000 0.0000 0.0000
+  roc.v1_ca20 0.8863 0.0000 0.9645 0.0000 0.0000 0.9520 0.0000 0.0000 0.0000
+   roc.v1_eer 0.8863 0.6739 0.0664 0.5176 0.7249 0.9520 0.4048 0.1576 0.7076
+  roc.v2_ca05 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v2_ca10 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+  roc.v2_ca20 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+
+----------------------------------------------------------------------------
+                                    basic stats
+----------------------------------------------------------------------------
+             dataset : config/test1.sessions
+      scorer_version : 1.7
+            sessions : 715
+     total_wall_time : 114.580698967
+               turns : 10085
+  wall_time_per_turn : 0.0113614971707
+\end{lstlisting}
+\caption{Výsledek systému pro odhad stavu podle třetího typu hodnocení a základní statistiky.}
+\label{ex:res2}
+\end{example}
+}
