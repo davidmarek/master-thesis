@@ -1,4 +1,4 @@
-% !TEX root = prace.tex
+% !TEX root = thesis.tex
 \chapter{Teorie dialogových systémů}
 \label{ch:kap1}
 
@@ -21,7 +21,7 @@ Příkaz od uživatele může vypadat např. takto: \uv{Chci jet z~Malostranské
 Dialogový systém z~této věty odvodí, že uživatel hledá spojení. 
 Výchozí stanice je Malostranské náměstí a cílová stanice je Anděl.
 Nyní záleží na chování dialogového systému, může například předpokládat, že uživatel chce vždy najít nejdřívější spojení, pokud neřekne jinak.
-V~takovém případě už systém najde v~databázi nejbližší spojení a uživateli jej sdělí.
+V~takovém případě systém najde v~databázi nejbližší spojení a uživateli jej sdělí.
 
 Důležitou vlastností dialogového systému je robustnost.
 Pokud budeme používat dialogový systém v~přirozeném prostředí, musíme se vyrovnat s~tím, že často nebude uživateli rozumět.
@@ -51,7 +51,7 @@ Existuje i celá řada komerčního softwaru od firem jako IBM nebo Nuance.
 Pro obecnou doménu se problém stává mnohem těžším a je třeba velké množství dat.
 K~měření výkonu ASR systému se používá metrika Word Error Rate (WER).
 Při počítání WER je třeba nejprve provést zarovnání rozpoznaného a originálního textu.
-WER je pak počet slov, která jsou změněná, smazaná, anebo přidaná, vydělený počtem slov v~originálním textu.
+WER je pak počet slov, která jsou změněná, smazaná nebo přidaná, vydělený počtem slov v~originálním textu.
 Dialogový systém Let's Go!~\cite{raux2006doing} například dosahuje průměrné WER $64.3\%$.
 
 Systém rozpoznávání řeči může produkovat více hypotéz pro jeden vstup.
@@ -160,7 +160,7 @@ Příklad konfúzní sítě je na obrázku~\ref{fig:konnet}.
 
 Po získání hypotéz o~promluvě uživatele se musi dialogový systém pokusit porozumět, co se uživatel snažil sdělit.
 Dialogový systém nepotřebuje vědět, co přesně uživatel řekl, důležité je pouze zjistit význam sdělení.
-Pokud například uživatel řekne \uv{Chtěl bych nalézt spojení z~Malostranského náměstí na Anděl} anebo \uv{Jak se dostanu na Anděl ze zastávky Malostranské náměstí?}, tak pro dialogový systém jsou obě tvrzení ekvivalentní
+Pokud například uživatel řekne \uv{Chtěl bych nalézt spojení z~Malostranského náměstí na Anděl} anebo \uv{Jak se dostanu na Anděl ze zastávky Malostranské náměstí?}, tak pro dialogový systém jsou obě tvrzení ekvivalentní.
 Uživatel požaduje informace o~spojení mezi dvěma zastávkami, i když v~jednom případě jde o~větu oznamovací a v~druhém případě o~otázku.
 
 První rozdělení mezi přesným významem sdělení a jeho účelem se objevilo ve formě tzv. speech aktů~\cite{austin1975things}.
@@ -184,9 +184,9 @@ Typů může být libovolné množství, ale existuje několik základních, jej
 \begin{itemize}
 \item {\em inform} --- sdělujeme informaci, doplňujeme hodnotu do slotu,
 \item {\em request} --- požadujeme od protějšku doplnění hodnoty pro dotazovaný slot,
-\item {\em confirm} --- chceme potvrdit hodnotu slotu, potvrzení může být implicitní, anebo explicitní.
+\item {\em confirm} --- chceme potvrdit hodnotu slotu, potvrzení může být implicitní nebo explicitní.
 	Při explicitním potvrzení očekáváme odpověď \uv{Ano} nebo \uv{Ne}.
-	U implicitního, pokud se nám nedostane odpovědi, předpokládáme, že protějšek souhlasí.
+	U implicitního, pokud se nám nedostane odpovědi, předpokládáme souhlas.
 \end{itemize}
 
 V~tabulce~\ref{tab:dstcdat} jsou ukázány všechny typy dialogových aktů, které může uživatel říct v~dialogovém systému Let's Go!~\cite{williamsdialog}.

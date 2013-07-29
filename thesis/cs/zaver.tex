@@ -1,4 +1,4 @@
-% !TEX root = prace.tex
+% !TEX root = thesis.tex
 \chapter*{Závěr}
 \addcontentsline{toc}{chapter}{Závěr}
 
@@ -27,3 +27,17 @@ Implementovaný systém pro odhad stavu byl lepší než baseline systém poskyt
 Příklad vrcholů vytvořených speciálně pro použití v~EP je v~sekci \ref{sec:vrdir}.
 Učení parametrů pro odhad stavu v~dialogových systémech je odvozeno v~kapitole \ref{ch:ep}.
 \end{enumerate}
+
+\section*{Další směr práce}
+
+Prostor pro rozšíření práce se nabízí ve dvou rovinách. 
+První je množina možných distribucí, s kterými umí knihovna pracovat.
+Implementované byly kategorické a Dirichletovské pravděpodobnostní rozdělení, protože jsou využívány v dialogových systémech.
+Nic ovšem nebrání například přidat Gamma rozdělení a používat ho jako apriorní rozdělení pro Dirichletovské parametry.
+Také je možné se odprostit od dialogových systémů a implementovat spojité faktory, třeba pro počítání s Normálním rozdělením.
+Pak se otevírá velké množství řešitelných úloh jako regrese pomocí probit modelu.
+
+Další možností jak obohatit vytvořenou knihovnu je upravením inferenčních metod.
+Existují rozšíření algoritmu Expectation Propagation pro zrychlení inference~\cite{seeger2010fast}.
+Možností je i přidat úplně nové metody.
+Například variační aproximace, která je podobná EP, ale minimalizujeme KL divergenci s opačným pořadím pravděpodobnostních rozdělení, by rozšířila množinu řešitelných problémů.

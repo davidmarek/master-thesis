@@ -1,4 +1,4 @@
-% !TEX root = prace.tex
+% !TEX root = thesis.tex
 \chapter{Implementace}
 \label{ch:kap4}
 
@@ -1467,9 +1467,13 @@ Ovšem při hovoru s~uživatelem není možné si dovolit dlouhé pauzy, působ�
 Častým problémem pak u~těchto knihoven je nemožnost volby aproximace.
 
 Populární knihovna, která umožňuje použití Bayesovských modelů pro širokou škálu problémů, je Infer.Net, pocházející z~Microsoft Research~\cite{InferNET12}.
-Tato knihovna nabízí velkou řadu inferenčních algoritmů.
+Tato knihovna nabízí velkou řadu inferenčních algoritmů, např. Expectation Propagation, Variational Message Passing nebo Gibbsovo vzorkování.
 Jak název napovídá, je napsaná v~prostředí .Net a tedy je nutné ji používat z~jazyka, který běží v~tomto prostředí (C\#, F\# atd.)
 
-Dále existuje řada knihoven, které lze použít pro inferenci v~Bayesovských sítích, ovšem namísto variačních metod používají vzorkování.
+Další knihovny jsou například Bayes Net Toolbox pro Matlab~\cite{bnl} nebo Probabilistic Network Library (\url{http://sourceforge.net/projects/openpnl/}).
+Většinou obsahují obecné inferenční algoritmy, omezený počet podporovaných distribucí a podpora je diskutabilní.
+V případě BNT byla poslední verze vydána v roce 2007 a u PNL už neexistuje oficiální web na stránkách firmy Intel, která knihovnu vytvořila.
+
+Dále existují knihovny, které lze použít pro inferenci v~Bayesovských sítích, ovšem namísto variačních metod používají vzorkování.
 Příkladem je knihovna PyMC~\cite{patil2010pymc}. 
 Díky využití metod Monte Carlo je jednoduší počítání se složitějšími distribucemi, ovšem na druhou stranu platíme mnohdy pomalou konvergencí.
