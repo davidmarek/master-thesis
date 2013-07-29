@@ -305,11 +305,11 @@ Můžeme spočítat pravděpodobnost stavu v~čase $t+1$ po přijetí nového po
 \begin{align}
 \small
 p(s_{t+1} = s^\prime \mid h_{t+1}) \; \propto \;& 
-    p(o_{t+1} = o^\prime \mid s_{t+1} = s^\prime) \\
+    p(o_{t+1} = o^\prime \mid s_{t+1} = s^\prime)
+\label{eq:beliefupdate} \\
     &\sum_{s~\in \mathcal{S}}
         p(s_t = s~\mid h_t)
         p(s_{t+1} = s^\prime \mid s_t = s, a_t = a) \nonumber
-\label{eq:beliefupdate}
 \end{align}
 
 Nyní můžeme definovat stav důvěry v~čase $t$, $b_t$, jako pravděpodobnost stavů dáno všemi pozorováními až do času $t$.
