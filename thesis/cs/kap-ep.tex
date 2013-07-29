@@ -1,4 +1,4 @@
-% !TEX root = prace.tex
+% !TEX root = thesis.tex
 \chapter{Učení parametrů}
 \label{ch:ep}
 
@@ -520,8 +520,8 @@ V~algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation uprave
     \State Spočítej všechny zprávy z~parametrů:
     \For{každý parametr $\vec{\theta}_i$ spojený s~faktorem $f_{\tilde\beta}$}
         \State Parametry zprávy z~$\vec{\theta}_i$ do $f_{\tilde\beta}$:
-            $\vec\alpha_{ \vec\theta_i \rightarrow f_\beta} = \vec{\alpha}_i -
-            \vec\alpha_{f_\beta \rightarrow \vec\theta_i } + 1$.
+            $\vec\alpha_{ \vec\theta_i \rightarrow f_{\tilde\beta}} = \vec{\alpha}_i -
+            \vec\alpha_{f_{\tilde\beta} \rightarrow \vec\theta_i } + 1$.
     \EndFor
 
     \State Aktualizuj zprávy z~faktoru do proměnných:
@@ -531,9 +531,9 @@ V~algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation uprave
         \hskip\algorithmicindent
         $m_{f_{\tilde{\beta}} \rightarrow x_j} =
             \sum_{\vec{x}: x_j = \tilde{x}_j}
-                \mathbb{E}_{q^{\backslash\beta}}(\,\theta_{\rho(\vec{x^\prime}), x_0}\,)\,
+                \mathbb{E}_{q^{\backslash\tilde\beta}}(\,\theta_{\rho(\vec{x^\prime}), x_0}\,)\,
                 \prod_{i \ne j}\,
-                    q^{\backslash\beta}(x_i)$
+                    q^{\backslash\tilde\beta}(x_i)$
     \EndFor
 
     \State Aktualizuj marginální pravděpodobnost parametrů:
@@ -546,23 +546,23 @@ V~algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation uprave
         \State Parametry zprávy z~$f_{\tilde\beta}$ do $\vec{\theta}_i$:
         \State
             \hskip\algorithmicindent
-            $\vec\alpha_{f_\beta \rightarrow \vec\theta_i} =
+            $\vec\alpha_{f_{\tilde\beta} \rightarrow \vec\theta_i} =
                 \vec{\alpha}_i^*
-                - \vec\alpha_{ \vec\theta_i \rightarrow f_\beta}
+                - \vec\alpha_{ \vec\theta_i \rightarrow f_{\tilde\beta}}
                 + 1$
         \State Aktualizuj parametry marginální distribuce $q(\vec{\theta}_i)$
         \State
             \hskip\algorithmicindent
             $\vec{\alpha}_i = \vec{\alpha}_i^* =
-                \vec\alpha_{f_\beta \rightarrow \vec\theta_i}
-                + \vec\alpha_{ \vec\theta_i \rightarrow f_\beta}$
+                \vec\alpha_{f_{\tilde\beta} \rightarrow \vec\theta_i}
+                + \vec\alpha_{ \vec\theta_i \rightarrow f_{\tilde\beta}}$
     \EndFor
     \For{každou proměnnou $X_i$, spojenou s~faktorem $f_{\tilde\beta}$}
         \State Aktualizuj zprávy z~proměnných do faktoru:
         \State
             \hskip\algorithmicindent
-            $q^{\backslash\beta}(x_i) =
-                \prod_{\beta \ne \tilde\beta} \, m_{f_\beta \rightarrow x_i}(x_i)$
+            $q^{\backslash\tilde\beta}(x_i) =
+                \prod_{\beta \ne \tilde\beta} \, m_{f_{\beta} \rightarrow x_i}(x_i)$
     \EndFor
 \Until{konvergence}
 \end{algorithmic}

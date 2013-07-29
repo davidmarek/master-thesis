@@ -31,13 +31,13 @@ Učení parametrů pro odhad stavu v~dialogových systémech je odvozeno v~kapit
 \section*{Další směr práce}
 
 Prostor pro rozšíření práce se nabízí ve dvou rovinách. 
-První je množina možných distribucí, s kterými umí knihovna pracovat.
-Implementované byly kategorické a Dirichletovské pravděpodobnostní rozdělení, protože jsou využívány v dialogových systémech.
-Nic ovšem nebrání například přidat Gamma rozdělení a používat ho jako apriorní rozdělení pro Dirichletovské parametry.
+První je množina možných distribucí, s~kterými umí knihovna pracovat.
+Implementované byly kategorické a~Dirichletovské pravděpodobnostní rozdělení, protože jsou využívány v~dialogových systémech.
+Nic ovšem nebrání například přidat Gamma rozdělení a~používat ho jako apriorní rozdělení pro Dirichletovské parametry.
 Také je možné se odprostit od dialogových systémů a implementovat spojité faktory, třeba pro počítání s Normálním rozdělením.
-Pak se otevírá velké množství řešitelných úloh jako regrese pomocí probit modelu.
+Pak se otevírá velké množství řešitelných úloh jako třeba regrese pomocí probit modelu.
 
-Další možností jak obohatit vytvořenou knihovnu je upravením inferenčních metod.
+Další možností, jak obohatit vytvořenou knihovnu, je upravení inferenčních metod.
 Existují rozšíření algoritmu Expectation Propagation pro zrychlení inference~\cite{seeger2010fast}.
 Možností je i přidat úplně nové metody.
 Například variační aproximace, která je podobná EP, ale minimalizujeme KL divergenci s opačným pořadím pravděpodobnostních rozdělení, by rozšířila množinu řešitelných problémů.
