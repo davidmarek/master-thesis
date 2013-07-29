@@ -1,3 +1,3 @@
 all:
-	cd cs; make; cp prace.pdf ..
+	cd thesis/cs; make
 
