@@ -19,4 +19,5 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     packages=['alex.infer'],
+    install_requires=['numpy', 'scipy', 'python-gflags'],
 )
