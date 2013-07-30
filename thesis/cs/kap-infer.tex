@@ -215,9 +215,9 @@ Eliminace proměnných je popsána v~algoritmu~\ref{alg:ve}.
 \label{alg:ve}
 \begin{algorithmic}
 \Function{Sum-Product-VE}{$\Phi$, $\vec{X}$, $\prec$}
-\State{$\Phi$ množina všech faktorů.} 
-\State{$\vec{X}$ množina náhodných proměnných, které mají být eliminovány.}
-\State{$\prec$ pořadí proměnných, v~jakém mají být eliminovány.}
+\State{$\Phi$ -- množina všech faktorů.} 
+\State{$\vec{X}$ -- množina náhodných proměnných, které mají být eliminovány.}
+\State{$\prec$ -- pořadí proměnných, v~jakém mají být eliminovány.}
 \State
 
 \State Nechť $X_1, \dots, X_k$ je seřazení proměnných z~$\vec{X}$, t.ž. $X_i \prec X_j \Leftrightarrow i < j$.
@@ -229,8 +229,8 @@ Eliminace proměnných je popsána v~algoritmu~\ref{alg:ve}.
 \EndFunction
 \State
 \Function{Sum-Product-Eliminate-Var}{$\Phi$, $X$}
-\State{$\Phi$ množina všech faktorů.}
-\State{$X$, proměnná, která má být eliminována.}
+\State{$\Phi$ -- množina všech faktorů.}
+\State{$X$ -- proměnná, která má být eliminována.}
 \State
 
 \State $\Phi^\prime \gets \{\phi \in \Phi: X \in Dom(\phi)\}$
