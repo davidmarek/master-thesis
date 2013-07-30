@@ -10,7 +10,16 @@ Knihovna :mod:`alex.infer` implementuje aproximativní bayesovské metody pro in
 Byla speciálně vytvořena pro použití v statistických dialogových systémech.
 Implementuje algoritmus Loopy Belief Propagation pro inferenci na faktor grafech a Expectation Propagation pro učení parametrů z Dirichletovského rozdělení.
 
-Obsah:
+Instalace
+---------
+
+Mezi závislosti patří knihovny numpy a scipy.
+Instalace se provede pomocí setuptools::
+
+    # python setup.py install
+
+Obsah
+-----
 
 .. toctree::
    :maxdepth: 4

@@ -4,20 +4,21 @@
 
 Práce splnila všechny vytyčené cíle.
 Výsledkem je implementace metod pro odhad stavu a parametrů v~dialogových systémech.
-Byly představeny metody pro inferenci v~grafických modelech založené na posílání zpráv, navíc byl odvozen algoritmus pro inferenci parametrů Dirichletovského rozdělení srovnáním momentů.
-Práce obsahuje příklady použití vytvořené knihovny a otestování na reálných datech v~rámci soutěže Dialog State Tracking Challenge, kde generativní systém pro odhad stavu používající implementovanou knihovnu dosáhl výsledků srovnatelných s~ostatními přihlášenými týmy.
+Byly představeny metody pro inferenci v~grafických modelech založené na posílání zpráv, navíc byl odvozen algoritmus pro inferenci parametrů Dirichletovského rozdělení.
+Práce obsahuje příklady použití vytvořené knihovny a otestování na reálných datech v~rámci soutěže Dialog State Tracking Challenge, kde generativní systém pro odhad stavu používající implementovanou knihovnu dosáhl výsledků srovnatelných s~ostatními přihlášenými systémy.
 Bližší detaily podle cílů vytyčených v~úvodu práce:
 \begin{enumerate}
 
 \item V~kapitole \ref{ch:kap1} byly představeny dialogové systémy a jejich jednotlivé součásti.
-V~sekci \ref{sec:bn} pak byly představeny bayesovské sítě, které se nabízí jako ideální model pro reprezentaci dialogového stavu.
+V~sekci \ref{sec:bn} pak byly představeny Bayesovské sítě, které se nabízejí jako ideální model pro reprezentaci dialogového stavu.
 
-\item V~kapitole \ref{ch:kap2} jsou prezentovány možné inferenční algoritmy pro odhad stavu v~bayesovských sítích.
+\item V~kapitole \ref{ch:kap2} jsou prezentovány možné inferenční algoritmy pro odhad stavu v~Bayesovských sítích.
 V~sekci \ref{sec:lbp} je představen algoritmus Loopy Belief Propagation.
 Jeho použití je ukázáno v~sekci \ref{sec:usage}.
 
 \item Implementace LBP byla použita pro DSTC a popis celé soutěže i s~výsledky je v~sekci \ref{sec:dstc}.
-Implementovaný systém pro odhad stavu byl lepší než baseline systém poskytnutý organizátory (tabulka \ref{t:all:datasets}) a systém se navíc umístil příznivě i vzhledem k~ostatním přihlášeným týmům (tabulka \ref{t:DSTC:ranking}).
+Implementovaný systém pro odhad stavu byl lepší než baseline systém poskytnutý organizátory (tabulka \ref{t:all:datasets}), a navíc se umístil příznivě i~vzhledem k~ostatním přihlášeným systémům (tabulka~\ref{t:DSTC:ranking}).
+Popis použitého systému a jeho srovnání s diskriminativním systémem bylo publikováno v~samostatném článku~\cite{zilka2013}.
 
 \item Implementované strategie pro výběr vrcholu v~LBP algoritmu jsou popsány v~sekci \ref{sec:noch}.
 
@@ -31,11 +32,10 @@ Učení parametrů pro odhad stavu v~dialogových systémech je odvozeno v~kapit
 \section*{Další směr práce}
 
 Prostor pro rozšíření práce se nabízí ve dvou rovinách. 
-První je množina možných distribucí, s~kterými umí knihovna pracovat.
-Implementované byly kategorické a~Dirichletovské pravděpodobnostní rozdělení, protože jsou využívány v~dialogových systémech.
-Nic ovšem nebrání například přidat Gamma rozdělení a~používat ho jako apriorní rozdělení pro Dirichletovské parametry.
-Také je možné se odprostit od dialogových systémů a implementovat spojité faktory, třeba pro počítání s Normálním rozdělením.
-Pak se otevírá velké množství řešitelných úloh jako třeba regrese pomocí probit modelu.
+První je množina možných distribucí, se~kterými dokáže knihovna pracovat.
+Implementováno bylo kategorické a~Dirichletovské pravděpodobnostní rozdělení, protože jsou využívána v~dialogových systémech.
+Mohli bychom přidat Gamma rozdělení a~používat jej jako apriorní rozdělení pro Dirichletovské parametry.
+Také je možné se oprostit od dialogových systémů a implementovat spojité faktory, třeba pro počítání s~normálním rozdělením.
 
 Další možností, jak obohatit vytvořenou knihovnu, je upravení inferenčních metod.
 Existují rozšíření algoritmu Expectation Propagation pro zrychlení inference~\cite{seeger2010fast}.

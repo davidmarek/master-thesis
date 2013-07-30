@@ -343,9 +343,8 @@ Pro výpočty jsou používány třídy z modulu :mod:`~alex.infer.factor`.
         Vytvoření nového vrcholu.
 
         Při vytvoření vrcholu je třeba zadat jeho jméno, pod kterým bude možné
-        jej nalézt při inferenci a je možné předat aliasy pro proměnné. Aliasy pro
-        proměnné slouží k přejmenování proměnných ve zprávách, které přicházejí
-        do vrcholu.
+        jej nalézt při inferenci. Je možné předat aliasy pro proměnné, slouží k
+        přejmenování proměnných ve zprávách, které přicházejí do vrcholu.
 
         :arg name: jméno vrcholu.
         :arg aliases: zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v parametru.
@@ -354,7 +353,9 @@ Pro výpočty jsou používány třídy z modulu :mod:`~alex.infer.factor`.
 
         Přidání souseda.
 
-        Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost přidat implementačně závislé parametry.
+        Pro většinu implementací bude stačit pouze první parametr (sousední
+        vrchol), zůstává tu ovšem možnost přidat implementačně závislé
+        parametry.
 
         :arg node: sousední vrchol.
         :arg options: implementačně závislé parametry.
@@ -363,8 +364,8 @@ Pro výpočty jsou používány třídy z modulu :mod:`~alex.infer.factor`.
 
         Propojení dvou vrcholů.
 
-        Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-        Interně zavolá metodu :meth:`add_neighbor` a předá jí parametry.
+        Stačí zavolat pouze jednou pro dvojici vrcholů.
+        Interně zavolá metodu :meth:`add_neighbor` na obou vrcholech a předá ji parametry.
 
         :arg node: sousední vrchol.
         :arg options: implementačně závislé parametry.
@@ -456,8 +457,8 @@ Vrcholy pro diskrétní vrcholy
 
         Propojení dvou vrcholů.
 
-        Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-        Interně zavolá metodu :meth:`add_neighbor` a předá jí parametry.
+        Stačí zavolat pouze jednou pro dvojici vrcholů.
+        Interně zavolá metodu :meth:`add_neighbor` na obou vrcholech a předá ji parametry.
 
         :arg node: sousední vrchol.
 
@@ -485,7 +486,7 @@ Vrcholy pro diskrétní vrcholy
         Normalizace pravděpodobnostního rozdělení.
 
         Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-        normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+        normalizovaný. Je tedy třeba jej normalizovat před jakýmkoliv dalším
         použitím.
 
     .. method:: update()
@@ -540,8 +541,8 @@ Vrcholy pro diskrétní vrcholy
 
         Propojení dvou vrcholů.
 
-        Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-        Interně zavolá metodu :meth:`add_neighbor` obou vrcholů a předá jí parametry.
+        Stačí zavolat pouze jednou pro dvojici vrcholů.
+        Interně zavolá metodu :meth:`add_neighbor` na obou vrcholech a předá ji parametry.
 
         :arg node: sousední vrchol.
 
@@ -569,7 +570,7 @@ Vrcholy pro diskrétní vrcholy
         Normalizace pravděpodobnostního rozdělení.
 
         Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-        normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+        normalizovaný. Je tedy třeba jej normalizovat před jakýmkoliv dalším
         použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
         pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
         jedné.
@@ -616,12 +617,12 @@ Vrcholy pro Dirichletovské parametry
         :arg node: sousední vrchol.
         :type node: :class:`~alex.infer.node.DirichletFactorNode`
 
-    .. method:: connect(node, \*\*options)
+    .. method:: connect(node)
 
         Propojení dvou vrcholů.
 
-        Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-        Interně zavolá metodu :meth:`add_neighbor` a předá jí parametry.
+        Stačí zavolat pouze jednou pro dvojici vrcholů.
+        Interně zavolá metodu :meth:`add_neighbor` na obou vrcholech a předá ji parametry.
 
         :arg node: sousední vrchol.
         :type node: :class:`~alex.infer.node.DirichletFactorNode`
@@ -650,8 +651,8 @@ Vrcholy pro Dirichletovské parametry
 
     Předek: :class:`alex.infer.node.FactorNode`
 
-    Diskrétní faktor, který ovšem bere své parametry z
-    :class:`~alex.infer.node.DirichletParameterNode` vrcholu.
+    Diskrétní faktor, parametry jeho rozdělení ovšem nejsou pevně dány, ale
+    pochází z vrcholu typu :class:`~alex.infer.node.DirichletParameterNode`.
 
     .. method:: __init__(name[, aliases])
 
@@ -663,22 +664,24 @@ Vrcholy pro Dirichletovské parametry
         přicházejí do vrcholu.
 
         :arg name: název faktoru.
-            :arg aliases: zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.
+            :arg aliases: zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných ve faktoru.
 
-    .. method:: add_neighbor(node)
+    .. method:: add_neighbor(node, parent=True)
 
         Přidání souseda.
 
         :arg node: sousední vrchol.
+        :arg parent: přepínač, zda-li je přidávaná proměnná rodičem ve faktoru.
 
-    .. method:: connect(node)
+    .. method:: connect(node, parent=True)
 
         Propojení dvou vrcholů.
 
-        Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-        Interně zavolá metodu :meth:`add_neighbor` obou vrcholů a předá jí parametry.
+        Stačí zavolat pouze jednou pro dvojici vrcholů.
+        Interně zavolá metodu :meth:`add_neighbor` na obou vrcholech a předá ji parametry.
 
         :arg node: sousední vrchol.
+        :arg parent: přepínač, zda-li je přidávaná proměnná rodičem ve faktoru.
 
     .. method:: init_messages()
 

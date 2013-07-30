@@ -27,7 +27,7 @@ Faktor pak může být zapsán zkráceně:
 $$f_\beta(\vec{x}, \Theta) = p(x_0 | x_1, \dots, x_{N_x}; \Theta) =
 \theta_{\rho(x^\prime), x_0}$$
 
-Příklad faktoru $f_\beta$ je na obrázku~\ref{ex:factor}, pro ilustraci pouze s~třemi parametry a čtyřmi proměnnými.
+Příklad faktoru $f_\beta$ je na obrázku~\ref{ex:factor}, pro ilustraci pouze s~třemi parametry a~čtyřmi proměnnými.
 Správně by měl faktor mít tolik parametrů, kolik je možných přiřazení pro rodičovské proměnné.
 
 \begin{figure}[h]
@@ -116,12 +116,12 @@ Rovnost~(\ref{eq:1}) vychází z~definice výpočtu marginální pravděpodobnos
 sdružené pravděpodobnosti.
 V~(\ref{eq:2}) byla použita definice faktoru, z~integrálu byly vytknuty členy neobsahující $\Theta$ a nakonec bylo využito toho, že pro
 množiny parametrů, které nejsou spojeny s~faktorem $f_\beta$, je jejich neúplná
-distribuce rovna marginální distribuci a tedy $\int_{\theta_i} q(\theta_i) =
+distribuce rovna marginální distribuci, a tedy $\int_{\theta_i} q(\theta_i) =
 1$. V~(\ref{eq:3}) byla použita definice očekávané hodnoty.
 
-Marginální pravděpodobnost proměnné $x_i$ tedy je
+Marginální pravděpodobnost proměnné $x_j$ tedy je
 \begin{equation}
-p^*(x_i) =
+p^*(x_j) =
 \sum_{\vec{x} \backslash x_j} \;
 	\prod_i \;
 		q^{\backslash \beta}(x_i)\;
@@ -151,7 +151,7 @@ pro proměnné:
 \begin{align}
 p^*(\tilde{\vec{\theta}}_j) & = 
     \sum_{\vec{x}} \; 
-    \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \;
+    \int_{\vec{\Theta} \backslash \vec{\theta}_j} \;
          \prod_i \;
              q^{\backslash \beta}(x_i) \;
          \prod_l \;
@@ -163,7 +163,7 @@ p^*(\tilde{\vec{\theta}}_j) & =
         \sum_{\vec{x}: \rho(\vec{x^\prime}) = l} \;
             \prod_i \;
                 q^{\backslash \beta}(x_i) \,
-                \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \;
+                \int_{\vec{\Theta} \backslash \vec{\theta}_j} \;
                     \prod_k \;
                         q^{\backslash \beta}(\vec{\theta}_k) \;
                         \theta_{l, x_0}\; + \label{eq:ep:theta_2}
@@ -172,7 +172,7 @@ p^*(\tilde{\vec{\theta}}_j) & =
     \sum_{\vec{x}: \rho(\vec{x^\prime}) = j} \;
         \prod_i \;
             q^{\backslash \beta}(x_i) \;
-            \int_{\vec{\Theta}: \vec{\theta}_j = \tilde{\vec{\theta}}_j} \;
+            \int_{\vec{\Theta} \backslash \vec{\theta}_j} \;
                 \prod_k \;
                     q^{\backslash \beta}(\vec{\theta}_k) \; 
                     \tilde{\theta}_{j, x_0}
@@ -235,7 +235,7 @@ těchto parametrů.
 
 \section{Aproximace marginálních pravděpodobností}
 
-Při výpočtu aproximující distribuce $q(\vec{\theta}_j)$ se může stát, že skutečná marginální distribuce je v~komplikovaném tvaru, a pak je aproximace složitá na výpočet a může se odchylovat od skutečné distribuce.
+Při výpočtu aproximující distribuce $q(\vec{\theta}_j)$ se může stát, že skutečná marginální distribuce je v~komplikovaném tvaru a pak je aproximace složitá na výpočet a může se odchylovat od skutečné distribuce.
 Například se jedná o~směs distribucí.
 Ideální případ je takový, kdy aproximace je stejného typu jako skutečná distribuce.
 
@@ -292,7 +292,7 @@ Dir(\vec{\theta}_i;
 Naším cílem je nalézt parametry $\vec{\alpha}^*$ aproximované marginální pravděpodobnosti \eqref{eq:ep:aprx_1}, které minimalizují vzdálenost od skutečné marginální pravděpodobnosti \eqref{eq:ep:theta_4}. 
 
 Jednotlivé faktory musíme vždy aproximovat s~ohledem na všechny ostatní.
-U~našeho grafického modelu využijeme nezávislostí a tak nám stačí pouze pracovat se zprávami ze sousedních vrcholů.
+U~našeho grafického modelu využijeme nezávislostí, a tak nám stačí pouze pracovat se zprávami ze sousedních vrcholů.
 Všechny informace se v~modelu šíří přes zprávy mezi vrcholy, a proto je třeba několika iterací pro přesun informace z~jedné části modelu do druhé.
 
 Pro měření vzdálenosti mezi dvěma pravděpodobnostními rozloženími se používá Kullback-Leiblerova divergence:
@@ -334,6 +334,8 @@ w_j \, \theta_j \, Dir(\vec{\theta}; \vec{\alpha}) &\propto \,
          {\sum_i \, \alpha_i} \;
     Dir(\vec\theta; \,\vec{\alpha} + \vec{\delta}_j) \\
 \end{align}
+
+Zde jsme použili $\vec{\delta}_i$, což je vektor nul, který má pouze na pozici $i$ jedničku.
 
 Díky této úpravě lze $p^*$ vyjádřit jako směs Dirichletovských rozdělení.
 \begin{equation}
@@ -400,7 +402,7 @@ $\vec\theta$ podle $p^*$. Můžeme ji vyjádřit z~definice střední hodnoty:
 
 Opět získáváme vážený součet středních hodnot podle Dirichletovských rozdělení.
 Střední hodnotu druhé mocniny proměnné podle Dirichletovského rozdělení
-lze podle~(\ref{eq:epweimix2}) opět jednoduše odvodit z~definice:
+lze opět jednoduše odvodit z~definice:
 \begin{align}
 \mathbb{E}_{Dir(\vec\alpha)}[x_i^2] &=
 	\int x_i^2 \, Dir(\vec x; \, \vec\alpha) \; \mathrm{d}\vec x
@@ -530,7 +532,7 @@ V~algoritmu~\ref{alg:ep} je předveden algoritmus Expectation Propagation uprave
     \State
         \hskip\algorithmicindent
         $m_{f_{\tilde{\beta}} \rightarrow x_j} =
-            \sum_{\vec{x}: x_j = \tilde{x}_j}
+            \sum_{\vec{x} \backslash x_j}
                 \mathbb{E}_{q^{\backslash\tilde\beta}}(\,\theta_{\rho(\vec{x^\prime}), x_0}\,)\,
                 \prod_{i \ne j}\,
                     q^{\backslash\tilde\beta}(x_i)$

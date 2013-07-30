@@ -1,11 +1,11 @@
-% !TEX root = prace.tex
+% !TEX root = thesis.tex
 \chapter{Zpracování dialogů z DSTC}
 \label{ap:dstc}
 
 \section{Soubory}
 \label{sec:dstcfiles}
-Předvedeme použití vytvořené knihovny na data z Dialog State Tracking Challenge.
-Všechny potřebné data a zdrojové kódy jsou na přiloženém CD.
+Předvedeme použití vytvořené knihovny na datech z Dialog State Tracking Challenge.
+Všechna potřebné data a zdrojové kódy jsou na přiloženém CD.
 V adresáři \texttt{dstc/} je velké množství modulů a dalších adresářů:
 \begin{itemize}
 \item \texttt{dstcutils.py}, \texttt{jsonpath.py}, \texttt{ontology.py}, \texttt{pddiscrete.py}, \\\texttt{common.py}, \texttt{preprocessing.py} -- pomocné moduly pro práci s daty, vytvořené členy výzkumné skupiny pracující na projektu Vystadial,
@@ -13,7 +13,7 @@ V adresáři \texttt{dstc/} je velké množství modulů a dalších adresářů
 \item \texttt{loader.py} -- modul pro načítání dat z formátu JSON~\cite{crockford2006application} do interní reprezentace, 
 
 \item \texttt{system\_dm.py} -- skript pro zpracování dat používající vytvořenou knihovnu pro odhad stavu v jednotlivých dialozích.
-Použitá datová sada, vstupní a výstupní soubory, parametry grafického modelu a další parametry nutné pro výpočet je možné skriptu zadat buď pomocí přepínačů na příkazové řádce, anebo v konfiguračním souboru.
+Použitá datová sada, vstupní a~výstupní soubory, parametry grafického modelu a další parametry nutné pro výpočet je možné skriptu zadat buď pomocí přepínačů na příkazové řádce, anebo v konfiguračním souboru.
 
 \item \texttt{test\_run.sh} -- bashový skript pro spuštění celé pipeline od zpracování dat až po zobrazení výsledků,
 
@@ -29,11 +29,12 @@ Použitá datová sada, vstupní a výstupní soubory, parametry grafického mod
 	\end{itemize}
 
 \item V adresáři \texttt{dstc/data/} jsou všechny 4 testovací datové sady, každá ve vlastním adresáři (\texttt{test1/}, \texttt{test2/}, \texttt{test3/}, \texttt{test4/}).
+Datové sady jsou komprimované a je třeba je nejprve rozbalit.
 Každá datová sada se pak skládá z podadresářů pro jednotlivé hovory.
 Každý hovor se skládá ze dvou souborů:
 	\begin{itemize}
 	\item \texttt{dstc.log.json} -- záznam z dialogového systému obsahující všechny informace o dialogu ve formátu JSON,
-	\item \texttt{dstc.labels.json} -- soubor obsahující správné hypotézy, tedy řešení úlohy. Tento soubor samozřejmě před skončením soutěže v datech  chyběl.
+	\item \texttt{dstc.labels.json} -- soubor obsahující správné hypotézy, tedy řešení úlohy. Tento soubor samozřejmě před ukončením soutěže v datech  chyběl.
 	\end{itemize}
 
 \item V adresáři \texttt{dstc/config/} jsou soubory obsahující cesty k jednotlivým dialogům pro každou testovací sadu.
@@ -69,18 +70,18 @@ Představíme si ty nejdůležitější parametry:
 \item \emph{scorefile} -- povinný, název souboru, do kterého má být zapsán výsledek zpracování dialogů,
 \item \emph{slu} (live / batch) -- přepínač, zda-li pracovat s hypotézami z live nebo batch dat,
 \item \emph{remove\_inconsistent} -- mazat nekonzistentní hypotézy (např. v jedné hypotéze více hodnot pro jeden slot),
-\item \emph{processes} -- systém podporuje zpracování na více jádrech, pomocí tohoto přepínače je možné nastavit počet jader, pro jedno jádro systém přepne do ladícího módu, kdy si udržuje v paměti všechny dialogy. Nehodí se pro velké datové sady.
+\item \emph{processes} -- systém podporuje zpracování na více jádrech. Pomocí tohoto přepínače je možné nastavit počet použitých jader. Pro jedno jádro systém přepne do ladícího módu, kdy si udržuje v paměti všechny dialogy. Nehodí se pro velké datové sady.
 \item \emph{prob\_same} -- hodnota parametru $\theta_o$, tedy pravděpodobnost, že pozorování odpovídá skryté proměnné,
 \item \emph{prob\_trans} -- hodnota parametru $\theta_t$, tedy pravděpodobnost, že se hodnota skryté proměnné nezmění v další obrátce.
 \end{itemize}
 
-Přepínače jsou implementovány pomocí knihovny \texttt{python-gflags}, tedy je třeba ji mít nainstalovanout.
+Přepínače jsou implementovány pomocí knihovny \texttt{python-gflags}, je třeba ji mít nainstalovanou.
 
 \section{Výpočet}
 
-V předchozí sekci bylo ukázáno jakým způsobem lze nastavit a spustit skript \texttt{system\_dm.py}, který provede odhad dialogového stavu.
-Výsledkem je soubor ve formátu JSON, kde pro každý dialog a každou jeho obrátku jsou vyznačeny hypotézy pro každý slot.
-V příkladu~\ref{ex:res} je ukázáno jak vypadá výstup pro jeden slot, v tomto případě se jedná o počáteční zastávku, kde hodnota \uv{shadyside} má pravděpodobnost přibližně $0.56$.
+V předchozí sekci bylo ukázáno, jakým způsobem lze nastavit a spustit skript \texttt{system\_dm.py}, který provede odhad dialogového stavu.
+Výsledkem je soubor ve formátu JSON, kde pro každý dialog a každou jeho obrátku jsou uloženy hypotézy pro každý slot.
+V příkladu~\ref{ex:res} je znázorněn výstup pro jeden slot, v tomto případě se jedná o počáteční zastávku, kde hodnota \uv{shadyside} má pravděpodobnost přibližně $0.56$.
 
 \begin{example}
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -100,7 +101,7 @@ V příkladu~\ref{ex:res} je ukázáno jak vypadá výstup pro jeden slot, v tom
 \label{ex:res}
 \end{example}
 
-Nyní by bylo třeba výsledky zpracovat a následně zobrazit.
+Po zpracování dat je třeba výstup vyhodnotit a následně výsledky zobrazit.
 Všechny tři kroky je možné provést naráz použitím skriptu \texttt{test\_run.sh}:
 
 \begin{verbatim}
@@ -113,9 +114,9 @@ V první tabulce (\uv{schedule1}) jsou statistiky počítány po každé obrátc
 V druhé tabulce (\uv{schedule2}) jsou statistiky počítány pro slot pouze pokud se o něm v dané obrátce mluvilo.
 Nakonec ve třetí tabulce (\uv{schedule3}) jsou statistiky počítány pouze na konci dialogu.
 
-Jednotlivé sloupce reprezentují různé sloty, navíc je zde sloupec \emph{joint}, který hodnotí sdruženou informaci o všech slotech v dané obrátce, a sloupec \emph{all}, který obsahuje průměrné skóre.
+Jednotlivé sloupce reprezentují různé sloty, navíc je zde sloupec \emph{joint}, který hodnotí sdruženou informaci o všech slotech v dané obrátce, a sloupec \emph{all} obsahující průměrné skóre.
 
-Jednotlivé řádky obsahují statistiky o slotech, zvlášť zajímavé jsou:
+Řádky obsahují statistiky o slotech, zvláště zajímavé jsou:
 \begin{itemize}
 \item accuracy -- přesnost,
 \item avgp -- průměrné skóre přiřazené správné hypotéze,
@@ -167,7 +168,7 @@ Nakonec jsou zobrazeny i základní informace o celém výpočtu, například ja
   roc.v2_ca10 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
   roc.v2_ca20 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
 \end{lstlisting}
-\caption{Výsledek systému pro odhad stavu podle prvních dvou typů hodnocení.}
+\caption{Výsledky systému pro odhad stavu podle prvních dvou typů hodnocení.}
 \label{ex:res1}
 \end{example}
 
@@ -203,7 +204,7 @@ Nakonec jsou zobrazeny i základní informace o celém výpočtu, například ja
                turns : 10085
   wall_time_per_turn : 0.0113614971707
 \end{lstlisting}
-\caption{Výsledek systému pro odhad stavu podle třetího typu hodnocení a základní statistiky.}
+\caption{Výsledky systému pro odhad stavu podle třetího typu hodnocení a základní statistiky.}
 \label{ex:res2}
 \end{example}
 }

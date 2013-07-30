@@ -1,4 +1,4 @@
-% !TEX root = prace.tex
+% !TEX root = thesis.tex
 
 \chapter{Dokumentace knihovny}
 \label{ap:doc}
@@ -29,18 +29,18 @@ skalární hodnotu.
 \index{\_\_init\_\_() (metoda alex.infer.factor.Factor)}
 
 \begin{fulllineitems}
-\phantomsection\label{alex.infer:alex.infer.factor.Factor.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{variables}, \emph{variable\_values}, \emph{prob\_table}\optional{, \emph{logarithmetic=True}}}{}
+\phantomsection\label{alex.infer:alex.infer.factor.Factor.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{variables}, \emph{variable\_values}, \emph{prob\_table}, \emph{logarithmetic=True}}{}
 Vytvoření nového faktoru.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
-    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
-    \PY{p}{\PYZob{}}
-        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
-        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
-        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
-        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
-    \PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{g+gp}{\PYZgt{}\PYZgt{}\PYZgt{} }\PY{n}{f} \PY{o}{=} \PY{n}{Factor}\PY{p}{(}\PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}\PY{l+s}{\PYZsq{}}\PY{l+s}{A}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{B}\PY{l+s}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{g+gp}{... }    \PY{p}{\PYZob{}}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.8}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a1}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.2}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b1}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.3}\PY{p}{,}
+\PY{g+gp}{... }        \PY{p}{(}\PY{l+s}{\PYZsq{}}\PY{l+s}{a2}\PY{l+s}{\PYZsq{}}\PY{p}{,} \PY{l+s}{\PYZsq{}}\PY{l+s}{b2}\PY{l+s}{\PYZsq{}}\PY{p}{)}\PY{p}{:} \PY{l+m+mf}{0.7}
+\PY{g+gp}{... }    \PY{p}{\PYZcb{}}\PY{p}{)}
 \end{Verbatim}
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
@@ -444,9 +444,9 @@ Obsahuje definice základních metod, které musí obsahovat každá implementac
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.__init__}\pysiglinewithargsret{\bfcode{\_\_init\_\_}}{\emph{name}\optional{, \emph{aliases}}}{}
 Vytvoření nového vrcholu.
 
-Při vytvoření vrcholu je třeba zadat jeho jméno, pod kterým bude možné
-jej nalézt při inferenci a je možné předat aliasy pro proměnné. Aliasy pro
-proměnné slouží k~přejmenování proměnných ve zprávách, které přicházejí
+Při vytvoření vrcholu je třeba zadat jméno, pod kterým bude možné
+jej nalézt při inferenci.
+Je možné předat aliasy pro proměnné, slouží k~přejmenování proměnných ve zprávách, které přicházejí
 do vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
@@ -454,7 +454,7 @@ do vrcholu.
 \textbf{name}~-- jméno vrcholu.
 
 \item {} 
-\textbf{aliases}~-- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v~parametru.
+\textbf{aliases}~-- slovník obsahující zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných v~parametru.
 
 \end{itemize}
 
@@ -468,7 +468,7 @@ do vrcholu.
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}, \emph{**options}}{}
 Přidání souseda.
 
-Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost přidat implementačně závislé parametry.
+Pro většinu implementací bude stačit pouze první parametr (sousední vrchol), zůstává tu ovšem možnost přidat implementačně závislé parametry.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
@@ -489,8 +489,8 @@ Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost 
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.Node.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{**options}}{}
 Propojení dvou vrcholů.
 
-Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.Node.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
+Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.Node.add_neighbor]{\code{add\_neighbor()}}} na obou vrcholech a předá ji parametry.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
 \item {} 
@@ -554,7 +554,8 @@ Poslání zprávy do sousedního vrcholu.
 Normalizace pravděpodobnostního rozdělení.
 
 Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-normalizovaný a je tedy třeba jej normalizovat před jakýmkoliv dalším
+normalizovaný.
+Je tedy třeba jej normalizovat před jakýmkoliv dalším
 použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
 pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
 jedné.
@@ -661,11 +662,11 @@ Přidání souseda.
 \index{connect() (metoda alex.infer.factor.alex.infer.node.DiscreteVariableNode)}
 
 \begin{fulllineitems}
-\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{**options}}{}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}}{}
 Propojení dvou vrcholů.
 
-Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
+Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor]{\code{add\_neighbor()}}} na obou vrcholech a předá ji parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
 \textbf{node}~-- sousední vrchol.
@@ -723,8 +724,8 @@ Poslání zprávy do sousedního vrcholu.
 Normalizace pravděpodobnostního rozdělení.
 
 Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
-použitím.
+normalizovaný.
+Je tedy třeba jej normalizovat před jakýmkoliv dalším použitím.
 
 \end{fulllineitems}
 
@@ -745,11 +746,11 @@ reprezentaci jejich součinu před počítáním odchozích zpráv.
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteVariableNode.observed}\pysiglinewithargsret{\bfcode{observed}}{\emph{assignment\_dict}}{}
 Nastavení pozorovaných hodnot.
 
-Proměnná je nastavená na pozorované rozdělení. Pravděpodobnost nepozorovaných hodnot
+Proměnná je nastavená na pozorované rozdělení. Pravděpodobnost nepozorovaných přiřazení
 je nulová.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
-\textbf{assignment\_dict}~-- slovník se zobrazením z~hodnot do jejich pravděpodobností.
+\textbf{assignment\_dict}~-- slovník se zobrazením z~přiřazení do jejich pravděpodobností.
 
 \end{description}\end{quote}
 
@@ -825,8 +826,8 @@ Přidání souseda.
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}}{}
 Propojení dvou vrcholů.
 
-Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor]{\code{add\_neighbor()}}} obou vrcholů a předá jí parametry.
+Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor]{\code{add\_neighbor()}}} na obou vrcholech a předá ji parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
 \textbf{node}~-- sousední vrchol.
@@ -883,9 +884,8 @@ Poslání zprávy do sousedního vrcholu.
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DiscreteFactorNode.normalize}\pysiglinewithargsret{\bfcode{normalize}}{\optional{\emph{parents}}}{}
 Normalizace pravděpodobnostního rozdělení.
 
-Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
-použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
+Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být normalizovaný.
+Je tedy třeba jej normalizovat před jakýmkoliv dalším použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
 pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
 jedné.
 \begin{quote}\begin{description}
@@ -924,7 +924,7 @@ Reprezentace parametrů Dirichletovského rozdělení.
 
 \begin{fulllineitems}
 \phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.alpha}\pysigline{\bfcode{alpha}}
-Parametry dirichletovského rozdělení. Typu {\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}.
+Parametry Dirichletovského rozdělení. Typu {\hyperref[alex.infer:alex.infer.factor.Factor]{\code{Factor}}}.
 
 \end{fulllineitems}
 
@@ -970,11 +970,11 @@ Přidání souseda.
 \index{connect() (metoda alex.infer.factor.alex.infer.node.DirichletParameterNode)}
 
 \begin{fulllineitems}
-\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{**options}}{}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}}{}
 Propojení dvou vrcholů.
 
-Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor]{\code{add\_neighbor()}}} a předá jí parametry.
+Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor]{\code{add\_neighbor()}}} na obou vrcholech a předá ji parametry.
 \begin{quote}\begin{description}
 \item[{Parametr}] \leavevmode
 \textbf{node} ({\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode]{\code{DirichletFactorNode}}})~-- sousední vrchol.
@@ -1044,7 +1044,7 @@ Vytvoření nového vrcholu pro faktor.
 
 Pro vytvoření je třeba jméno faktoru.
 
-Aliasy pro proměnné slouží k~přejmenování proměnných ve zprávách, které
+Aliasy slouží k~přejmenování proměnných ve zprávách, které
 přicházejí do vrcholu.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}
@@ -1052,7 +1052,7 @@ přicházejí do vrcholu.
 \textbf{name}~-- název faktoru.
 
 \item {} 
-\textbf{aliases}~-- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.
+\textbf{aliases}~-- zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných ve faktoru.
 
 \end{itemize}
 
@@ -1063,12 +1063,16 @@ přicházejí do vrcholu.
 \index{add\_neighbor() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
 
 \begin{fulllineitems}
-\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}}{}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor}\pysiglinewithargsret{\bfcode{add\_neighbor}}{\emph{node}, \emph{parent=True}}{}
 Přidání souseda.
 \begin{quote}\begin{description}
-\item[{Parametr}] \leavevmode
+\item[{Parametr}] \leavevmode\begin{itemize}
+\item {}
 \textbf{node}~-- sousední vrchol.
 
+\item {}
+\textbf{parent}~-- přepínač, zda-li je přidávaná proměnná rodičem ve faktoru.
+\end{itemize}
 \end{description}\end{quote}
 
 \end{fulllineitems}
@@ -1076,15 +1080,21 @@ Přidání souseda.
 \index{connect() (metoda alex.infer.factor.alex.infer.node.DirichletFactorNode)}
 
 \begin{fulllineitems}
-\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}}{}
+\phantomsection\label{alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.connect}\pysiglinewithargsret{\bfcode{connect}}{\emph{node}, \emph{parent=True}}{}
 Propojení dvou vrcholů.
 
-Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor]{\code{add\_neighbor()}}} obou vrcholů a předá jí parametry.
+
+Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu {\hyperref[alex.infer:alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor]{\code{add\_neighbor()}}} na obou vrcholech a předá ji parametry.
+
 \begin{quote}\begin{description}
-\item[{Parametr}] \leavevmode
+\item[{Parametr}] \leavevmode\begin{itemize}
+\item {}
 \textbf{node}~-- sousední vrchol.
 
+\item {}
+\textbf{parent}~-- přepínač, zda-li je přidávaná proměnná rodičem ve faktoru.
+\end{itemize}
 \end{description}\end{quote}
 
 \end{fulllineitems}
@@ -1259,8 +1269,7 @@ Spustit inferenci v~grafickém modelu.
 
 Je možné nastavit počet iterací, po kterém se má inference zastavit.
 U~stromu není třeba zadávat počet iterací, bude provedena pouze jedna.
-
-U~vrstev je možné zadat od které vrstvy inferenci provádět.
+U~vrstev je možné zadat, od které vrstvy inferenci provádět.
 Popřípadě budou zprávy propagovány od začátku.
 \begin{quote}\begin{description}
 \item[{Parametry}] \leavevmode\begin{itemize}

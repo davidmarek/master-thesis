@@ -30,7 +30,7 @@ Dialogový systém se proto musí umět uživatele doptat na chybějící inform
 
 \section{Součásti dialogového systému}
 
-Dialogový systém se skládá z~několika spolupracujích částí.
+Dialogový systém se skládá z~několika spolupracujících částí.
 Na vstupu je zvukový záznam uživatele.
 O~jeho převedení do textu se stará systém rozpoznávání řeči (ASR).
 Z~textu je potřeba získat sémantické informace pomocí systému porozumění mluvené řeči (SLU).
@@ -57,7 +57,7 @@ Dialogový systém Let's Go!~\cite{raux2006doing} například dosahuje průměrn
 Systém rozpoznávání řeči může produkovat více hypotéz pro jeden vstup.
 Často existuje pro jeden zvukový záznam více možných slovních sekvencí, ze kterých by mohl pocházet.
 Reprezentací možných hypotéz může být seznam slovních sekvencí s~jejich věrohodností.
-Věrohodnosti jsou skóre přiřazená hypotézám určující jakou důvěru má systém rozpoznávání řeči ve správnost dané slovní sekvence.
+Věrohodnosti jsou skóre přiřazená hypotézám, určující jakou důvěru má systém rozpoznávání řeči ve správnost dané slovní sekvence.
 Příklad možného seznamu hypotéz je v~tabulce~\ref{tab:sezhyp}.
 
 \begin{table}[h]
@@ -95,7 +95,7 @@ Uživatel by rád jel do zastávky Poliklinika Modřany.}
 Pro práci s~hypotézami je vhodné, aby věrohodnost odpovídala aposteriorní pravděpodobnosti sekvence slov, dáno vstupním zvukem.
 
 Další možností, jak reprezentovat výstup, je použití konfúzní sítě \cite{bertoldi2005new}.
-Konfúzní síť je vážený orientovaný graf, obsahující startovní a konečný vrchol a hrany označené slovy.
+Konfúzní síť je vážený orientovaný graf obsahující startovní a konečný vrchol a hrany označené slovy.
 Každá cesta ze startovního do konečného vrcholu vede přes všechny ostatní vrcholy.
 Váhy hran jsou pravděpodobnosti slova přiřazeného dané hraně.
 Hrany mohou obsahovat i prázdné slovo $\epsilon$.
@@ -158,9 +158,9 @@ Příklad konfúzní sítě je na obrázku~\ref{fig:konnet}.
 
 \subsection{Porozumění mluvené řeči (SLU)}
 
-Po získání hypotéz o~promluvě uživatele se musi dialogový systém pokusit porozumět, co se uživatel snažil sdělit.
+Po získání hypotéz o~promluvě uživatele se musí dialogový systém pokusit porozumět, co se uživatel snažil sdělit.
 Dialogový systém nepotřebuje vědět, co přesně uživatel řekl, důležité je pouze zjistit význam sdělení.
-Pokud například uživatel řekne \uv{Chtěl bych nalézt spojení z~Malostranského náměstí na Anděl} anebo \uv{Jak se dostanu na Anděl ze zastávky Malostranské náměstí?}, tak pro dialogový systém jsou obě tvrzení ekvivalentní.
+Pokud například uživatel řekne \uv{Chtěl bych nalézt spojení z~Malostranského náměstí na Anděl} nebo \uv{Jak se dostanu na Anděl ze zastávky Malostranské náměstí?}, tak pro dialogový systém jsou obě tvrzení ekvivalentní.
 Uživatel požaduje informace o~spojení mezi dvěma zastávkami, i když v~jednom případě jde o~větu oznamovací a v~druhém případě o~otázku.
 
 První rozdělení mezi přesným významem sdělení a jeho účelem se objevilo ve formě tzv. speech aktů~\cite{austin1975things}.
@@ -176,11 +176,12 @@ Příklad dialogového aktu ze systému pro hledání spojení v~městské dopra
 {\tt hello(), inform(route="61a")}.
 \end{center}
 
-Zde se dialogový akt skládá ze dvou položek, první položka má pouze typ {\em hello}, značící pozdrav.
+Zde se dialogový akt skládá ze dvou položek.
+První položka má pouze typ {\em hello}, značící pozdrav.
 Druhá položka má typ {\em inform}, tzn. uživatel nás informuje o~svém požadavku.
 Název slotu je {\em route} a hodnota je \uv{61a}, tedy uživatel nám říká, že hledá spojení linkou 61a.
 
-Typů může být libovolné množství, ale existuje několik základních, jejichž použití je ustálené.
+Typů může být libovolné množství, ale existuje několik základních, jejichž použití je ustálené:
 \begin{itemize}
 \item {\em inform} --- sdělujeme informaci, doplňujeme hodnotu do slotu,
 \item {\em request} --- požadujeme od protějšku doplnění hodnoty pro dotazovaný slot,
@@ -225,7 +226,7 @@ deny \\
 inform \\
 \hline
 \end{tabular}
-\caption{Typy dialogových aktů, které může říct použít uživatel v~systému Let's Go!}
+\caption{Typy dialogových aktů, které může použít uživatel v~systému Let's Go!}
 \label{tab:dstcdat}
 \end{center}
 \end{table}
@@ -240,7 +241,7 @@ Pokud už jsou pravděpodobné dialogové akty dekódovány, je třeba rozhodnou
 Komponenta řízení dialogu rozhoduje o~dalším kroku systému.
 Odpověď systému je zakódována do formy dialogových aktů a nazývá se systémová akce.
 
-Zvolená systémová akce $a$ je vybrána z~množiny možných akci $\mathcal{A}$ a závisí na vstupu, který systém obdržel z~SLU.
+Zvolená systémová akce $a$ je vybrána z~množiny možných akcí $\mathcal{A}$ a závisí na vstupu, který systém obdržel z~SLU.
 Tento vstup se nazývá pozorování $o \in \mathcal{O}$, obsahuje všechny informace získáné od uživatele.
 
 Zvolení správné akce potřebuje více znalostí než jen poslední pozorování.
@@ -248,8 +249,8 @@ Historie dialogu a kontext hrají důležitou roli.
 Komponenta řízení dialogu proto udržuje interní reprezentaci celé historie dialogu.
 Všechny informace o~historii dialogu a cílech uživatele nazýváme stavem dialogu.
 
-Cíle uživatele ovšem neznáme a tedy musíme nějak uvažovat nad všemi možnými hodnotami.
-Pro vyrovnání se s~tímto problém se dialog považuje za Částečně pozorovatelný Markovský rozhodovací proces (POMDP) a cíle uživatele za skryté proměnné~\cite{williams2007partially}.
+Cíle uživatele ovšem neznáme, a tedy musíme nějak uvažovat nad všemi možnými hodnotami.
+Pro vyrovnání se s~tímto problém se dialog považuje za částečně pozorovatelný Markovský rozhodovací proces (POMDP) a cíle uživatele za skryté proměnné~\cite{williams2007partially}.
 Pravděpodobnostní rozdělení nad možnými dialogovými stavy nazýváme stav důvěry $b \in \mathcal{B}$.
 Aktuální stav důvěry závisí na přechodové funkci, která jej aktualizuje pro každé nové pozorování a systémovou akci.
 Přechodová funkce je tedy mapování $\mathcal{T} : \mathcal{B} \times \mathcal{A} \times \mathcal{O} \longrightarrow \mathcal{B}$.
@@ -257,7 +258,7 @@ V~této práci se budeme věnovat právě metodám pro odhad stavu.
 
 Chování systému definuje dialogová strategie $\pi$.
 Strategie určuje další akci systému v~závislosti na aktuálním dialogovém stavu.
-Stochastické strategie přiřadí možným akcím pravděpodobnost s~jakou by je měl systém použít a pak z~nich jednu náhodně vybere.
+Stochastická strategie přiřadí možným akcím pravděpodobnost, s~jakou by je měl systém použít a pak z~nich jednu náhodně vybere.
 
 Pozorování, stav důvěry a akce jsou číslovány podle obrátky.
 Pokud je časový okamžik důležitý, pozorování, stav důvěry a akce z~obrátky číslo $t$ se značí $o_t$, $b_t$ a~$a_t$.
@@ -269,7 +270,7 @@ Nejprve systém generování přirozené řeči (NLG) převede dialogové akty n
 Následně je text převeden na zvuk pomocí textového syntetizéru řeči (TTS).
 
 Nejjednodušším přístupem ke generování přirozeného jazyka z~dialogových aktů je použití šablon.
-Například pro dialogový akt {\tt inform(from.stop="x")} bude vytvořena šablona \uv{Pojedete ze zastávky x}, kde \uv{x} bude nahrazeno názvem zástávky (\uv{Malostranská}, \uv{Letňany} atd.).
+Například pro dialogový akt {\tt inform(from.stop="x")} bude vytvořena šablona \uv{Pojedete ze zastávky x}, kde \uv{x} bude nahrazeno názvem zastávky (\uv{Malostranská}, \uv{Letňany} atd.).
 Šablony jsou jednoduché a často efektivní řešení, protože počet možných frází je většinou malý.
 
 Při syntéze řeči existuje mnoho alternativ.
@@ -283,8 +284,8 @@ Pro syntézu řeči existují také komerční systémy, například systém Spe
 \section{Dialogový stav}
 
 Dialogový stav je reprezentace všech získaných informací z~aktuálního dialogu.
-To znamená vše co uživatel a systém řekli.
-Systém ovšem nezná cíle uživatele a navíc systémy pro rozpoznávání i porozumění řeči často chybují.
+To znamená vše, co uživatel a systém řekli.
+Systém ovšem nezná cíle uživatele, a~navíc systémy pro rozpoznávání i porozumění řeči často chybují.
 Možnost chyb ve vstupních datech proto musí brát komponenta řízení dialogu v~potaz.
 Vypořádat se s~nejistotou lze pomocí jejího zakomponování do modelu pro odhad dialogového stavu.
 
@@ -304,15 +305,15 @@ Můžeme spočítat pravděpodobnost stavu v~čase $t+1$ po přijetí nového po
 
 \begin{align}
 \small
-p(s_{t+1} = s^\prime \mid h_{t+1}) \; \propto \;& 
+p(s_{t+1} = s^\prime \mid h_{t+1}) \; \propto &\; 
     p(o_{t+1} = o^\prime \mid s_{t+1} = s^\prime)
 \label{eq:beliefupdate} \\
-    &\sum_{s~\in \mathcal{S}}
-        p(s_t = s~\mid h_t)
+    &\;\sum_{s~\in \mathcal{S}}
+        p(s_t = s~\mid h_t)\;
         p(s_{t+1} = s^\prime \mid s_t = s, a_t = a) \nonumber
 \end{align}
 
-Nyní můžeme definovat stav důvěry v~čase $t$, $b_t$, jako pravděpodobnost stavů dáno všemi pozorováními až do času $t$.
+Nyní můžeme definovat stav důvěry v~čase $t$, $b_t$, jako pravděpodobnostní rozdělení stavů dáno všemi pozorováními až do času $t$.
 Množina možných stavů důvěry jsou pravděpodobnostní distribuce přes všechny možné dialogové stavy $\mathcal{B} = \prod(\mathcal{S})$.
 
 Můžeme přepsat rovnici~\eqref{eq:beliefupdate} s~pomocí stavů důvěry.
@@ -321,7 +322,7 @@ Můžeme přepsat rovnici~\eqref{eq:beliefupdate} s~pomocí stavů důvěry.
 b(s_{t+1}) \propto
     p(o_{t+1} \mid s_{t+1})
     \sum_{s~\in \mathcal{S}}
-        b(s_t)
+        b(s_t)\;
         p(s_{t+1} \mid s_t, a_t)
 \label{eq:beliefupdate2}
 \end{equation}
@@ -335,7 +336,7 @@ Tedy velikost stavového prostoru roste exponenciálně.
 \subsection{Aktualizace stavu}
 
 Efektivní metodou pro aktualizaci dialogového stavu je použití Dynamických Bayesovských sítí~\cite{thomson2008bayesian}.
-Bayesovské sítě umožňují efektivní výpočet (inferenci) využitím podmíněných nezávislostí mezi sloty.
+Ty umožňují efektivní výpočet (inferenci) využitím podmíněných nezávislostí mezi sloty.
 Stále ovšem zůstává problém s~výpočtem, pokud i jednotlivé sloty obsahují příliš mnoho hodnot.
 Lze použít aproximace a počítat jen s~$k$ nejpravděpodobnějšími hodnotami~\cite{thomson2010bayesian}.
 

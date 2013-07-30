@@ -461,9 +461,8 @@ Pro výpočty jsou používány třídy z modulu <a class="reference internal" h
 <tt class="descname">__init__</tt><big>(</big><em>name</em><span class="optional">[</span>, <em>aliases</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Vytvoření nového vrcholu.</p>
 <p>Při vytvoření vrcholu je třeba zadat jeho jméno, pod kterým bude možné
-jej nalézt při inferenci a je možné předat aliasy pro proměnné. Aliasy pro
-proměnné slouží k přejmenování proměnných ve zprávách, které přicházejí
-do vrcholu.</p>
+jej nalézt při inferenci. Je možné předat aliasy pro proměnné, slouží k
+přejmenování proměnných ve zprávách, které přicházejí do vrcholu.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -482,7 +481,9 @@ do vrcholu.</p>
 <dt id="alex.infer.factor.alex.infer.node.Node.add_neighbor">
 <tt class="descname">add_neighbor</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Přidání souseda.</p>
-<p>Pro většinu vrcholů bude stačit pouze vrchol, zůstává tu ovšem možnost přidat implementačně závislé parametry.</p>
+<p>Pro většinu implementací bude stačit pouze první parametr (sousední
+vrchol), zůstává tu ovšem možnost přidat implementačně závislé
+parametry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -501,8 +502,8 @@ do vrcholu.</p>
 <dt id="alex.infer.factor.alex.infer.node.Node.connect">
 <tt class="descname">connect</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.Node.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Propojení dvou vrcholů.</p>
-<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.Node.add_neighbor" title="alex.infer.factor.alex.infer.node.Node.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> a předá jí parametry.</p>
+<p>Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.Node.add_neighbor" title="alex.infer.factor.alex.infer.node.Node.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> na obou vrcholech a předá ji parametry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -652,8 +653,8 @@ Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.</p>
 <dt id="alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect">
 <tt class="descname">connect</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Propojení dvou vrcholů.</p>
-<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> a předá jí parametry.</p>
+<p>Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DiscreteVariableNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> na obou vrcholech a předá ji parametry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -708,7 +709,7 @@ Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.a
 <tt class="descname">normalize</tt><big>(</big><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteVariableNode.normalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Normalizace pravděpodobnostního rozdělení.</p>
 <p>Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+normalizovaný. Je tedy třeba jej normalizovat před jakýmkoliv dalším
 použitím.</p>
 </dd></dl>
 
@@ -798,8 +799,8 @@ Je třeba, aby všechny vrcholy v grafickém modelu byly nastaveny stejně.</p>
 <dt id="alex.infer.factor.alex.infer.node.DiscreteFactorNode.connect">
 <tt class="descname">connect</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Propojení dvou vrcholů.</p>
-<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> obou vrcholů a předá jí parametry.</p>
+<p>Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DiscreteFactorNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> na obou vrcholech a předá ji parametry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -854,7 +855,7 @@ Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.a
 <tt class="descname">normalize</tt><big>(</big><span class="optional">[</span><em>parents</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DiscreteFactorNode.normalize" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Normalizace pravděpodobnostního rozdělení.</p>
 <p>Při počítání nejsou zprávy normalizované, proto ani výsledek nemusí být
-normalizovaný a je tedy jej třeba normalizovat před jakýmkoliv dalším
+normalizovaný. Je tedy třeba jej normalizovat před jakýmkoliv dalším
 použitím. Pro normalizaci je možné zadat, které proměnné jsou rodiče,
 pak musí být suma ohodnocení všech přiřazení se stejnými rodiči rovna
 jedné.</p>
@@ -930,10 +931,10 @@ přicházejí do vrcholu.</p>
 
 <dl class="method">
 <dt id="alex.infer.factor.alex.infer.node.DirichletParameterNode.connect">
-<tt class="descname">connect</tt><big>(</big><em>node</em>, <em>**options</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<tt class="descname">connect</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Propojení dvou vrcholů.</p>
-<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> a předá jí parametry.</p>
+<p>Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DirichletParameterNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> na obou vrcholech a předá ji parametry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -989,8 +990,8 @@ Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.a
 <dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode">
 <em class="property">class </em><tt class="descclassname">alex.infer.node.</tt><tt class="descname">DirichletFactorNode</tt><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Předek: <a class="reference internal" href="#alex.infer.factor.alex.infer.node.FactorNode" title="alex.infer.factor.alex.infer.node.FactorNode"><tt class="xref py py-class docutils literal"><span class="pre">alex.infer.node.FactorNode</span></tt></a></p>
-<p>Diskrétní faktor, který ovšem bere své parametry z
-<a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode" title="alex.infer.factor.alex.infer.node.DirichletParameterNode"><tt class="xref py py-class docutils literal"><span class="pre">DirichletParameterNode</span></tt></a> vrcholu.</p>
+<p>Diskrétní faktor, parametry jeho rozdělení ovšem nejsou pevně dány, ale
+pochází z vrcholu typu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletParameterNode" title="alex.infer.factor.alex.infer.node.DirichletParameterNode"><tt class="xref py py-class docutils literal"><span class="pre">DirichletParameterNode</span></tt></a>.</p>
 <dl class="method">
 <dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>name</em><span class="optional">[</span>, <em>aliases</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.__init__" title="Trvalý odkaz na tuto definici">¶</a></dt>
@@ -1003,7 +1004,7 @@ přicházejí do vrcholu.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>name</strong> &#8211; název faktoru.
-:arg aliases: zobrazení ze jmen proměnných, které se mohou objevit ve zprávě do proměnných ve faktoru.</td>
+:arg aliases: zobrazení ze jmen proměnných, které se mohou objevit ve zprávě, do proměnných ve faktoru.</td>
 </tr>
 </tbody>
 </table>
@@ -1011,13 +1012,17 @@ přicházejí do vrcholu.</p>
 
 <dl class="method">
 <dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor">
-<tt class="descname">add_neighbor</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<tt class="descname">add_neighbor</tt><big>(</big><em>node</em>, <em>parent=True</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Přidání souseda.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>parent</strong> &#8211; přepínač, zda-li je přidávaná proměnná rodičem ve faktoru.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1025,15 +1030,19 @@ přicházejí do vrcholu.</p>
 
 <dl class="method">
 <dt id="alex.infer.factor.alex.infer.node.DirichletFactorNode.connect">
-<tt class="descname">connect</tt><big>(</big><em>node</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
+<tt class="descname">connect</tt><big>(</big><em>node</em>, <em>parent=True</em><big>)</big><a class="headerlink" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.connect" title="Trvalý odkaz na tuto definici">¶</a></dt>
 <dd><p>Propojení dvou vrcholů.</p>
-<p>Propojení dvou vrcholů, stačí zavolat pouze jednou pro dvojici vrcholů.
-Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> obou vrcholů a předá jí parametry.</p>
+<p>Stačí zavolat pouze jednou pro dvojici vrcholů.
+Interně zavolá metodu <a class="reference internal" href="#alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor" title="alex.infer.factor.alex.infer.node.DirichletFactorNode.add_neighbor"><tt class="xref py py-meth docutils literal"><span class="pre">add_neighbor()</span></tt></a> na obou vrcholech a předá ji parametry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><strong>node</strong> &#8211; sousední vrchol.</td>
+<tr class="field-odd field"><th class="field-name">Parametry:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> &#8211; sousední vrchol.</li>
+<li><strong>parent</strong> &#8211; přepínač, zda-li je přidávaná proměnná rodičem ve faktoru.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
